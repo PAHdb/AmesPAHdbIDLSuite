@@ -1,0 +1,28 @@
+These are the instruction on how to install the AmesPAHdbIDLSuite
+accompanying the NASA Ames PAH IR Spectroscopic Database. The suite
+has been tested with IDL versions 7.0 through 8.4. The IDL-versions of
+NNLS requires IDL version 8.0 or higher due to its use of the
+!NULL. The open source IDL-replacement GDL is currently not compatible
+with the suite due to its lack of an XML-parsing interface.
+
+1)   Unpack the suite, e.g., tar xvaf AmesPAHdbIDLSuite.
+
+2)   Put the files in a directory accessible by IDL or update the IDL
+     !PATH variable, e.g., !PATH = !PATH + ":/path/to/AmesPAHdbIDLSuite/"
+
+3)   Obtain the XML version(s) of the database from the website
+     http://www.astrochem.org/pahdb/
+
+4)   Place the XML file(s) somewhere and, optionally, set either or both
+     of the system and IDL AMESPAHDEFAULTDB environment variables for
+     the default database file you want to use, e.g.
+     defsysv,'!AMESPAHDEFAULTDB',"/path/to/theoretical.xml" and export
+     AMESPAHDEFAULTDB='/path/to/theoretical.xml' (case-sensitive!)
+
+5)   Run example programs from the 'examples' directory to verify
+     proper installation of the suite
+
+Additional and updated information can be found at
+http://www.astrochem.org/pahdb/ and in Boersma et al. 2014, The
+Astrophysical Journal Supplement Series, 211, 8. Don't forget to
+consult the README file.
