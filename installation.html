@@ -1,0 +1,141 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <title>AmesPAHdbIDLSuite Manual</title>
+
+
+    <link rel="stylesheet" type="text/css" media="all"
+          href="idldoc-resources/main.css" />
+    <link rel="stylesheet" type="text/css" media="print"
+          href="idldoc-resources/main-print.css" />
+
+    <link rel="stylesheet" type="text/css" media="all"
+          href="idldoc-resources/prismjs.css" />
+
+    <script type="text/javascript" src="idldoc-resources/prismjs.js"></script>
+
+  </head>
+
+  <body>
+
+    <div class="container">
+
+      <div class="header">
+
+        <div class="breadcrumb">
+
+          <a href="overview.html">Docs</a> &raquo; Installation
+
+        </div>
+
+        <a class="btn-prev" href="overview.html" title="AmesPAHdbIDLSuite Manual" accesskey="p"> Previous</a>
+
+        <a class="btn-next" href="usage.html" title="Usage" accesskey="n">Next </a>
+
+      </div>
+
+      <div class="content">
+
+        <hr />
+
+        <h1>Installation</h1>
+
+        <p>
+          The <i>AmesPAHdbIDLSuite</i> can be freely downloaded
+          from the
+          <a href="https://www.astrochemistry.org/pahdb/theoretical/3.20/download/view">download</a> section
+          of the NASA Ames PAH IR Spectroscopic
+          Database <a href="https://www.astrochemistry.org/pahdb/theoretical/3.20/default/view">website</a> as a
+          gzipped tar-archive or from <a href="https://github.com/PAHdb/AmesPAHdbIDLSuite/releases/latest">GitHub</a> as a zip-archive.
+        </p>
+        <p>
+          The <i>AmesPAHdbIDLSuite</i> has been tested with IDL versions 7.0 through 8.7.2. Spectroscopic fitting using the built-in
+          NNLS-algorithm requires IDL version 8.0 or higher due to the use of !NULL in the NNLS implementation.
+        </p>
+        <p>
+          <b>NB</b> It is possible to make use of an externally programmed NNSL-implementation. Consult the API-documentation for
+          details.
+        </p>
+        <p>
+          <ol type="i">
+            <li>
+              Unpack the <i>AmesPAHdbIDLSuite</i> downloaded as a gzipped tar-archive <i>or</i> zip-archive.
+              <pre><code class="language-bash">tar xvaf AmesPAHdbIDLSuite.tgz</code></pre>
+	      <pre><code class="language-bash">unzip AmesPAHdbIDLSuite.zip</code></pre>
+            </li>
+            <li>
+              <p>
+                Place the unpacked files in a directory accessible by IDL or update the IDL !PATH-variable accordingly.
+              </p>
+              <pre><code class="language-bash">!PATH = !PATH + ":/path/to/AmesPAHdbIDLSuite/"</code></pre>
+            </li>
+            <li>
+              <p>
+                Obtain the XML-version(s) of either/or both the theoretical and experimental database from the <a href="https://www.astrochemistry.org/pahdb/theoretical/3.20/download/view">download</a> section of the NASA Ames PAH IR Spectroscopic Database <a href="https://www.astrochemistry.org/pahdb/theoretical/3.20/default/view">website</a> and unpack the gzipped-file(s).
+              </p>
+              <pre><code class="language-bash">gunzip pahdb-full-theoretical-v2.00.xml.gz</code></pre>
+            </li>
+            <li>
+              <p>
+                Place the unpacked file somewhere where IDL can access it and/or set either or both of the system and IDL AMESPAHDEFAULTDB environment variables to a default database file you wish to use.
+              </p>
+              IDL:
+	      <pre><code class="language-idl">DEFSYSV,'!AMESPAHDEFAULTDB',"/path/to/default/xml-file"</code></pre>
+              Bash:
+              <pre><code class="language-bash">export AMESPAHDEFAULTDB='/path/to/default/xml-file'</code></pre>
+              <p>
+                <b>NB</b> On some systems these variables are case-sensitive.
+              </p>
+            </li>
+            <li>
+              <p>
+                Run 'example.pro' from the 'examples'-directory to verify correct installation.
+              </p>
+            </li>
+          </ol>
+          <p>
+            Complementary information can be found in the README.md and INSTALL files accompanying the download.
+          </p>
+
+      </div>
+
+      <div class="footer">
+
+        <a class="btn-prev" href="overview.html" title="AmesPAHdbIDLSuite Manual" accesskey="p"> Previous</a>
+
+        <a class="btn-next" href="usage.html" title="Usage" accesskey="n">Next </a>
+
+        <hr />
+
+        <table class="smaller" summary="footer">
+
+          <tr>
+
+            <td>
+
+              &copy; Copyright 2020, Dr. Christiaan Boersma
+
+            </td>
+
+          </tr>
+
+          <tr>
+
+            <td>
+              Built with <a href="https://github.com/mgalloy/idldoc">IDLdoc</a> using <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> elements provided by <a href="https://readthedocs.org">Read the Docs</a>.
+            </td>
+
+          </tr>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </body>
+
+</html>

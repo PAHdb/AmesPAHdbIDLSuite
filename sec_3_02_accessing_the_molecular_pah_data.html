@@ -1,0 +1,141 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <title>AmesPAHdbIDLSuite Manual</title>
+
+
+    <link rel="stylesheet" type="text/css" media="all"
+          href="idldoc-resources/main.css" />
+    <link rel="stylesheet" type="text/css" media="print"
+          href="idldoc-resources/main-print.css" />
+
+    <link rel="stylesheet" type="text/css" media="all"
+          href="idldoc-resources/prismjs.css" />
+
+    <script type="text/javascript" src="idldoc-resources/prismjs.js"></script>
+    <script type="text/javascript" src="idldoc-resources/language-idl.js"></script>
+
+  </head>
+
+  <body>
+
+    <div class="container">
+
+      <div class="header">
+
+        <div class="breadcrumb">
+
+          <a href="overview.html">Docs</a> &raquo; <a href="api.html">API</a> &raquo; Accessing the Molecular PAH Data
+
+        </div>
+
+        <a class="btn-prev" href="sec_3_01_main_interface.html" title="Main Interface" accesskey="p"> Previous</a>
+
+        <a class="btn-next" href="sec_3_03_working_with_molecular_pah_properties.html" title="Acessing the Molecular PAH Data" accesskey="n">Next </a>
+
+      </div>
+
+      <div class="content">
+
+        <hr />
+
+        <h1>Accessing the molecular PAH data</h1>
+
+        <p>
+          The molecular PAH data is accessed through their associated unique identifier (UID). However, a search-interface is available that allows retrieval of these UIDs through simplified queries. The syntax is the same as used on the NASA Ames PAH IR Spectroscopic Database <a href="https://www.astrochemistry.org/pahdb/theoretical/3.20/default/view">website.</a>
+        </p>
+        <pre><code class="language-idl">uids = pahdb-&gt;Search("c&lt;=20 neutral n=2 neutral")</code></pre>
+        <p>
+          The molecular PAH data contained in the database  XML-files consists of four main parts:
+        </p>
+        <ol>
+          <li>Molecular properties, .e.g, molecular weight, zero point energy, total energy, etc. </li>
+          <li>Fundamental vibrational transitions</li>
+          <li>Molecular  geometric data</li>
+          <li>Raw laboratory spectra for a subset of molecules in the experimental database</li>
+        </ol>
+        <pre><code class="language-idl">pahdb = OBJ_NEW('AmesPAHdbIDLSuite')
+
+uids = pahdb-&gt;Search("c&lt;=20 neutral n=2 neutral")
+
+pahs = pahdb-&gt;getSpeciesByUID(uids)
+
+transitions = pahdb-&gt;getTransitionsByUID(uids)
+
+geometries = pahdb-&gt;getGeometryByUID(uids)
+
+laboratory = pahdb-&gt;getLaboratoryByUID(uids)
+
+... work ...
+
+OBJ_DESTROY,[laboratory, $
+             geometries, $
+             transitions, $
+             pahs, $
+             pahdb]</code></pre>
+        <p>
+          Alternatively, one can access these data components through the 'AmesPAHdbIDLSuite_Species'-object.
+        </p>
+        <pre><code class="language-idl">pahdb = OBJ_NEW('AmesPAHdbIDLSuite')
+
+pahs = pahdb-&gt;getSpeciesByUID( $
+       pahdb-&gt;Search("c&lt;=20 neutral n=2 neutral"))
+
+transitions = pahs-&gt;transitions()
+
+geometries = pahs-&gt;geometry()
+
+laboratory = pahs-&gt;laboratory()
+
+... work ...
+
+OBJ_DESTROY,[laboratory, $
+             geometries, $
+             transitions, $
+             pahs, $
+             pahdb]</code></pre>
+
+      </div>
+
+      <div class="footer">
+
+        <a class="btn-prev" href="sec_3_01_main_interface.html" title="Main Interface" accesskey="p"> Previous</a>
+
+        <a class="btn-next" href="sec_3_03_working_with_molecular_pah_properties.html" title="Acessing the Molecular PAH Data" accesskey="n">Next </a>
+
+        <hr />
+
+        <table class="smaller" summary="footer">
+
+          <tr>
+
+            <td>
+
+              &copy; Copyright 2020, Dr. Christiaan Boersma
+
+            </td>
+
+          </tr>
+
+          <tr>
+
+            <td>
+
+              Built with <a href="https://github.com/mgalloy/idldoc">IDLdoc</a> using <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> elements provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+            </td>
+
+          </tr>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </body>
+
+</html>

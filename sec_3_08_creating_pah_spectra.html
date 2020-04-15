@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <title>AmesPAHdbIDLSuite Manual</title>
+
+
+    <link rel="stylesheet" type="text/css" media="all"
+          href="idldoc-resources/main.css" />
+    <link rel="stylesheet" type="text/css" media="print"
+          href="idldoc-resources/main-print.css" />
+
+    <link rel="stylesheet" type="text/css" media="all"
+          href="idldoc-resources/prismjs.css" />
+
+    <script type="text/javascript" src="idldoc-resources/prismjs.js"></script>
+    <script type="text/javascript" src="idldoc-resources/language-idl.js"></script>
+
+  </head>
+
+  <body>
+
+    <div class="container">
+
+      <div class="header">
+
+        <div class="breadcrumb">
+
+          <a href="overview.html">Docs</a> &raquo; <a href="api.html">API</a> &raquo; Creating PAH Spectra
+
+        </div>
+
+        <a class="btn-prev" href="sec_3_07_working_outside_the_amespahdbidlsuite_object_classes.html" title="Working Outside the Amespahdbidlsuite Object Classes" accesskey="p"> Previous</a>
+
+        <a class="btn-next" href="sec_3_09_spectroscopic_database_fitting.html" title="Spectroscopic Database Fitting" accesskey="n">Next </a>
+
+      </div>
+
+      <div class="content">
+
+        <hr />
+
+        <h1>Creating PAH spectra</h1>
+        <p>
+          The (theoretical) database XML-files provide fundamental vibrational transitions at 0-Kelvin. To compare these with observations, they need to be transformed into a spectral density, i.e., spectra. When not dealing with absorption at 0-Kelvin, an emission model is required as well.
+        </p>
+
+        <h2>Emission models</h2>
+        <p>
+          The <i>AmesPAHdbIDLSuite</i> offers three PAH emission models. With increasing complexity they are the 'FixedTemperature', 'CalculatedTemperature', and 'Cascade' model. The first simply multiplies a blackbody at fixed given temperature with the integrated cross-section of each vibrational transition. The second first calculates the maximum attained temperature from the provided input and subsequently multiplies a blackbody at that fixed temperature with the integrated cross-section of each vibrational transition. The third averages the total emission over the entire cooling cascade (time).
+        </p>
+        <p>
+          Emission models are handled by the 'AmesPAHdbIDLSuite_Transitions'-object. The 'FixedTemperature'-model simply takes a temperature, in Kelvin, and, in their simplest form, both the 'CalculatedTemperature' and 'Cascade' models take an energy, in erg.
+        </p>
+        <pre><code class="language-idl">transitions-&gt;FixedTemperature,600D
+
+transitions-&gt;CalculatedTemperature,6D*1.603D-12; 6 eV
+
+transitions-&gt;Cascade,6D*1.603D-12; 6 eV</code></pre>
+        <p>
+	  Both the 'CalculatedTemperature' and 'Cascade'-methods accept the 'Approximate', 'Star', 'StellarModel', and 'ISRF'-keywords. With the 'Approximate'-keyword specified, calculations are performed using the PAH emission model from Bakes et al. (2001<a href="http://adsabs.harvard.edu/abs/2001ApJ...556..501B">a</a>, <a href="http://adsabs.harvard.edu/abs/2001ApJ...560..261B">b</a>).  When the 'Star'-keyword is set, a stellar blackbody at the provided temperature is used to calculate the average energy absorbed by each PAH utilizing the PAH absorption cross-sections from Draine &amp; Li (<a href="http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2007ApJ...657..810D&db_key=AST&link_type=ABSTRACT&high=54888b502c27613">2007</a>). In case the 'StellarModel'-keyword is provided as well, the input is considered to be a full-blown, for example, Kurucz stellar atmosphere model. The 'AmesPAHdbIDLSuite_CREATE_KURUCZ_STELLARMODEL_S' helper routine is provided to assist with molding the model data into the proper input format. Lastly, with the 'ISRF'-keyword set, the interstellar radiation field from Mathis et al. (<a href="http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=1983A%26A...128..212M&db_key=AST&link_type=ABSTRACT&high=54888b502c28367">1983</a>) is used to calculate the average energy absorbed by each PAH.
+        </p>
+        <pre><code class="language-idl">transitions-&gt;CalculatedTemperature,17D3,/Star
+
+transitions-&gt;Cascade,/Approximate,/ISRF
+
+FTAB_EXT,'ckp00_17000.fits',[1,10],angstroms,flam,EXT=1
+
+transitions-&gt;Cascade, $
+              AmesPAHdbIDLSuite_CREATE_KURUCZ_STELLARMODEL_S(angstroms, $
+                                                             flam), $
+              /Star, $
+              /StellarModel</code></pre>
+        <p>
+          The 'Cascade'-method also accepts the 'Convolve'-keyword. When set and combined with either the 'Star', optionally with the 'StellarModel'-keyword, or 'ISRF'-keyword, will instead of calculating the average absorbed photon energy for each PAH, convolve the PAH emission with the entire radiation field.
+        </p>
+        <pre><code class="language-idl">transitions-&gt;Cascade,17D3,/Star,/Convolve</code></pre>
+        <p>
+          <b>NB</b> This is computationally expensive.
+        </p>
+	<p>
+	  The 'AmesPAHdbIDLSuite_Transitions'-object's 'Shift'-method can be used to redshift the fundamental transitions to simulate anharmonic effects.
+	</p>
+	<pre><code class="language-idl">transitions-&gt;Shift,-15D</code></pre>
+	<p>
+	  <b>NB</b> Red-shifting the fundamental vibrational transitions should be done <i>after</i> applying one of the three emission models described above.
+	</p>
+
+        <h2>Line profiles</h2>
+        <p>
+          Line profiles are handled by the 'AmesPAHdbIDLSuite_Transitions'-object and it provides three profiles; Lorentzian, Gaussian and Drude. Convolution with the keyword chosen line profile is achieved through the 'AmesPAHdbIDLSuite_Transitions'-object's 'Convolve'-method, which will return the convolved spectrum in the form of an 'AmesPAHdbIDLSuite_Spectrum'-object.
+        </p>
+        <pre><code class="language-idl">spectrum = transitions-&gt;Convolve(/Drude)</code></pre>
+        <p>
+          Optionally, the 'Convolve'-method accepts the 'FWHM', 'Grid', 'NPoints', and 'XRange'-keywords, which control the full-width-at-half-maximum of the selected line profile (in cm<sup>-1</sup>), convolution onto a specified grid, the number of resolution elements in the generated spectrum, and the frequency range (in cm<sup>-1</sup>) of the spectrum.
+	</p>
+        <pre><code class="language-idl">spectrum = transitions-&gt;Convolve(/Drude, FWHM=20D, Grid=myGrid)</code></pre>
+        <p>
+          The 'AmesPAHdbIDLSuite_Spectrum'-object exposes the convolved spectra and provides the 'Plot', and 'Write'-methods.  The 'Plot'-method will display the spectrum of each PAH species in a different color. The 'Write'-method will write all spectra to a single text (.txt) file. Optionally, a prefix can be given that will be prepended to the filename.
+        </p>
+        <pre><code class="language-idl">spectrum-&gt;Plot
+
+spectrum-&gt;Write,'myPrefix''</code></pre>
+        <p>
+          Optionally, the 'Wavelength', 'Stick', 'Oplot', 'Legend', and 'Color'-keywords can be given to the 'Plot'-method to control abscissa, stick representation, overplotting, legend and color, respectively. Through IDL's keyword inheritance mechanism additional keywords accepted by IDL's 'PLOT'-procedure can be passed.
+        </p>
+        <pre><code class="language-idl">spectrum-&gt;Plot,/Wavelength,XRANGE=[2.5,15],/XSTYLE</code></pre>
+
+      </div>
+
+      <div class="footer">
+
+        <a class="btn-prev" href="sec_3_07_working_outside_the_amespahdbidlsuite_object_classes.html" title="Working Outside the Amespahdbidlsuite Object Classes" accesskey="p"> Previous</a>
+
+        <a class="btn-next" href="sec_3_09_spectroscopic_database_fitting.html" title="Spectroscopic Database Fitting" accesskey="n">Next </a>
+
+        <hr />
+
+        <table class="smaller" summary="footer">
+
+          <tr>
+
+            <td>
+
+              &copy; Copyright 2020, Dr. Christiaan Boersma
+
+            </td>
+
+          </tr>
+
+          <tr>
+
+            <td>
+
+              Built with <a href="https://github.com/mgalloy/idldoc">IDLdoc</a> using <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> elements provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+            </td>
+
+          </tr>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </body>
+
+</html>

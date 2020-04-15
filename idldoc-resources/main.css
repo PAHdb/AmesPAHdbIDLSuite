@@ -1,0 +1,241 @@
+/* setup page */
+body { background: rgba(0,0,0,0.05); font-family: "Lato", "proxima-nova", "Helvetica Neue", Arial, sans-serif; font-size: 12pt; margin: 0; padding: 0; }
+
+div.container { background: white; max-width: 50em; height: 100%; }
+div.content { padding: 0 3em 1em  3em; clear:both; }
+body#root.content { background: white; max-width: 50em; }
+p { line-height: 1.4; }
+td p { padding-bottom: 0.5em; }
+img { border: 0; }
+
+/* link styles */
+a { text-decoration: none; }
+a:link, a:visited { color: #2980B9; }
+a:hover, a:focus { color: #3091D1 }
+
+/* dir-overview styles */
+dt.filename { margin-top: 0.5em; }
+dl.file_listing { margin-left: 1em; }
+
+/* titles */
+h1, h2, h3, h4 { font-family: "Roboto Slab", "ff-tisa-web-pro", "Georgia", Arial, sans-serif; font-weight: 700; color: black; margin-top: 0; font-style: normal; word-break: break-all; }
+h4 { margin-bottom: 0.25em; }
+.center { margin-left: auto; margin-right: auto; }
+.small { font-family: Verdana, Helvetica, sans-serif; font-size: 90%; }
+.smaller { font-family: Verdana, Helvetica, sans-serif; font-size: 80%; }
+.smallest { font-family: Verdana, Helvetica, sans-serif; font-size: 70%; }
+h1.basename { margin-top: 0; margin-bottom: 0; }
+h1.basename span.file-attributes { font-size: 70%; margin-left: 3em; color: #384806; }
+h2.directory { font-size: 90%; margin-bottom: 0; }
+h2.routine-name { margin-top: 0; margin-bottom: 0; }
+p.categories { color: #384806; margin-top: 0; }
+span.file_attribute { float: right; color: #384806; margin: 0 0 1em 3em; }
+div#file_comments { margin-top: 1em; }
+
+div.routine-details { border: 1px dotted #C0C0C0; margin-top: 1em; padding: 1em; }
+span.routine-attributes { font-size: 70%; margin-left: 3em; color: #384806; }
+div.details dt { color: #871E31; margin-left: 2em; }
+div.details dt span { color: #384806; margin-left: 2em; }
+div.details dd { margin: 0.5em 2em 1em 4em; }
+a.top {
+  font-family: Verdana, Helvetica, sans-serif;
+  font-size: 8pt;
+  font-weight: bold;
+  color: #2980B9;
+  text-transform: uppercase;
+  float: right;
+  margin-left: 1em;
+}
+
+/* comments */
+.pre { white-space: pre; }
+
+/* code styles */
+.content code { padding: 0; }
+code { font-family: Monaco, "Courier New", Courier, monospace; font-size: 95%; }
+code.listing { white-space: pre; display: block; margin: 0.75em 0 0.75em 0; padding: 0 3em 0 1em; line-height: 1.4em; }
+code.source { white-space: pre; display: block; }
+code.source span.comments { color: #408080; }
+.syntax { margin-top: 1em; margin-left: 1.5em; text-indent: -1.5em; }
+.var { font-style: italic; }
+.argument { } /* white-space: nowrap; does not work in Safari (and sometimes not even in Firefox) */
+
+dl.routine-summary dt { margin-bottom: 0.25em; }
+dl.routine-summary dd { margin-bottom: 0.5em; margin-left: 2em; }
+
+ul.inherited-method-summary { padding-left: 0em; margin-left: 0em; }
+
+/* general styles */
+ul li { list-style-type: none; }
+table { empty-cells: show; }
+thead { color: #871E31; }
+dd { margin-bottom: 0.35em; }
+input, textarea { background: white; border: #C0C0C0 1px solid; padding: 2px 4px; }
+input.text { background: white; }
+
+/* submenu */
+ul.submenu li { padding: 0.5em; }
+
+div.note { margin: 1em 2em 1em 2em; background: #EFEFEF; border: 1px #A0A0A0 dotted; padding: 0 1em 0 1em; }
+p.indent { margin-left: 2em; }
+
+/* An attribute table is a vertical list of name-value pairs. */
+table.box {
+  background: #EFEFEF;
+  border: 1px #A0A0A0 dotted;
+  padding-top: 0.75em;
+  padding-bottom: 0.75em;
+}
+table.attribute { padding-left: 0.75em; padding-right: 0.75em; }
+table td { vertical-align: top; }
+table.attribute p { margin: 0; }
+table td.name { font-style: normal; padding-right: 1.5em; }
+ul.fieldslist { padding-top: 0; color: #909090; }
+ul.fieldslist li { margin-bottom: 0.25em; }
+span.fieldname { color: #000000; }
+
+dl.attribute dt { color: #990000; }
+
+/* header/navbar styles */
+div.header { padding: 3em 3em 0 3em; }
+div.header img { border: 0; max-width: 100%; height: auto; }
+div.header h1 { margin-top: 1.5em; }
+div.header h2 { margin-bottom: 0; }
+table.navbar { background: #C0C0C0; margin: 0; padding: 0; width: 100%; }
+table.navbar td { padding: 4px 0.5em 3px 0.5em; white-space: nowrap; vertical-align: top; }
+table.navbar td.flexible { width: 100%; text-align: right; padding-right: 1em; white-space: nowrap; }
+table.navbar td.selected { background: #262626; }
+table.navbar td.selected, table.navbar td.selected a { color: white; }
+table.navbar a {color: black;}
+table.navbar a:hover, table.navbar a:focus { background: inherit; border-bottom: 1px solid black; }
+p.localnavbar { text-align: right; margin: 0.2em 1em 0.2em 0.2em; padding: 0; }
+
+/* CSS graphics styles */
+div.box {
+  margin-left: 0.25em;
+  display: inline-block;
+  width: 0.9em;
+  height: 0.9em;
+  vertical-align: -1px;
+}
+.red { background-color: #A00; }
+.orange { background-color: #F40; }
+.green { background-color: #480; }
+
+/* index styles */
+span.index_type { margin-left: 1em; }
+dl.index_listing dd { margin-bottom: 0.5em; margin-left: 2em; }
+dl.index_listing dd p { margin-top: 0.2em; margin-bottom: 0em; }
+
+/* search styles */
+fieldset { border: #ddd 1px solid; padding: 1em; margin-top: 3em; }
+legend { color: #871E31; font-size: 120%; }
+label { white-space: nowrap; }
+p.description { margin: 2em 2em 1em 2em; }
+form table td.name { vertical-align: middle; }
+
+/* footer styles */
+div.footer { padding: 3em 3em 2em 3em; color: gray; }
+div.footer table { width: 100%; }
+div.footer td { padding: 0.5em 0; }
+div.footer td.right { text-align: right; }
+
+/* horizontal rule style */
+hr { border: 0; border-bottom: solid 1px #C0C0C0; width:100%; clear: both; }
+
+/* navigation buttons */
+a.btn-prev:before { font-family: FontAwesome; content: ""; }
+a.btn-prev { margin: 1em 0; box-shadow: 0px 1px 2px -1px rgba(255,255,255,0.5) inset,0px -2px 0px 0px rgba(0,0,0,0.1) inset; border: 1px solid rgba(0,0,0,0.1); cursor: pointer; color: black; background-color: #f3f6f6; float: left; border-radius: 2px; text-align: center; padding: 6px 12px 8px 12px; }
+a.btn-next { margin: 1em 0; box-shadow: 0px 1px 2px -1px rgba(255,255,255,0.5) inset,0px -2px 0px 0px rgba(0,0,0,0.1) inset; border: 1px solid rgba(0,0,0,0.1); cursor: pointer; color: black; background-color: #f3f6f6; float: right;  border-radius: 2px; text-align: center; padding: 6px 12px 8px 12px; }
+a.btn-next:after { font-family: FontAwesome; content: ""; }
+
+/* faq */
+p.question { font-weight: bold; }
+p.answer { font-style: italic; }
+
+/* screenshot */
+#screenshot {
+    background: transparent url('gui.png') no-repeat scroll 0px 0px;
+    background-size: 732px 765px;
+    margin-top: 2em;
+    display: block;
+    width: 732px;
+    height: 765px;
+    text-indent: -9000px;
+}
+
+@media (min-resolution: 2dppx), (min-resolution: 144dpi), (-webkit-min-device-pixel-ratio: 2), (-o-min-device-pixel-ratio: 2/1) {
+
+    #screenshot {
+        background: transparent url('gui@2x.png') no-repeat scroll 0px 0px;
+        background-size: 732px 765px;
+    }
+}
+
+/*  Font Awesome 4.7.0 by @davegandy - http://fontawesome.io - @fontawesome */
+/*  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License) */
+@font-face {
+    font-family: 'FontAwesome';
+    src: url("fonts/fontawesome-webfont.eot?v=4.7.0");
+    src: url("fonts/fontawesome-webfont.eot?#iefix&v=4.7.0") format("embedded-opentype"),
+         url("fonts/fontawesome-webfont.woff2?v=4.7.0") format("woff2"),
+         url("fonts/fontawesome-webfont.woff?v=4.7.0") format("woff"),
+         url("fonts/fontawesome-webfont.ttf?v=4.7.0") format("truetype"),
+         url("fonts/fontawesome-webfont.svg?v=4.7.0#fontawesomeregular") format("svg");
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: "Lato";
+    src: url("fonts/Lato/lato-regular.eot");
+    src: url("fonts/Lato/lato-regular.eot?#iefix") format("embedded-opentype"),
+         url("fonts/Lato/lato-regular.woff2") format("woff2"),
+         url("fonts/Lato/lato-regular.woff") format("woff"),
+         url("fonts/Lato/lato-regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+}
+@font-face {
+    font-family: "Lato";
+    src: url("fonts/Lato/lato-bold.eot");
+    src: url("fonts/Lato/lato-bold.eot?#iefix") format("embedded-opentype"),
+         url("fonts/Lato/lato-bold.woff2") format("woff2"), url("fonts/Lato/lato-bold.woff") format("woff"),
+         url("fonts/Lato/lato-bold.ttf") format("truetype");
+    font-weight: 700;
+    font-style: normal;
+}
+@font-face {
+    font-family: "Lato";
+    src: url("fonts/Lato/lato-bolditalic.eot");
+    src: url("fonts/Lato/lato-bolditalic.eot?#iefix") format("embedded-opentype"),
+         url("fonts/Lato/lato-bolditalic.woff2") format("woff2"), url("fonts/Lato/lato-bolditalic.woff") format("woff"),
+         url("fonts/Lato/lato-bolditalic.ttf") format("truetype");
+    font-weight: 700;
+    font-style: italic;
+}
+@font-face {
+    font-family: "Lato";
+    src: url("fonts/Lato/lato-italic.eot");
+    src: url("fonts/Lato/lato-italic.eot?#iefix") format("embedded-opentype"), url("fonts/Lato/lato-italic.woff2") format("woff2"), url("fonts/Lato/lato-italic.woff") format("woff"), url("fonts/Lato/lato-italic.ttf") format("truetype");
+    font-weight: 400;
+    font-style:italic;
+}
+@font-face {
+    font-family:"Roboto Slab";
+    font-style:normal;
+    font-weight:400;
+    src:url("fonts/RobotoSlab/roboto-slab.eot");
+    src:url("fonts/RobotoSlab/roboto-slab-v7-regular.eot?#iefix") format("embedded-opentype"),
+        url("fonts/RobotoSlab/roboto-slab-v7-regular.woff2") format("woff2"),
+        url("fonts/RobotoSlab/roboto-slab-v7-regular.woff") format("woff"), url("fonts/RobotoSlab/roboto-slab-v7-regular.ttf") format("truetype")
+}
+@font-face {
+    font-family: "Roboto Slab";
+    font-style: normal;
+    font-weight: 700;
+    src: url("fonts/RobotoSlab/roboto-slab-v7-bold.eot");
+    src: url("fonts/RobotoSlab/roboto-slab-v7-bold.eot?#iefix") format("embedded-opentype"),
+         url("fonts/RobotoSlab/roboto-slab-v7-bold.woff2") format("woff2"),
+         url("fonts/RobotoSlab/roboto-slab-v7-bold.woff") format("woff"),
+         url("fonts/RobotoSlab/roboto-slab-v7-bold.ttf") format("truetype");
+}

@@ -1,0 +1,100 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <title>AmesPAHdbIDLSuite Manual</title>
+
+
+    <link rel="stylesheet" type="text/css" media="all"
+          href="idldoc-resources/main.css" />
+    <link rel="stylesheet" type="text/css" media="print"
+          href="idldoc-resources/main-print.css" />
+
+    <link rel="stylesheet" type="text/css" media="all"
+          href="idldoc-resources/prismjs.css" />
+
+    <script type="text/javascript" src="idldoc-resources/prismjs.js"></script>
+    <script type="text/javascript" src="idldoc-resources/language-idl.js"></script>
+
+  </head>
+
+  <body>
+
+    <div class="container">
+
+      <div class="header">
+
+        <div class="breadcrumb">
+
+          <a href="overview.html">Docs</a> &raquo; <a href="api.html">API</a> &raquo; Working with Molecular PAH Properties
+
+        </div>
+
+        <a class="btn-prev" href="sec_3_02_accessing_the_molecular_pah_data.html" title="Accessing the Molecular PAH Data" accesskey="p"> Previous</a>
+
+        <a class="btn-next" href="sec_3_04_working_with_fundamental_vibrational_transitions.html" title="Working with Fundamental Vibrational Transitions" accesskey="n">Next </a>
+
+      </div>
+
+      <div class="content">
+
+        <hr />
+
+        <h1>Working with molecular PAH properties</h1>
+        <p>
+          The 'AmesPAHdbIDLSuite_Species'-object exposes the molecular PAH properties.
+        </p>
+        <pre><code class="language-idl">pahs = pahdb-&gt;getSpeciesByUID( $
+       pahdb-&gt;Search("c&lt;=20 neutral n=2 neutral"))</code></pre>
+        <p>
+          The 'AmesPAHdbIDLSuite_Species'-object's 'Print'-method will print out the associated molecular properties for each PAH species.
+        </p>
+        <pre><code class="language-idl">pahs-&gt;Print</code></pre>
+        <p>
+          Optionally, the 'Str'-keyword can be given to the 'Print'-method, which will return the molecular PAH properties for each species as an array of strings.
+        </p>
+        <pre><code class="language-idl">pahs-&gt;Print,Str=Str</code></pre>
+
+      </div>
+
+      <div class="footer">
+
+        <a class="btn-prev" href="sec_3_02_accessing_the_molecular_pah_data" title="Accessing the Molecular PAH Data" accesskey="p"> Previous</a>
+
+        <a class="btn-next" href="sec_3_04_working_with_fundamental_vibrational_transitions" title="Working with Fundamental Vibrational Transitions" accesskey="n">Next </a>
+
+        <hr />
+
+        <table class="smaller" summary="footer">
+
+          <tr>
+
+            <td>
+
+              &copy; Copyright 2020, Dr. Christiaan Boersma
+
+            </td>
+
+          </tr>
+
+          <tr>
+
+            <td>
+
+              Built with <a href="https://github.com/mgalloy/idldoc">IDLdoc</a> using <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> elements provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+            </td>
+
+          </tr>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </body>
+
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <title>AmesPAHdbIDLSuite Manual</title>
+
+
+    <link rel="stylesheet" type="text/css" media="all"
+          href="idldoc-resources/main.css" />
+    <link rel="stylesheet" type="text/css" media="print"
+          href="idldoc-resources/main-print.css" />
+
+    <link rel="stylesheet" type="text/css" media="all"
+          href="idldoc-resources/prismjs.css" />
+
+    <script type="text/javascript" src="idldoc-resources/prismjs.js"></script>
+    <script type="text/javascript" src="idldoc-resources/language-idl.js"></script>
+
+  </head>
+
+  <body>
+
+    <div class="container">
+
+      <div class="header">
+
+        <div class="breadcrumb">
+
+          <a href="overview.html">Docs</a> &raquo; <a href="api.html">API</a> &raquo; Working with Molecular Geometric Data
+
+        </div>
+
+        <a class="btn-prev" href="sec_3_04_working_with_fundamental_vibrational_transitions.html" title="Working with Fundamental Vibrational Transitions" accesskey="p"> Previous</a>
+
+        <a class="btn-next" href="sec_3_06_working_with_raw_laboratory_spectra.html" title="Acessing the Molecular PAH Data" accesskey="n">Next </a>
+
+      </div>
+
+      <div class="content">
+
+        <hr />
+
+        <h1>Working with molecular geometric data</h1>
+        <p>
+          The 'AmesPAHdbIDLSuite_Geometry'-object exposes the molecular geometric data.
+        </p>
+        <pre><code class="language-idl">geometry = pahdb-&gt;getGeometryByUID( $
+           pahdb-&gt;Search("c&lt;=20 neutral n=2 neutral"))</code></pre>
+        <p>
+	  The 'AmesPAHdbIDLSuite_Geometry'-object provides both the 'Plot' and 'Structure'-methods to output the chemical structure of the PAH with provided UID. The first method uses IDL's PLOT-procedures to create the output, while the latter IDL object graphics.
+        </p>
+        <pre><code class="language-idl">; UID 18 = coronene (C24H12)
+
+void = geometry-&gt;Plot(18)
+
+img = geometry-&gt;Structure(18)</code></pre>
+        <p>
+          The 'Plot'-method will accept the 'Scale', 'Thick', and 'RGB'- keywords to control the scale at which the atoms are to be drawn, the thickness of the bonds, and if colors should be outputted as decomposed RGB, respectively. In addition, the 'NoErase' and 'Position'-keywords control display erasing prior plotting and the plot position in normalized coordinates, respectively. When the 'Resolution'-keyword is set, the plot will be rendered to IDL's Z-buffer device at given resolution and outputted as an image and returned to the caller. When the 'Save'-keyword is also set, a PNG-image will be generated as well, which will have the UID of the PAH molecule under consideration embedded in the filename. Lastly, the 'Angle'-keyword controls rotation of the structure around the <i>z</i>-axis.
+        </p>
+        <pre><code class="language-idl">; UID 18 = coronene (C24H12)
+
+img = geometry-&gt;Plot(18, Scale=2.0, Thick=5.0, $
+                         Resolution=[1200, 1200], /Save)</code></pre>
+        <p>
+          The 'Structure'-method will accept the 'Background' and 'Frame'-keywords to control background color and display of a wireframe. The 'Resolution'-keyword controls the dimension of the 3D-rendered output image.  The 'Save'-keyword can be specified to save the generated image as a PNG-image as well, which will have the UID of the PAH molecule under consideration embedded in the filename. If in addition the 'Transparent'-keyword is specified as a color-triplet array, that color will be set to transparent in the generated PNG-file. The 'Axis' and 'Angle'-keywords can control axis and angle of rotation, respectively. With the 'View'-keyword set the generated structure will be displayed using IDL's XOBJVIEW routine. Lastly, when the 'Obj'-keyword is set, the generated IDLgrModel-object is returned to the caller.
+        </p>
+        <pre><code class="language-idl">; UID 18 = coronene (C24H12)
+
+img = geometry-&gt;Structure(18, Background=[0, 255, 0], $
+                              Resolution=[600, 600], $
+                              /Save, Transparent=[0, 255, 0], $
+                              /View)</code></pre>
+        <p>
+          In addition, the 'AmesPAHdbIDLSuite_Geometry'-object
+          provides the 'Mass', 'Rings', and 'Area'-methods that
+          return the calculated mass based on atomic masses, the
+          number of 3-8 membered rings, and total surface area of
+          the PAH molecules under consideration.
+          <p>
+            <pre><code class="language-idl">masses = geometry-&gt;Mass()
+
+rings = geometry-&gt;Rings()
+
+areas = geometry-&gt;Area()</code></pre>
+            <p>
+              Lastly, the 'Inertia'-method provides the moment of inertia matrices, which are diagonalized with the 'Diagonalize'-method, for the PAH molecules under consideration. The latter method can be particular useful to ensure proper alignment of the structure with the view before calling the 'Plot' or 'Structure'-methods.
+            </p>
+            <pre><code class="language-idl">matrix = geometry-&gt;Inertia()
+
+geometry-&gt;Diagonalize</code></pre>
+
+      </div>
+
+      <div class="footer">
+
+        <a class="btn-prev" href="sec_3_04_working_with_fundamental_vibrational_transitions.html" title="Working with Fundamental Vibrational Transitions" accesskey="p"> Previous</a>
+
+        <a class="btn-next" href="sec_3_06_working_with_raw_laboratory_spectra.html" title="Acessing the Molecular PAH Data" accesskey="n">Next </a>
+
+        <hr />
+
+        <table class="smaller" summary="footer">
+
+          <tr>
+
+            <td>
+
+              &copy; Copyright 2020, Dr. Christiaan Boersma
+
+            </td>
+
+          </tr>
+
+          <tr>
+
+            <td>
+
+              Built with <a href="https://github.com/mgalloy/idldoc">IDLdoc</a> using <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> elements provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+            </td>
+
+          </tr>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </body>
+
+</html>

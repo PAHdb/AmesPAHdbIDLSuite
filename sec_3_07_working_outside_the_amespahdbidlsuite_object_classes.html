@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <title>AmesPAHdbIDLSuite Manual</title>
+
+
+    <link rel="stylesheet" type="text/css" media="all"
+          href="idldoc-resources/main.css" />
+    <link rel="stylesheet" type="text/css" media="print"
+          href="idldoc-resources/main-print.css" />
+
+    <link rel="stylesheet" type="text/css" media="all"
+          href="idldoc-resources/prismjs.css" />
+
+    <script type="text/javascript" src="idldoc-resources/prismjs.js"></script>
+    <script type="text/javascript" src="idldoc-resources/language-idl.js"></script>
+
+  </head>
+
+  <body>
+
+    <div class="container">
+
+      <div class="header">
+
+        <div class="breadcrumb">
+
+          <a href="overview.html">Docs</a> &raquo; <a href="api.html">API</a> &raquo; Working Outside the <i>AmesPAHdbIDLSuite</i> Object Classes
+
+        </div>
+
+        <a class="btn-prev" href="sec_3_06_working_with_raw_laboratory_spectra.html" title="Working with Raw Laboratory Spectra" accesskey="p"> Previous</a>
+
+        <a class="btn-next" href="sec_3_08_creating_pah_spectra.html" title="Creating PAH Spectra" accesskey="n">Next </a>
+
+      </div>
+
+      <div class="content">
+
+        <hr />
+
+        <h1>Working outside the <i>AmesPAHdbIDLSuite</i> object classes</h1>
+        <p>
+          The <i>AmesPAHdbIDLSuite</i> object classes all provide the 'Get'-method that allows extraction of the object's internal data into an anonymous IDL struct.
+        </p>
+        <pre><code class="language-idl">transitions_s = transitions-&gt;Get()</code></pre>
+        <p>
+          This allows, for example, more control over the presentation of the data.
+        </p>
+        <pre><code class="language-idl">PLOT,transitions_s.data.frequency,1D5*transitions_s.data.intensity, $
+     XTITLE=transitions_s.units.x.str, $
+     YTITLE='integrated intensity [cm!U-2!N mol!U-1!N]', $
+     PSYM=10</code></pre>
+        <p>
+          Subsequently this anonymous structure can be manipulated and even be set to the object, which will try altering its internal state to reflect that of the manipulated data.
+        </p>
+        <pre><code class="language-idl">transitions-&gt;Set,transitions_s</code></pre>
+        <p>
+          In addition, the 'Set'-method accepts keywords to alter
+          its internal state.
+        </p>
+        <pre><code class="language-idl">transitions-&gt;Set,Data=transitions_s.data</code></pre>
+        <p>
+          Lastly, it is also possible to create new <i>AmesPAHdbIDLSuite</i>-objects initialized with an appropriate anonymous structure or through keywords.
+        </p>
+        <pre><code class="language-idl">transitions = OBJ_NEW('AmesPAHdbIDLSuite_Transitions', transitions_s)
+
+transitions = OBJ_NEW('AmesPAHdbIDLSuite_Transitions', $
+                       Type=transitions_s.type, $
+                       Version=transitions_s.version, $
+                       PAHdb=pahdb-&gt;Pointer(), $
+                       Data=transitions_s.data, $
+                       Uids=transitions_s.uids, $
+                       Model=transitions_s.model, $
+                       Units=transitions_s.units)</code></pre>
+      </div>
+
+      <div class="footer">
+
+        <a class="btn-prev" href="sec_3_06_working_with_raw_laboratory_spectra.html" title="Working with Raw Laboratory Spectra" accesskey="p"> Previous</a>
+
+        <a class="btn-next" href="sec_3_08_creating_pah_spectra.html" title="Creating PAH Spectra" accesskey="n">Next </a>
+
+        <hr />
+
+        <table class="smaller" summary="footer">
+
+          <tr>
+
+            <td>
+
+              &copy; Copyright 2020, Dr. Christiaan Boersma
+
+            </td>
+
+          </tr>
+
+          <tr>
+
+            <td>
+
+              Built with <a href="https://github.com/mgalloy/idldoc">IDLdoc</a> using <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> elements provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+            </td>
+
+          </tr>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </body>
+
+</html>
