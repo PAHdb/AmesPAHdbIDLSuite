@@ -1521,7 +1521,7 @@ FUNCTION AmesPAHdbIDLSuite::Init,Filename=Filename,Check=Check,Cache=Cache,Updat
 
      IF KEYWORD_SET(UpdateCheck) THEN BEGIN
 
-        self->File_WGET,'http://www.astrochemistry.org/pahdb/theoretical/2.00/ajax/amespahdbidlsuite/versioncheck',remote_version
+        self->File_WGET,'https://www.astrochemistry.org/pahdb/theoretical/2.00/ajax/amespahdbidlsuite/versioncheck',remote_version
 
         IF remote_version EQ '' THEN BEGIN
 
