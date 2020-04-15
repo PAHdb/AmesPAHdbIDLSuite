@@ -1,0 +1,27 @@
+<div class="footer">
+
+  <hr />
+
+  <table class="smaller" summary="footer">
+
+    <tr>
+
+      <td>
+
+        &copy; Copyright 2020, Dr. Christiaan Boersma
+
+      </td>
+
+    </tr>
+
+    <tr>
+
+      <td>
+        Built with <a href="https://github.com/mgalloy/idldoc">IDLdoc</a> using <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> elements provided by <a href="https://readthedocs.org">Read the Docs</a>.
+      </td>
+
+    </tr>
+
+  </table>
+
+</div>

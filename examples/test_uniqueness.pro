@@ -1,17 +1,42 @@
-; NASA Ames PAH IR Spectroscopic Database
+; docformat = 'rst'
+
+;+
 ;
-; This is an example of fitting an astronomical spectrum built around
-; the functionality provided by the Suite and should help confirm that
-; the AmesPAHdbIDLSuite has been properly installed.
-; 
-; Additional information can be found at
-; http://www.astrochem.org/pahdb, in Bauschlicher et al. 2010, The
-; Astrophysical Journal Supplement Series, 189, 341 and in Boersma et
-; al. 2014, The Astrophysical Journal Supplement Series, 211, 8.
+; This is an example testing the uniqueness of a number of randomly
+; generated PAH emission spectra , built around the functionality
+; provided by the AmesPAHdbIDLSuite and should help confirm that the
+; it has been properly installed. The source code is annotated to
+; guide users and developers in the inner workings of the suite.
 ;
-; USAGE
-;   test_uniqueness
+; Updated versions of the NASA Ames PAH IR Spectroscopic Database and
+; more information can be found at: `www.astrochemistry.org/pahdb <https://www.astrochemistry.org/pahdb>`.
 ;
+; :Examples:
+;   Call the procedure directly::
+;
+;     IDL> test_uniqueness
+;
+; :Author:
+;   Dr. Christiaan Boersma
+;
+; :Copyright:
+;   BSD licensed
+;
+; :History:
+;   Changes::
+;
+;     08-19-2019
+;     Documentation added. Christiaan Boersma.
+;-
+
+
+;+
+; Procedure for testing the uniqueness of a number of randomly
+; generate PAH emission spectra.
+;
+; :Categories:
+;   Example
+;-
 PRO TEST_UNIQUENESS
 
   ; avoid underflow messages
@@ -24,10 +49,10 @@ PRO TEST_UNIQUENESS
   fwhm = 15D
 
   xrange = [15D, 2.5D]
-  
+
   ; read in the default database defined by the environement variable
-  ; !AMESPAHDEFAULTDB or the system variable AMESPAHDEFAULTDB. use
-  ; the keyword FILENAME if these have not been set
+  ; !AMESPAHDEFAULTDB or the system variable AMESPAHDEFAULTDB. use the
+  ; keyword FILENAME if these have not been set
   pahdb = OBJ_NEW('AmesPAHdbIDLSuite')
 
   ; retrieve all the transitions from the database
@@ -38,7 +63,7 @@ PRO TEST_UNIQUENESS
 
   ; have every PAH absorb 6 eV
   transitions->Cascade,6D * 1.6021765D-12
-  
+
   ; convolve the transitions into a spectrum
   spectrum = transitions->Convolve( $
              Xrange=1D4/xrange, $
@@ -67,11 +92,11 @@ PRO TEST_UNIQUENESS
                      quintet: 0D}, niterations)
 
   ntags = N_TAGS(store)
-  
+
   selected_weights = REPLICATE({uid:0L, weight:0D}, nspectra)
 
   indices = LONARR(nspectra, /NOZERO)
-  
+
   FOR i = 0, niterations - 1 DO BEGIN
 
      ; print progress
@@ -81,7 +106,7 @@ PRO TEST_UNIQUENESS
 
      ; create random selection of unique identifiers and avoid doubles
      n = nspectra
-     
+
      WHILE n GT 0 DO BEGIN
 
         indices[nspectra - n] = LONG(RANDOMU(seed, n) * nuids)
@@ -96,16 +121,16 @@ PRO TEST_UNIQUENESS
      ENDWHILE
 
      selected_uids = uids[indices]
-     
+
      ; intersect
      spectrum->Intersect,selected_uids
 
      ; store data
      data = (spectrum->Get()).data
-    
+
      ; create random weights
      selected_weights.uid = selected_uids
-  
+
      selected_weights.weight = 1D14 * RANDOMU(LONG(SYSTIME(1)), nspectra, /DOUBLE)
 
      ; co-add the spectra using the random weights
@@ -123,9 +148,9 @@ PRO TEST_UNIQUENESS
      OBJ_DESTROY,coadd
 
      IF OBJ_VALID(fit) THEN BEGIN
-    
+
        ; breakdown of the fit
-       bd_fit = fit->getBreakdown()    
+       bd_fit = fit->getBreakdown()
 
        store[i].norm = fit->getNorm()
 
@@ -138,19 +163,19 @@ PRO TEST_UNIQUENESS
 
           data[sel2].intensity *= selected_weights[sel1].weight
        ENDFOR
-    
+
        fit->Set,Data=data,Weights=selected_weights,UIDs=selected_uids
-       
+
        bd_org = fit->getBreakdown()
-    
+
        ; store breakdown fractional difference
        FOR j = 0, ntags - 2 DO store[i].(j + 1) = DOUBLE(bd_fit.(j)) / DOUBLE(bd_org.(j))
-   
+
        ; clean up fit
        OBJ_DESTROY,fit
 
     ENDIF
-    
+
     ; reset spectrum
     spectrum->Set,spectrum_s
 
@@ -201,7 +226,7 @@ PRO TEST_UNIQUENESS
   PLOT,l,h,XTITLE='fraction nitrogen correct',YTITLE='frequency [#]',PSYM=10
 
   IF !D.NAME EQ 'X' THEN READ,key,PROMPT="Press <enter> to continue..."
-  
+
   ; plot distribution solo
   h = HISTOGRAM(store.solo, LOCATIONS=l, BINSIZE=0.05, /NAN)
 

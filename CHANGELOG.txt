@@ -1,0 +1,227 @@
+CHANGELOG
+
++- 10-02-2020
+   Make sure to remove continuum when calculating norm and chi-squared
+   in AmesPAHdbIDLSuite_Fitted_Spectrum__define.pro
++- 21-01-2020
+   Fix equations for the Drude profiles, making sure they are in
+   frequency-space in AmesPAHdbIDLSuite_Transitions__define.pro
++- 11-15-2019
+   Implement mechanism to check the state of parsing an XML-file
+   by updating PARSEFILE in AmesPAHdbIDLSuite__define.pro to call
+   the STATUS-method in AmesPAHDIDLSuite_XMLParser__define.pro,
+   which returns the status-property, which in turn will be set
+   to 1B when FATALERROR needs to be called. This avoids caching
+   invalid data.
++- 05-08-2019
+   In the absence of Michael Galloy's STR_REPLACE function
+   FormatFormulae in AmesPAHdbIDLSuite_Species__define.pro will
+   now print a message and return.
++- 03-26-2019
+   Correct log-file naming scheme in CASCADE_IDLBRIDGE to
+   accommodate more than 9 CPUs/threads in
+   AmesPAHdbIDLSuite_Transitions__define.pro.
++- 02-12-19
+   Fixed hitting the maximum value that can be held in a LONG in
+   GETTAGBYUID by changing data type to ULONG and ensuring returned
+   UIDs reflect those found in AmesPAHdbIDLSuite__define.pro.
+-+ 02-10-2019
+   Now expecting laboratory spectrum to be base64 encoded in
+   AmesPAHdbIDLSuite_XMLParser__define.pro.
+-+ 02-08-2019
+   Renamed .nhex to .nbytes and binaryx to bytesx for
+   clarity in AmesPAHdbIDLSuite_XMLParser__define.pro.
+-+ 01-25-2019
+   Now writing files as IPAC-tables in WRITE in
+   AmesPAHdbIDLSuite_fitted_spectrum__define.pro.
+-+ 12-13-2018
+   Now writing files as IPAC-tables in WRITE in
+   AmesPAHdbIDLSuite_coadded_spectrum__define.pro.
+-+ 12-01-2018
+   Refactored suite structure by moving code to
+   src-directory. Refactored code-comments into rst-format and
+   utilized idldocs for generating API-documenation.
+-+ 10-02-2018
+   Allow CASCADE to run on the spectroscopic libaries of the
+   experimental database as long as the APPROXIMATE-keyword is set in
+   AmesPAHdbIDLSuite_Transitions__define. Christiaan Boersma.
+-+ 07-17-2018
+   Added EXTENDDATABASE method to AmesPAHdbIDLSuite__define.pro
+-+ 10-17-2017
+   Fixed units definition in TRANSITIONS in
+   AmesPAHdbIDLSuite_Species__define.pro.
+-+ 10-10-2017
+   Fixed GETUIDSCOMPLETECHARGESET to set list to !NULL when last
+   last anion/neutral has been matched in AmesPAHdbIDLSuite__define.pro.
+   Refactored and now using LA_TRIQL and LA_TRIRED instead of TRIQL
+   and TRIRED in DIAGONALIZE in AmesPAHdbIDLSuite_Geometry__define.pro.
+-+ 10-06-2017
+   Added GETHASH to allow retrieval of the calculated md5-sum in
+   AmesPAHdbIDLSuite__define.pro
+-+ 09-18-2017
+   Fixed !NULL value in return for FWHM in FIT in
+   AmesPAHdbIDLSuite_Spectrum__define.pro.
+-+ 08-10-2017
+   Fixed typo in RINGS in AmesPAHdbIDLSuite_Geometry__define.pro.
+-+ 08-06-2017
+   Renamed 'doc'- to 'docs'-directory to be in line with common GitHub
+   practices; updated README. Updated base url to
+   http://www.astrochemistry.org from http://www.astrochem.org; affects
+   all .pro- and README-files. Updated compatibility to IDL version
+   8.6.1 in INSTALL.
+-+ 01-23-2017
+   Display UIDs larger than 999 correctly, added Structures keyword to
+   PLOT, do not change weights when doing Sort and avoid INT_TABULATED
+   changing arrays in
+   AmesPAHdbIDLSuite_Fitted_Spectrum__define.pro. Added method
+   FORMATFORMULAE and now doing pointer checks in method Get in
+   AmesPAHdbIDLSuite_Species__define.pro.
+-+ 11-07-2016
+   Print notice in AmesPAHdbIDLSuite_Spectrum__define.pro when
+   performing a fit to inform the user to take care when interpreting
+   the results.
+-+ 09-11-2016
+   If md5 cannot be calculated, the basename of the database XML-file
+   is used instead in AmesPAHdbIDLSuite__define.pro.
+-+ 08-25-2016
+   Now also checking for WIN-device when plotting in
+   AmesPAHdbIDLSuite_Plot__define.pro.
+-+ 07-07-2016
+   Removed extraneous spaces after last column when writing to file in
+   WRITE, adding use of TEMPORARY where appropriate and use PRINT/F
+   without for-loop. in AmesPAHdbIDLSuite_Observation__define.pro.
+-+ 07-06-2016
+   Using now TEMPORARY to move pahdb and joined to properties of
+   AmesPAHdbIDLSuite in READFILE and SEARCH, respectively, in
+   AmesPAHdbIDLSuite__define.pro.
+-+ 07-03-2016
+   The direct graphics output window in SETUP is now created using an
+   unmanaged draw widget in AmesPAHdbIDLSuite_Plot__define.pro. The
+   widget id is stored as property of AmesPAHdbIDLSuite_Plot. Output
+   to a managed direct graphics window can be controlled via
+   !AMESPAHDBIDLSUITE_PLOT_MANAGED_WINDOW_ID by setting it to the
+   associated window id.
+-+ 07-02-2016
+   Added file_md5 as a property of AmesPAHdbIDLSuite in
+   AmesPAHdbIDLSuite__define.pro, now calling method FILE_MD5 only
+   once in method READFILE, which sets file_md5. Affected routines
+   have been updated. Notably, file_md5 is added as a tag to the pahdb
+   structure returned by AmesPAHdbIDLSuite_XMLParser and can now be
+   used in calling code for caching purposes. The SEARCH and READFILE
+   methods in AmesPAHdbIDLSuite__define.pro now print a message when
+   saving to cache and both routines have been refactored to store the
+   location of the cache file into a variable. The SEARCH method in
+   AmesPAHdbIDLSuite__define.pro now only prints the database header
+   when restoring from cache.
+-+ 06-29-2016
+   Parse scale attribute for frequencies in
+   AmesPAHdbIDLSuite_XMLParser__define.pro. Remove scale-property from
+   species in GETUIDSCOMPLETECHARGESET and removed extra comma from
+   GETVERSION in AmesPAHdbIDLSuite__define.pro. PRINT now shows
+   symmetry and scale for transitions in
+   AmesPAHdbIDLSuite_Transitions__define.pro
+-+ 06-27-2016
+   Added EXTERNAL_NNLS-keyword to FIT in
+   AmesPAHdbIDLSuite_Spectrum__define.pro; Updated INSTALL.
+-+ 04-26-2016
+   Updated GETSIZEDISTRIBUTION to use Rice Rule for determining the
+   number of bins in AmesPAHdbIDLSuite_Fitted_Spectrum__define.pro.
+-+ 04-21-2016
+   Added Resolution keyword to REBIN, added message to
+   ReadFromFITSFile and ReadFromTextFile printing filename and fixed
+   bug in Init not handling input structure correctly in
+   AmesPAHdbIDLSuite_Observation__define.pro.
+-+ 05-11-2016
+   Added function GETSIZEDISTRIBUTION and DISTRIBUTIONSIZE-keyword
+   to PLOT in AmesPAHdbIDLSuite_Fitted_Spectrum__define.pro.
+-+ 03-29-2016
+   Fixed dot-notation for class access in DESCRIPTION in
+   AmesPAHdbIDLSuite_Fitted_Spectrum__define.pro.
+-+ 03-23-2016
+   Removed unnecessary declaration of 'weights' in FIT in
+   AmesPAHdbIDLSuite_Spectrum__define.pro.
+-+ 03-18-2016
+   Fixed bug in READFROMFILE in
+   AmesPAHdbIDLSuite_Observation__define.pro; using now '->' instead
+   of '.'.
+-+ 03-18-2016
+   Replaced [ ] with !NULL in NNLS int
+   AmesPAHdbIDLSuite_Spectrum__define.pro to avoid compiler error for
+   IDL versions older than 8.
+-+ 03-15-2016
+   Provide argument to ROUTINE_FILEPATH in INIT in
+   AmesPAHdbIDLSuite__define.pro for compatibility with older version
+   of IDL.
+-+11-18-2015
+   Fixed FLEM to FLAM in
+   AmesPAHdbIDLSuite_CREATE_KURUCZ_STELLARMODEL_S.pro.
+-+11-05-2015
+   Added RESAMPLE procedure to
+   AmesPAHdbIDLSuite_Spectrum__define.pro. Fixed REBIN in
+   AmesPAHdbIDLSuite_Observation_define to handle data outside
+   original grid.
+-+09-09-2015
+   Added FILE_WGET procedure and updated INIT in
+   AmesPAHdbIDLSuite__define.pro to allow for update check (enabled
+   with the UPDATECHECK-keyword).
+-+ 08-26-2015
+   Added FILE_MD5 procedure and updated READFILE and SEARCH procedures
+   and updated Init to read VERSION-file from current distribution in
+   AmesPAHdbIDLSuite__define.pro.
+-+ 07-12-2015
+   Added GETMETHOD and its infrastructure to
+   AmesPAHdbIDLSuite_Fitted_Spectrum__define.pro and method to FIT in
+   AmesPAHdbIDLSuite_Spectrum__define.pro.
+-+ 07-11-2015
+   CASCADE and FIXEDTEMPERATURE now print calculated effective
+   temperature as an INTEGER in
+   AmesPAHdbIDLSuite_Transitions__define.pro.
+-+ 05-20-2015
+   Added DIFFERENCE and ensured uids is an array in INTERSECT in
+   AmesPAHdbIDLSuite_Data__define.pro. Fixed missing Struct in SET in
+   AmesPAHdbIDLSuite_Fitted_Spectrum__define.pro.
+-+ 05-03-2015
+   Reading from file will now honor overriding keywords in SET, and
+   Fixed formatting string in CASCADE in
+   AmesPAHdbIDLSuite_Observations__define.pro; FIXEDTEMPERATURE,
+   CALCULATEDTEMPERATURE and CASCADE now print used emission model in
+   AmesPAHdbIDLSuite_Transitions__define.pro; Use Courier-font for
+   LEGEND in AmesPAHdbIDLSuite_Plot__define.pro; Updated weights
+   formatting for DESCRIPTION
+   AmesPAHdbIDLSuite_Coadded_Spectrum__define.pro, Updated formatting
+   for DESCRIPTION in AmesPAHdbIDLSuite_Fitted_Spectrum__define.pro.
+-+ 04-27-2015
+   Fixed INIT to call AmesPAHdbSuite_Plot in
+   AmesPAHdbIDLSuite_Observations__define.pro.
+-+ 04-24-2015
+   Refactored GETRESIDUAL and GETBREAKDOWN to use GETFIT and other
+   small fixes in AmesPAHdbIDLSuite__Fitted_Spectrum__define.pro.
+-+ 04-21-2015
+   Updated CASCADE_IDLBRIDGE and
+   AMESPAHDBIDLSUITE_TRANSITIONS__IDLBRIDGE_CALLBACK progress
+   indicators to not use fixed width counters in
+   AmesPAHdbIDLSuite_Transitions__define.pro. Moved stop condition to
+   beginning of SEARCH-method in
+   AmesPAHdbIDLSuite__define.pro. Removed duplicate charge tokens from
+   TOKENIZEWORDS in AmesPAHdbIDLSuite__define.pro.
+-+ 04-15-2015
+    Refactored CONVOLE in AmesPAHdbIDLSuite__Transitions.pro.
+-+ 04-14-2015
+   Changed id to uid and xmin|xmax to DOUBLE in CONVOLVE in
+   AmesPAHdbIDLSutie__Transitions.pro.
+-+ 04-10-2015
+   There is no energy-tag in AmesPAHdbIDLSuite_XMLParser__define.pro.
+-+ 04-08-2015
+   Fixed memory leak in AmesPAHdbIDLSuite_Geometry__define.pro; moved
+   from IDL_Container to IDLgrModel. Silenced LOADCT in
+   AmesPAHdbIDLSuite_Plot__define.pro.
+-+ April 7, 2015
+   Added SETGRIDRANGE to
+   AmesPAHdbIDLSuite_Observation__define.pro. Added _OVERLOADFOREACH,
+   _OVERLOADPLUS, _OVERLOADBRACKETSRIGHTSIDE, _OVERLOADSIZE,
+   _OVERLOADPRINT, _OVERLOADIMPLIEDPRINT, _OVERLOADHELP to
+   AmesPAHdbIDLSuite_Data__define.pro. Ensured UIDs in GetXXXXByUID
+   are arrays, even when when called with scalar
+   AmesPAHdbIDLSuite__define.pro.
+-+ 03-02-2015
+   Minor bug fixes.

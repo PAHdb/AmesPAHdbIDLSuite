@@ -1,25 +1,49 @@
-; NASA Ames PAH IR Spectroscopic Database
+; docformat = 'rst'
+
+;+
 ;
-; This is an example of creating an astronomical PAH spectrum using a
-; Kurucz stellar model for excitination, built around the
-; functionality provided by the Suite and should help confirm that the
-; AmesPAHdbIDLSuite has been properly installed.
-; 
-; Additional information can be found at
-; http://www.astrochem.org/pahdb, in Bauschlicher et al. 2010, The
-; Astrophysical Journal Supplement Series, 189, 341 and in Boersma et
-; al. 2014, The Astrophysical Journal Supplement Series, 211, 8.
+; This is an example of creating an astronomical PAH emission spectrum
+; using a Kurucz stellar model for excitination, built around the
+; functionality provided by the AmesPAHdbIDLSuite and should help
+; confirm that the it has been properly installed. The source code is
+; annotated to guide users and developers in the inner workings of the
+; suite.
 ;
-; USAGE
-;   stellar_kurucz_model
+; Updated versions of the NASA Ames PAH IR Spectroscopic Database and
+; more information can be found at: `www.astrochemistry.org/pahdb <https://www.astrochemistry.org/pahdb>`.
 ;
+; :Examples:
+;   Call the procedure directly::
+;
+;     IDL> stellar_kurucz_model
+;
+; :Author:
+;   Dr. Christiaan Boersma
+;
+; :Copyright:
+;   BSD licensed
+;
+; :History:
+;   Changes::
+;
+;     08-19-2019
+;     Documentation added. Christiaan Boersma.
+;-
+
+;+
+; Procedure creating an astronomical PAH emission spectrum using a
+; Kurucz stellar model for excitination.
+;
+; :Categories:
+;   Example
+;-
 PRO STELLAR_KURUCZ_MODEL
 
   ; read in the default database defined by the environement variable
-  ; !AMESPAHDEFAULTDB or the system variable AMESPAHDEFAULTDB. use
-  ; the keyword FILENAME if these have not been set
+  ; !AMESPAHDEFAULTDB or the system variable AMESPAHDEFAULTDB. use the
+  ; keyword FILENAME if these have not been set
   pahdb = OBJ_NEW('AmesPAHdbIDLSuite')
- 
+
   ; use the unique identifier for coronene
   uid = 18
 
@@ -28,7 +52,7 @@ PRO STELLAR_KURUCZ_MODEL
 
   ; load Kurucz stellar model
   FTAB_EXT,'ckp00_17000.fits',[1,10],angstroms,flem,EXT=1
-  
+
   ; block under/overflow
   e = !EXCEPT
 
@@ -40,13 +64,13 @@ PRO STELLAR_KURUCZ_MODEL
      /Star, $
      /StellarModel, $
      /Convolved
-  
+
   ; shift data 15 wavenumber to the red
   transitions->Shift,-15D
 
   ; convolve stick spectrum
   spectrum = transitions->Convolve(FWHM=15D, XRange=1D4/[15,2.5])
-  
+
   ; plot the spectrum
   spectrum->Plot
 

@@ -1,22 +1,52 @@
-; NASA Ames PAH IR Spectroscopic Database
+; docformat = 'rst'
+
+;+
 ;
-; This is an example of fitting a constructed spectrum built around
-; the functionality provided by the Suite and should help confirm that
-; the AmesPAHdbIDLSuite has been properly installed.
-; 
-; Additional information can be found at
-; http://www.astrochem.org/pahdb, in Bauschlicher et al. 2010, The
-; Astrophysical Journal Supplement Series, 189, 341 and in Boersma et
-; al. 2014, The Astrophysical Journal Supplement Series, 211, 8.
+; This is an example of testing the non-negative least-squares
+; decomposition for a number of a randomly generated spectra, built
+; around the functionality provided by the AmesPAHdbIDLSuite and
+; should help confirm that the it has been properly installed. The
+; source code is annotated to guide users and developers in the inner
+; workings of the suite.
 ;
-; USAGE
-;   test_nnls
+; Updated versions of the NASA Ames PAH IR Spectroscopic Database and
+; more information can be found at: `www.astrochemistry.org/pahdb <https://www.astrochemistry.org/pahdb>`.
 ;
+; :Examples:
+;   Call the procedure directly::
+;
+;     IDL> test_nnls
+;
+; :Author:
+;   Dr. Christiaan Boersma
+;
+; :Copyright:
+;   BSD licensed
+;
+; :History:
+;   Changes::
+;
+;     08-19-2019
+;     Documentation added. Christiaan Boersma.
+;-
+
+
+;+
+; Procedure performing a non-negative least-squares decomposition.
+;
+; :Returns:
+;   array (1D) of structures
+;
+; :Categories:
+;   Example
+;
+; :Private:
+;-
 FUNCTION DO_NNLS
 
   ; avoid underflow messages
   !EXCEPT = 0
- 
+
   ; set number of spectra to co-add, the FWHM to be applied when
   ; convolving, the signal-to-noise ratio and spectral range
   nspectra = 20
@@ -43,7 +73,7 @@ FUNCTION DO_NNLS
 
   ; create random selection of unique identifiers and avoid doubles
   n = nspectra
-     
+
   WHILE n GT 0 DO BEGIN
 
      indices[nspectra - n] = LONG(RANDOMU(seed, n) * nuids)
@@ -58,7 +88,7 @@ FUNCTION DO_NNLS
   ENDWHILE
 
   selected_uids = uids[indices]
-     
+
   ; get the transitions for the selected species
   transitions = pahdb->getTransitionsByUID(selected_uids)
 
@@ -69,7 +99,7 @@ FUNCTION DO_NNLS
   selected_weights = REPLICATE({uid:0L, weight:0D}, nspectra)
 
   selected_weights.uid = selected_uids
-  
+
   selected_weights.weight = RANDOMU(LONG(SYSTIME(1)), nspectra, /DOUBLE)
 
   ; co-add the spectra using the random weights
@@ -139,7 +169,7 @@ FUNCTION DO_NNLS
         selected_uid = STRING(FORMAT='(I3)', selected_uids[select])
 
         select = WHERE(selected_weights.uid EQ all_uids[i])
-        
+
         selected_weight = STRING(FORMAT='(G7.2)', selected_weights[select].weight)
 
      ENDELSE
@@ -149,7 +179,7 @@ FUNCTION DO_NNLS
      IF count EQ 0 THEN BEGIN
 
         found_uid = ''
-    
+
         found_weight = ''
 
      ENDIF ELSE BEGIN
@@ -157,7 +187,7 @@ FUNCTION DO_NNLS
         found_uid = STRING(FORMAT='(I3)', found_uids[select])
 
         select = WHERE(found_weights.uid EQ all_uids[i])
-  
+
         found_weight = STRING(FORMAT='(G7.2)', found_weights[select].weight)
 
      ENDELSE
@@ -166,7 +196,7 @@ FUNCTION DO_NNLS
 
   ENDFOR
 
-  points = {x:0D, y:0D} 
+  points = {x:0D, y:0D}
 
   FOR i = 0, nspectra - 1 DO BEGIN
 
@@ -176,11 +206,11 @@ FUNCTION DO_NNLS
      ELSE BEGIN
 
         select = WHERE(selected_uids[i] EQ found_weights.uid)
-        
+
         found_weight = found_weights[select].weight
 
      ENDELSE
-     
+
      points = [points, {x:selected_weights[i].weight, y:found_weight}]
 
   ENDFOR
@@ -189,6 +219,13 @@ FUNCTION DO_NNLS
 
 END
 
+;+
+; Procedure testing non-negative least-squares decomposition.
+;
+; :Categories:
+;   Example
+;
+;-
 PRO TEST_NNLS
 
   points = {x:0D, y:0D}

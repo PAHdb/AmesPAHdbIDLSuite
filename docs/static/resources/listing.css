@@ -1,0 +1,98 @@
+/* link styles */
+a { text-decoration: none; }
+a:link, a:visited { color: #d9d9d9; }
+
+/* page setup */
+body { background: #343131; color: white; font-family: "Lato", "proxima-nova", "Helvetica Neue", Arial, sans-serif; font-size: 12pt; margin: 0; }
+
+/* header */
+div.header { color: white; text-align: center; margin-bottom: 1em; padding: 12pt; background: #2980B9; }
+div.header a.icon-home:before { font-family: FontAwesome;  content: ""; }
+div.header a.icon-home:hover, a.icon-home:focus { background: rgba(255,255,255,0.1); }
+div.header a { font-size: 100%; color: white; }
+
+/* headings */
+h1 { font-size: 100%; text-align: center; }
+h1 span {
+  font-size: 80%;
+  font-family: Verdana, Helvetica, sans-serif;
+  font-weight: normal;
+  font-style: italic;
+}
+
+/* list items */
+ul { font-size: 90%; padding: 0; margin: 0; }
+ul.submenu { display: none; }
+ul.submenu li:hover { background-color: #777777; }
+li { list-style-type: none; padding: 0.5em 0 0.5em 1.5em; }
+li:hover, li:focus { background: #4E4A4A; }
+.expand:before { font-family: FontAwesome; content: ""; float: left; margin-left: -1.2em; font-size: 0.8em; color: gray; line-height: 1.4; }
+.collapse:before { font-family: FontAwesome; content: ""; float: left; margin-left: -1.2em; font-size: 0.8em; color: gray; line-height: 1.4; }
+
+/*  Font Awesome 4.7.0 by @davegandy - http://fontawesome.io - @fontawesome */
+/*  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License) */
+@font-face {
+    font-family: 'FontAwesome';
+    src: url("fonts/fontawesome-webfont.eot?v=4.7.0");
+    src: url("fonts/fontawesome-webfont.eot?#iefix&v=4.7.0") format("embedded-opentype"),
+         url("fonts/fontawesome-webfont.woff2?v=4.7.0") format("woff2"),
+         url("fonts/fontawesome-webfont.woff?v=4.7.0") format("woff"),
+         url("fonts/fontawesome-webfont.ttf?v=4.7.0") format("truetype"),
+         url("fonts/fontawesome-webfont.svg?v=4.7.0#fontawesomeregular") format("svg");
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: "Lato";
+    src: url("fonts/Lato/lato-regular.eot");
+    src: url("fonts/Lato/lato-regular.eot?#iefix") format("embedded-opentype"),
+         url("fonts/Lato/lato-regular.woff2") format("woff2"),
+         url("fonts/Lato/lato-regular.woff") format("woff"),
+         url("fonts/Lato/lato-regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+}
+@font-face {
+    font-family: "Lato";
+    src: url("fonts/Lato/lato-bold.eot");
+    src: url("fonts/Lato/lato-bold.eot?#iefix") format("embedded-opentype"),
+         url("fonts/Lato/lato-bold.woff2") format("woff2"), url("fonts/Lato/lato-bold.woff") format("woff"),
+         url("fonts/Lato/lato-bold.ttf") format("truetype");
+    font-weight: 700;
+    font-style: normal;
+}
+@font-face {
+    font-family: "Lato";
+    src: url("fonts/Lato/lato-bolditalic.eot");
+    src: url("fonts/Lato/lato-bolditalic.eot?#iefix") format("embedded-opentype"),
+         url("fonts/Lato/lato-bolditalic.woff2") format("woff2"), url("fonts/Lato/lato-bolditalic.woff") format("woff"),
+         url("fonts/Lato/lato-bolditalic.ttf") format("truetype");
+    font-weight: 700;
+    font-style: italic;
+}
+@font-face {
+    font-family: "Lato";
+    src: url("fonts/Lato/lato-italic.eot");
+    src: url("fonts/Lato/lato-italic.eot?#iefix") format("embedded-opentype"), url("fonts/Lato/lato-italic.woff2") format("woff2"), url("fonts/Lato/lato-italic.woff") format("woff"), url("fonts/Lato/lato-italic.ttf") format("truetype");
+    font-weight: 400;
+    font-style:italic;
+}
+@font-face {
+    font-family:"Roboto Slab";
+    font-style:normal;
+    font-weight:400;
+    src:url("fonts/RobotoSlab/roboto-slab.eot");
+    src:url("fonts/RobotoSlab/roboto-slab-v7-regular.eot?#iefix") format("embedded-opentype"),
+        url("fonts/RobotoSlab/roboto-slab-v7-regular.woff2") format("woff2"),
+        url("fonts/RobotoSlab/roboto-slab-v7-regular.woff") format("woff"), url("fonts/RobotoSlab/roboto-slab-v7-regular.ttf") format("truetype")
+}
+@font-face {
+    font-family: "Roboto Slab";
+    font-style: normal;
+    font-weight: 700;
+    src: url("fonts/RobotoSlab/roboto-slab-v7-bold.eot");
+    src: url("fonts/RobotoSlab/roboto-slab-v7-bold.eot?#iefix") format("embedded-opentype"),
+         url("fonts/RobotoSlab/roboto-slab-v7-bold.woff2") format("woff2"),
+         url("fonts/RobotoSlab/roboto-slab-v7-bold.woff") format("woff"),
+         url("fonts/RobotoSlab/roboto-slab-v7-bold.ttf") format("truetype");
+}

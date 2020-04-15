@@ -1,20 +1,43 @@
-; NASA Ames PAH IR Spectroscopic Database
+; docformat = 'rst'
+
+;+
 ;
-; This is an example of fitting an astronomical spectrum built around
-; the functionality provided by the AmesPAHdbIDLSuite and should help
-; confirm that the AmesPAHdbIDLSuite has been properly installed.
-; 
-; Additional information can be found at
-; http://www.astrochem.org/pahdb, in Bauschlicher et al. 2010, The
-; Astrophysical Journal Supplement Series, 189, 341 and in Boersma et
-; al. 2014, The Astrophysical Journal Supplement Series, 211, 8.
+; This is an example of fitting an astronomical spectrum and should
+; confirm that the AmesPAHdbIDLSuite has been correctly installed. The
+; source code is annotated to guide users and developers in the inner
+; workings of the suite.
 ;
-; USAGE
-;   fit_a_spectrum
+; Updated versions of the NASA Ames PAH IR Spectroscopic Database and
+; more information can be found at: `www.astrochemistry.org/pahdb <https://www.astrochemistry.org/pahdb>`.
 ;
+; :Examples:
+;   Call the procedure directly::
+;
+;     IDL> fit_a_spectrum
+;
+; :Author:
+;   Dr. Christiaan Boersma
+;
+; :Copyright:
+;   BSD licensed
+;
+; :History:
+;   Changes::
+;
+;     08-19-2019
+;     Documentation added. Christiaan Boersma.
+;-
+
+;+
+; Procedure demonstrating fitting an astronomical spectrum using the
+; AmesPAHdbIDLSuite.
+;
+; :Categories:
+;   Example
+;-
 PRO FIT_A_SPECTRUM
 
-  ; the Spitzer IRS/SL 10 - 15 micron spectrum of NGC7023 
+  ; the Spitzer IRS/SL 10 - 15 micron spectrum of NGC7023
   file = 'ngc7023.dat'
 
   ; read observations into AmesPAHdbIDLSuite_Observation
@@ -26,8 +49,8 @@ PRO FIT_A_SPECTRUM
   observation->AbscissaUnitsTo,1
 
   ; rebin to uniform frequency grid
-  observation->Rebin,5D,/Uniform
-  
+  ;observation->Rebin,5D,/Uniform
+
   ; read in the default database defined by the environement variable
   ; !AMESPAHDEFAULTDB or the system variable AMESPAHDEFAULTDB. use
   ; the keyword FILENAME if these have not been set
@@ -35,7 +58,7 @@ PRO FIT_A_SPECTRUM
 
   ; retrieve the transitions from the database for a subset of PAHs
   transitions = pahdb->getTransitionsByUID( $
-                pahdb->Search("magnesium=0 oxygen=0 iron=0 silicium=0 chx=0 ch2=0 c>20"))
+                pahdb->Search("magnesium=0 oxygen=0 iron=0 silicium=0 chx=0 ch2=0 c>20 h>0"))
 
   ; shift data 15 wavenumber to the red
   transitions->Shift,-15D
@@ -44,7 +67,7 @@ PRO FIT_A_SPECTRUM
   spectrum = transitions->Convolve(Grid=observation->getGrid(), $
                                    FWHM=15D, $
                                    /Gaussian)
-  
+
   ; fit the spectrum
   fit = spectrum->Fit(observation)
 

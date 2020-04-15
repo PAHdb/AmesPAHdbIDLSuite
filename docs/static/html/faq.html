@@ -1,0 +1,108 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <title>AmesPAHdbIDLSuite Manual</title>
+
+
+    <link rel="stylesheet" type="text/css" media="all"
+          href="idldoc-resources/main.css" />
+    <link rel="stylesheet" type="text/css" media="print"
+          href="idldoc-resources/main-print.css" />
+  </head>
+
+  <body>
+
+    <div class="container">
+
+      <div class="header">
+
+        <div class="breadcrumb">
+
+          <a href="overview.html">Docs</a> &raquo; FAQ
+
+        </div>
+
+        <a class="btn-prev" href="release_history.html" title="Release  History" accesskey="p"> Previous</a>
+
+      </div>
+
+      <div class="content">
+
+        <hr />
+
+        <h1>FAQ</h1>
+
+        <ul>
+          <li>
+            <p class="question">
+              Why doesn't the code in this guide work with my installation?
+            </p>
+            <p class="answer">
+              You are probably using a version of the <i>AmesPAHdbIDLSuite</i> dated prior <i>February 14, 2015</i>. Please update to a newer version.
+            </p>
+          </li>
+          <li>
+            <p class="question">
+              Does the <i>AmesPAHdbIDLSuite</i> work with GDL?
+            </p>
+            <p class="answer">
+              The <i>AmesPAHdbIDLSuite</i> <b>might</b> be compatible with <a href="http://gnudatalanguage.sourceforge.net">GDL</a>, the open source alternative to IDL, although this has not been tested.
+            </p>
+          </li>
+	  <li>
+            <p class="question">
+              How does the <i>AmesPAHdbIDLSuite</i> deal with color output?
+            </p>
+            <p class="answer">
+              The <i>AmesPAHdbIDLSuite</i> 'Plot'-methods create and load a color table containing 15 colors. When outputting to screen, the device will be set into discrete graphics mode. Upon completion, both the color table and the display mode will be restored to their initial settings.
+            </p>
+          </li>
+	  <li>
+            <p class="question">
+              Where have the C-routines gone?
+            </p>
+            <p class="answer">
+              The C-code has been removed from the <i>AmesPAHdbIDLSuite</i> for three reasons. First, The NNLS implementation in the suite now makes use of IDL’s LA_LEAST_SQUARES-routine, which is implemented using LAPACK and therefore very fast. Second, it appears that IDL’s READS-routine has seen some significant speed improvements in recent IDL releases such that the CONVERT_ASCII C-implementation has become obsolete. Third and last, making the C-routines compile and reliable across multiple platforms has proven to be difficult.
+            </p>
+          </li>
+        </ul>
+
+      </div>
+
+      <div class="footer">
+
+        <a class="btn-prev" href="release_history.html" title="Release  History" accesskey="p"> Previous</a>
+        <hr />
+
+        <table class="smaller" summary="footer">
+
+          <tr>
+
+            <td>
+
+              &copy; Copyright 2020, Dr. Christiaan Boersma
+
+            </td>
+
+          </tr>
+
+          <tr>
+
+            <td>
+              Built with <a href="https://github.com/mgalloy/idldoc">IDLdoc</a> using <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> elements provided by <a href="https://readthedocs.org">Read the Docs</a>.
+            </td>
+
+          </tr>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </body>
+
+</html>

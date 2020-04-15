@@ -1,18 +1,41 @@
-; NASA Ames PAH IR Spectroscopic Database
+; docformat = 'rst'
+
+;+
 ;
-; This is an example of applying principal component analysis to the
-; spectra in the database built around the functionality provided by
-; the Suite and should help confirm that the AmesPAHdbIDLSuite has
-; been properly installed.
-; 
-; Additional information can be found at
-; http://www.astrochem.org/pahdb, in Bauschlicher et al. 2010, The
-; Astrophysical Journal Supplement Series, 189, 341 and in Boersma et
-; al. 2014, The Astrophysical Journal Supplement Series, 211, 8.
+; This is an example of applying singular value decomposition to the
+; spectra in the database, built around the functionality provided by
+; the AmesPAHdbIDLSuite and should help confirm that the it has been
+; properly installed.
 ;
-; USAGE
-;   test_svdc
+; Updated versions of the NASA Ames PAH IR Spectroscopic Database and
+; more information can be found at: `www.astrochemistry.org/pahdb <https://www.astrochemistry.org/pahdb>`.
 ;
+; :Examples:
+;   Call the procedure directly::
+;
+;     IDL> test_svdc
+;
+; :Author:
+;   Dr. Christiaan Boersma
+;
+; :Copyright:
+;   BSD licensed
+;
+; :History:
+;   Changes::
+;
+;     08-19-2019
+;     Documentation added. Christiaan Boersma.
+;-
+
+
+;+
+; Procedure for testing a singular value decomposition analysis on a
+; number of generated PAH emission spectra.
+;
+; :Categories:
+;   Example
+;-
 PRO TEST_SVDC
 
   ; spectral parameters
@@ -40,7 +63,7 @@ PRO TEST_SVDC
   spectrum = transitions->Convolve(FWHM=FWHM, Gaussian=gaussian, XRange=1D4/REVERSE(wrange), NPoints=npoints)
 
   frequency = spectrum->getGrid()
-  
+
   spectra = spectrum->get()
 
   OBJ_DESTROY,[spectrum, transitions, pahdb]
@@ -70,13 +93,13 @@ PRO TEST_SVDC
 
   key = ''
   read,key,prompt="Press <enter> to continue..."
-  
+
   srt = REVERSE(SORT(w))
-  
+
   PLOT,w[srt],XTITLE="Rank of ordered eigenvalues",YTITLE='Eigenvalues',/NODATA,/YLOG
 
   OPLOT,w[srt],COLOR=4
 
   OPLOT,w[srt],COLOR=2,PSYM=1
-  
+
 END

@@ -1,0 +1,286 @@
+<title>[% basename %] ([% title %])</title>
+
+<div class="content">
+  [% IF has_comments %]
+  <div id="file_comments">
+    <div class="small [% IF preformat %]pre[% END %]">[% comments %]</div>
+  </div>
+  [% END %]
+
+  [% IF has_examples %]
+  <h2>Examples</h2><hr class="style-one"/>
+
+  <div class="small">[% examples %]</div>
+  [% END %]
+
+  [% IF has_class %][% FOREACH class IN classes %][% SCOPE class %]
+  <div class="class-description">
+    <h2>Class description for [% classname %]</h2><hr class="style-one"/>
+
+      [% IF n_ancestors gt 0 %]
+      <h3>Inheritance</h3>
+        <ul>
+          [% FOREACH p IN parents %]
+          <li>[% IF p->hasUrl() %]<a href="[% relative_root %][% p->getUrl() %]">[% END %][% p->getClassname() %][% IF p->hasUrl() %]</a>[% END %]</li>
+          [% END %]
+        </ul>
+
+        [% IF n_ancestors gt n_parents %]
+        <p class="small">All ancestor classes:
+          [% FOREACH a IN ancestors %]
+          [% IF a->hasUrl() %]<a href="[% relative_root %][% a->getUrl() %]">[% END %][% a->getClassname() %][% IF a->hasUrl() %]</a>[% END %]
+          [% END %]
+        </p>
+        [% END %]
+      [% END %]
+
+      [% IF n_children gt 0 %]
+        <p class="small">Subclasses:
+          [% FOREACH c IN children %]
+          [% IF c->hasUrl() %]<a href="[% relative_root %][% c->getUrl() %]">[% END %][% c->getClassname() %][% IF c->hasUrl() %]</a>[% END %]
+          [% END %]
+        </p>
+      [% END %]
+
+      [% IF n_visible_properties gt 0 || n_visible_parent_properties gt 0 %]
+      <h3>Properties</h3>
+        [% IF n_ancestors gt 0 && ~user %]
+        [% FOREACH a IN ancestors %][% SCOPE a %]
+          [% IF n_visible_properties gt 0 %]
+          <h4>Properties in [% IF has_url %]<a href="[% relative_root %][% url %]">[% END %][% classname %][% IF has_url %]</a>[% END %]</h4>
+
+          <ul class="fieldslist smaller">
+            [% FOREACH p IN visible_properties %][% SCOPE p %]
+            <li><span class="fieldname">[% name %]</span> [% IF is_get %]get [% END %][% IF is_set %]set [% END %][% IF is_init %]init [% END %][% IF has_type %]type=[% type %][% END %]</li>
+            [% END %][% END %]
+          </ul>
+          [% END %]
+        [% END %][% END %]
+        [% END %]
+
+        [% IF n_visible_properties gt 0 %]
+        <h4>Properties in [% classname %]</h4>
+        <div class="details">
+          <dl>
+            [% FOREACH p IN visible_properties %][% SCOPE p %]
+            <dt>[% name %] <span class="smaller">[% IF is_get %]get [% END %][% IF is_set %]set [% END %][% IF is_init %]init [% END %][% IF has_type %]type=[% type %][% END %]</span></dt>
+            <dd class="small">[% comments %]</dd>
+            [% END %][% END %]
+          </dl>
+        </div>
+        [% END %]
+      [% END %]
+
+      [% IF (n_fields gt 0 || n_parent_fields gt 0) && ~user %]
+      <h3>Fields</h3>
+        [% IF n_ancestors gt 0 && ~user %]
+        [% FOREACH a IN ancestors %][% SCOPE a %]
+          [% IF n_fields gt 0 %]
+          <h4>Fields in [% IF has_url %]<a href="[% relative_root %][% url %]">[% END %][% classname %][% IF has_url %]</a>[% END %]</h4>
+          <ul class="fieldslist smaller">
+            [% FOREACH f IN fields %][% SCOPE f %]
+            <li><span class="fieldname">[% name %]</span> [% type %]</li>
+            [% END %][% END %]
+          </ul>
+          [% END %]
+        [% END %][% END %]
+        [% END %]
+
+        [% IF n_fields gt 0 %]
+        <h4>Fields in [% classname %]</h4>
+        <div class="details">
+          <dl>
+            [% FOREACH f IN fields %][% SCOPE f %]
+            <dt>[% name %] <span class="smaller">[% type %]</span></dt>
+            <dd class="small">[% comments %]</dd>
+            [% END %][% END %]
+          </dl>
+        </div>
+        [% END %]
+      [% END %]
+  </div>
+  [% END %][% END %][% END %]
+
+  [% IF has_author_info %]
+  <h2>Author information</h2><hr class="style-one"/>
+
+    <dl class="attribute small" summary="File author information">
+      [% IF has_author %]
+        <dt>Author</dt>
+        <dd>[% author %]</dd>
+      [% END %]
+
+      [% IF has_copyright %]
+        <dt>Copyright</dt>
+        <dd>[% copyright %]</dd>
+      [% END %]
+
+      [% IF has_history %]
+        <dt>History</dt>
+        <dd>[% history %]</dd>
+      [% END %]
+
+      [% IF has_version %]
+        <dt>Version</dt>
+        <dd>[% version %]</dd>
+      [% END %]
+    </dl>
+  [% END %]
+
+  [% IF has_others %]
+  <h2>Other file information</h2><hr class="style-one"/>
+
+    <dl class="attribute small" summary="Other file attributes">
+    [% IF has_bugs %]
+        <dt>Bugs:</dt>
+        <dd>[% bugs %]</dd>
+    [% END %]
+
+    [% IF has_customer_id %]
+        <dt>Customer ID:</dt>
+        <dd>[% customer_id %]</dd>
+    [% END %]
+
+    [% IF has_requires %]
+        <dt>Requires:</dt>
+        <dd>[% requires %]</dd>
+    [% END %]
+
+    [% IF has_restrictions %]
+        <dt>Restrictions:</dt>
+        <dd>[% restrictions %]</dd>
+    [% END %]
+
+    [% IF has_todo %]
+        <dt>Todo:</dt>
+        <dd>[% todo %]</dd>
+    [% END %]
+
+    [% IF has_uses %]
+        <dt>Uses:</dt>
+        <dd>[% uses %]</dd>
+    [% END %]
+    </dl>
+  [% END %]
+
+  [% IF n_visible_routines gt 1 %]
+  <div>
+    <h2>Routines</h2><hr class="style-one"/>
+
+    <dl class="routine-summary">
+      [% FOREACH r IN visible_routines %][% SCOPE r %]
+        <dt class="syntax"><a href="#[% name %]"><code>[% IF is_function %]<span class="var">result</span> = [% END %][% name %][% IF is_function %]([% END %][% IF n_visible_parameters gt 0 %][% FOREACH p IN visible_parameters %][% SCOPE p %]<span class="argument">[% IF is_optional %] [[% END %][% prefix %][% name %][% suffix %][% IF is_optional %]][% END %]</span>[% END %][% END %][% END %][% IF n_visible_keywords gt 0 %][% FOREACH k IN visible_keywords %][% SCOPE k %]<span class="argument">[% IF is_optional %] [[% END %][% prefix %][% IF is_boolean %]/[% END %][% name %][% IF ~is_boolean %]=<span class="var">[% IF type ne '' %][% type %][% ELSE %][% name %][% END %]</span>[% END %][% suffix %][% IF is_optional %]][% END %]</span>[% END %][% END %][% END %][% IF is_function %])[% END %]</code></a></dt>
+        <dd class="small">[% comments_first_line %]</dd>
+      [% END %][% END %]
+    </dl>
+  </div>
+  [% END %]
+
+
+  [% IF n_visible_routines gt 0 %]
+  <div id="routine-details">
+    [% IF n_visible_routines gt 1 %]<h2>Routine details</h2><hr class="style-one"/>[% END %]
+
+    [% FOREACH r IN visible_routines %][% SCOPE r %]
+    <div class="routine-details details" id="[% name %]">
+      [% IF n_visible_routines gt 1 %]<h1>[% name %]</h1><hr class="style-one"/>[% END %]
+
+      [% IF has_comments %]
+      <div class="small [% IF preformat %]pre[% END %]">[% comments %]</div>
+      [% END %]
+
+      <h2>Syntax</h2><hr class="style-one"/>
+      <p class="syntax"><code>[% IF is_function %]<span class="var">result</span> = [% END %][% name %][% IF is_function %]([% END %][% IF n_visible_parameters gt 0 %][% FOREACH p IN visible_parameters %][% SCOPE p %]<span class="argument">[% IF is_optional %] [[% END %][% prefix %]<a href="#[% id %]">[% name %]</a>[% suffix %][% IF is_optional %]][% END %]</span>[% END %][% END %][% END %][% IF n_visible_keywords gt 0 %][% FOREACH k IN visible_keywords %][% SCOPE k %]<span class="argument">[% IF is_optional %] [[% END %][% prefix %][% IF is_boolean %]/[% END %]<a href="#[% id %]">[% name %]</a>[% IF ~is_boolean %]=<span class="var">[% IF type ne '' %][% type %][% ELSE %][% name %][% END %]</span>[% END %][% suffix %][% IF is_optional %]][% END %]</span>[% END %][% END %][% END %][% IF is_function %])[% END %]</code></p>
+
+      [% IF is_function and has_returns %]
+      <h2>Return value</h2><hr class="style-one"/>
+        <div class="small">[% returns %]</div>
+      [% END %]
+
+      [% IF n_parameters gt 0 %]
+      <h2>Parameters</h2><hr class="style-one"/>
+        <dl>
+          [% FOREACH p IN parameters %][% SCOPE p %]
+          <dt id="[% id %]">[% name %] <span class="smaller">[% IF is_input %]in [% END %][% IF is_output %]out [% END %][% IF is_optional %]optional [% END %][% IF is_required %]required [% END %][% IF is_private %]private [% END %][% IF is_hidden %]hidden [% END %][% IF is_obsolete %]obsolete [% END %][% IF type ne '' %]type=[% type %] [% END %][% IF default_value ne '' %]default=[% default_value %][% END %]</span></dt>
+          <dd class="small">[% comments %]</dd>
+          [% END %][% END %]
+        </dl>
+      [% END %]
+
+      [% IF n_keywords gt 0 %]
+      <h2>Keywords</h2><hr class="style-one"/>
+        <dl>
+          [% FOREACH k IN keywords %][% SCOPE k %]
+          <dt id="[% id %]">[% name %] <span class="smaller">[% IF is_input %]in [% END %][% IF is_output %]out [% END %][% IF is_optional %]optional [% END %][% IF is_required %]required [% END %][% IF is_private %]private [% END %][% IF is_hidden %]hidden [% END %][% IF is_obsolete %]obsolete [% END %][% IF type ne '' %]type=[% type %] [% END %][% IF default_value ne '' %]default=[% default_value %][% END %]</span></dt>
+          <dd class="small">[% comments %]</dd>
+          [% END %][% END %]
+        </dl>
+      [% END %]
+
+      [% IF has_examples %]
+      <h2>Examples</h2><hr class="style-one"/>
+      <div>[% examples %]</div>
+      [% END %]
+
+      [% IF has_author_info %]
+      <h2>Author information</h2><hr class="style-one"/>
+
+        <dl class="attribute small" summary="Routine author information">
+          [% IF has_author %]
+            <dt>Author:</dt>
+            <dd>[% author %]</dd>
+          [% END %]
+
+          [% IF has_copyright %]
+            <dt>Copyright:</dt>
+            <dd>[% copyright %]</dd>
+          [% END %]
+
+          [% IF has_history %]
+            <dt>History:</dt>
+            <dd>[% history %]</dd>
+          [% END %]
+
+          [% IF has_version %]
+            <dt>Version:</dt>
+            <dd>[% version %]</dd>
+          [% END %]
+        </dl>
+      [% END %]
+
+      [% IF has_others %]
+      <h2>Other attributes</h2><hr class="style-one"/>
+
+        <dl class="attribute small" summary="Other routine attributes">
+          [% IF has_todo %]
+            <dt>Todo:</dt>
+            <dd>[% todo %]</dd>
+          [% END %]
+
+          [% IF has_restrictions %]
+            <dt>Restrictions:</dt>
+            <dd>[% restrictions %]</dd>
+          [% END %]
+
+          [% IF has_requires %]
+            <dt>Requires:</dt>
+            <dd>[% requires %]</dd>
+          [% END %]
+
+          [% IF has_uses %]
+            <dt>Uses:</dt>
+            <dd>[% uses %]</dd>
+          [% END %]
+
+          [% IF has_bugs %]
+            <dt>Bugs:</dt>
+            <dd>[% bugs %]</dd>
+          [% END %]
+        </dl>
+      [% END %]
+
+    </div>
+    [% END %][% END %]
+  </div>
+  [% END %]
+</div>

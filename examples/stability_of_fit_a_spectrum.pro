@@ -1,20 +1,44 @@
-; NASA Ames PAH IR Spectroscopic Database
+; docformat = 'rst'
+
+;+
 ;
-; This is an example of fitting an astronomical spectrum built around
-; the functionality provided by the Suite and should help confirm that
-; the AmesPAHdbIDLSuite has been properly installed.
-; 
-; Additional information can be found at
-; http://www.astrochem.org/pahdb, in Bauschlicher et al. 2010, The
-; Astrophysical Journal Supplement Series, 189, 341 and in Boersma et
-; al. 2014, The Astrophysical Journal Supplement Series, 211, 8.
+; This is an example of testing the stability of fitting an
+; astronomical spectrum by iteratively removing the most contributing
+; PAH species from a subsequent fit, built around the functionality
+; provided by the AmesPAHdbIDLSuite and should help confirm that the
+; it has been properly installed. The source code is annotated to
+; guide users and developers in the inner workings of the suite.
 ;
-; USAGE
-;   stability_of_fit_a_spectrum
+; Updated versions of the NASA Ames PAH IR Spectroscopic Database and
+; more information can be found at: `www.astrochemistry.org/pahdb <https://www.astrochemistry.org/pahdb>`.
 ;
+; :Examples:
+;   Call the procedure directly::
+;
+;     IDL> stability_of_fit_a_spectrum
+;
+; :Author:
+;   Dr. Christiaan Boersma
+;
+; :Copyright:
+;   BSD licensed
+;
+; :History:
+;   Changes::
+;
+;     08-19-2019
+;     Documentation added. Christiaan Boersma.
+;-
+
+;+
+; Procedure testing the stability of a spectroscopic fit.
+;
+; :Categories:
+;   Example
+;-
 PRO STABILITY_OF_FIT_A_SPECTRUM
 
-  ; the Spitzer IRS/SL 10 - 15 micron spectrum of NGC7023 
+  ; the Spitzer IRS/SL 10 - 15 micron spectrum of NGC7023
   file = 'ngc7023.dat'
 
   ; read observations into AmesPAHdbIDLSuite_Observation
@@ -27,10 +51,10 @@ PRO STABILITY_OF_FIT_A_SPECTRUM
 
   ; rebin to uniform frequency grid
   observation->Rebin,5D,/Uniform
-  
+
   ; read in the default database defined by the environement variable
-  ; !AMESPAHDEFAULTDB or the system variable AMESPAHDEFAULTDB. use
-  ; the keyword FILENAME if these have not been set
+  ; !AMESPAHDEFAULTDB or the system variable AMESPAHDEFAULTDB. use the
+  ; keyword FILENAME if these have not been set
   pahdb = OBJ_NEW('AmesPAHdbIDLSuite')
 
   ; retrieve all the transitions from the database
@@ -39,7 +63,7 @@ PRO STABILITY_OF_FIT_A_SPECTRUM
   ; have every PAH absorb 6 eV (CGS units) and include the temperature
   ; cascade
   transitions->Cascade,6D * 1.6021765D-12
-  
+
   ; shift data 15 wavenumber to the red
   transitions->Shift,-15D
 
@@ -50,9 +74,9 @@ PRO STABILITY_OF_FIT_A_SPECTRUM
              /Gaussian)
 
   OBJ_DESTROY,transitions
-  
+
   ; run stability test
-  niterations = 10
+  niterations = 11
 
   data = REPLICATE({norm: 0D, $
                     anion: 0D, $
@@ -80,9 +104,9 @@ PRO STABILITY_OF_FIT_A_SPECTRUM
     STRUCT_ASSIGN,fit->getBreakdown(), d
 
     data[i] = d
-    
+
     data[i].norm = fit->getNorm()
-    
+
     ; sort the spectra based on their total contribution to the flux
     fit->Sort,/Flux
 
@@ -91,7 +115,7 @@ PRO STABILITY_OF_FIT_A_SPECTRUM
 
     ; clean up fit
     OBJ_DESTROY,fit
-    
+
   ENDFOR
 
   PRINT

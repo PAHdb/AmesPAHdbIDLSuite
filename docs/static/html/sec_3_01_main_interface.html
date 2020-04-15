@@ -1,0 +1,117 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <title>AmesPAHdbIDLSuite Manual</title>
+
+
+    <link rel="stylesheet" type="text/css" media="all"
+          href="idldoc-resources/main.css" />
+    <link rel="stylesheet" type="text/css" media="print"
+          href="idldoc-resources/main-print.css" />
+
+    <link rel="stylesheet" type="text/css" media="all"
+          href="idldoc-resources/prismjs.css" />
+
+    <script type="text/javascript" src="idldoc-resources/prismjs.js"></script>
+    <script type="text/javascript" src="idldoc-resources/language-idl.js"></script>
+
+  </head>
+
+  <body>
+
+    <div class="container">
+
+      <div class="header">
+
+        <div class="breadcrumb">
+
+          <a href="overview.html">Docs</a> &raquo; <a href="api.html">API</a> &raquo; Main Interface
+
+        </div>
+
+        <a class="btn-prev" href="api.html" title="API" accesskey="p"> Previous</a>
+
+        <a class="btn-next" href="sec_3_02_accessing_the_molecular_pah_data.html" title="Acessing the Molecular PAH Data" accesskey="n">Next </a>
+
+      </div>
+
+      <div class="content">
+
+        <hr />
+
+        <h1>Main Interface</h1>
+
+        <p>
+          Interaction with the NASA Ames PAH IR Spectroscopic Database is organized around the 'AmesPAHdbIDLSuite'-object, which is created as shown below.
+        </p>
+        <pre><code class="language-idl">pahdb = OBJ_NEW('AmesPAHdbIDLSuite')</code></pre>
+	<p>
+	  Alternatively, the 'AmesPAHdbIDLSuite'-object can be created through the implicit object creation method as shown below.
+	</p>
+	<pre><code class="language-idl">pahdb = AmesPAHdbIDLSuite()</code></pre>
+        <p>
+          In case the system/IDL variable for the default database is not set, or one wishes to load another version or type of database, the 'Filename'-keyword can be specified.
+        </p>
+        <pre><code class="language-idl">pahdb = OBJ_NEW('AmesPAHdbIDLSuite', Filename='/path/to/xml-file')</code></pre>
+        <p>
+          By default the <i>AmesPAHdbIDLSuite</i> will cache the parsed database XML-file for faster subsequent access. However, this behavior can be disabled by setting the 'Cache'-keyword to '0'.
+        </p>
+        <pre><code class="language-idl">pahdb = OBJ_NEW('AmesPAHdbIDLSuite', Cache=0)</code></pre>
+        <p>
+          When parsing the database XML-file, the <i>AmesPAHdbIDLSuite</i> will try and validate its content against a URL-linked Schema. However, validation can be disabled by setting the 'Check'-keyword to '0'. This can be useful when not having an active internet connection.
+        </p>
+        <pre><code class="language-idl">pahdb = OBJ_NEW('AmesPAHdbIDLSuite', Check=0)</code></pre>
+        <p>
+          It is possible to combine the different keywords.
+        </p>
+        <pre><code class="language-idl">pahdb = OBJ_NEW('AmesPAHdbIDLSuite', Filename='path/to/xml-file', $
+                                     Cache=0, Check=0)</code></pre>
+        <p>
+          When finished with the <i>AmesPAHdbIDLSuite</i> the object should be destroyed.
+        </p>
+        <pre><code class="language-idl">OBJ_DESTROY,pahdb</code></pre>
+
+      </div>
+
+      <div class="footer">
+
+        <a class="btn-prev" href="api.html" title="API" accesskey="p"> Previous</a>
+
+        <a class="btn-next" href="sec_3_02_accessing_the_molecular_pah_data.html" title="Acessing the Molecular PAH Data" accesskey="n">Next </a>
+
+        <hr />
+
+        <table class="smaller" summary="footer">
+
+          <tr>
+
+            <td>
+
+              &copy; Copyright 2020, Dr. Christiaan Boersma
+
+            </td>
+
+          </tr>
+
+          <tr>
+
+            <td>
+
+              Built with <a href="https://github.com/mgalloy/idldoc">IDLdoc</a> using <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> elements provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+            </td>
+
+          </tr>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </body>
+
+</html>

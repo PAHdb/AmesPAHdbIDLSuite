@@ -1,22 +1,55 @@
-; NASA Ames PAH IR Spectroscopic Database
+; docformat = 'rst'
+
+;+
 ;
-; This is an example of fitting an astronomical spectrum built around
-; the functionality provided by the Suite and should help confirm that
-; the AmesPAHdbIDLSuite has been properly installed.
-; 
-; Additional information can be found at
-; http://www.astrochem.org/pahdb, in Bauschlicher et al. 2010, The
-; Astrophysical Journal Supplement Series, 189, 341 and in Boersma et
-; al. 2014, The Astrophysical Journal Supplement Series, 211, 8.
+; This is an example of fitting an astronomical spectrum and
+; optimizing several parameters describing the astrophysical
+; environment, built around the functionality provided by the
+; AmesPAHdbIDLSuite and should help confirm that the it has been
+; properly installed. The source code is annotated to guide users and
+; developers in the inner workings of the suite.
 ;
-; USAGE
-;   advanced_spectral_fit
+; Updated versions of the NASA Ames PAH IR Spectroscopic Database and
+; more information can be found at: `www.astrochemistry.org/pahdb <https://www.astrochemistry.org/pahdb>`.
 ;
+; :Examples:
+;   Call the procedure directly::
+;
+;     IDL> advanced_spectral_fit
+;
+; :Author:
+;   Dr. Christiaan Boersma
+;
+; :Copyright:
+;   BSD licensed
+;
+; :History:
+;   Changes::
+;
+;     08-19-2019
+;     Documentation added. Christiaan Boersma.
+;-
+
+;+
+; Callback function running a spectroscopy database-fit iteration.
+;
+; :Params:
+;   p: in, required, type=double array (1D)
+;     Parameter values
+;
+; :Returns:
+;   scalar (double)
+;
+; :Categories:
+;   CALLBACK
+;
+; :Private:
+;-
 FUNCTION FUNC,p
 
   ; common block
   COMMON _func,pahdb,uids,nuids,ncarbon,observation,options,fit,nfit
-  
+
   ; translate and check parameters
   i = 0
 
@@ -29,7 +62,7 @@ FUNCTION FUNC,p
         IF input LE 0 THEN RETURN,(MACHAR(/DOUBLE)).xmax
 
      ENDIF ELSE input = options.input
-  
+
   ENDIF ELSE input = 0.0D
 
   IF options.width LE 0 THEN BEGIN
@@ -90,7 +123,7 @@ FUNCTION FUNC,p
 
     ; intersect
     transitions->Intersect,uids[0,*]
-     
+
     ; retrieve data in struct
     t = transitions->Get()
 
@@ -133,14 +166,14 @@ FUNCTION FUNC,p
 
   ; norm
   norm = fit->getNorm()
-  
+
   ; print parameters
   PRINT
   PRINT,FORMAT='(89("="),"'+STRING(10B)+'",A4,4X,A8,4X,A8,4X,A8,4X,A8,4X,A8,4X,A8,4X,A8)',"run","redshift","FWHM","gamma","Tgas","T/energy","norm","chi-sq"
   PRINT,FORMAT='(I4,4X,g8.3,4X,g8.3,4X,g8.3,4X,g8.3,4X,g8.3,4X,g8.3,4X,g8.3)',nfit,redshift,width,balance,Tgas,input,norm,chisq
   PRINT,FORMAT='(89("="))'
   PRINT
- 
+
 
   ; return
   IF options.minimize EQ 0 THEN RETURN,norm
@@ -148,9 +181,19 @@ FUNCTION FUNC,p
   RETURN,chisq
 END
 
+;+
+; Procedure performing an advanced spectral fit.
+;
+; :Params:
+;   OPTS: in, optional, type=struct
+;     Options
+;
+; :Categories:
+;   Example
+;-
 PRO ADVANCED_SPECTRAL_FIT,OPTS
 
-  ; the Spitzer IRS/SL 10 - 15 micron spectrum of NGC7023 
+  ; the Spitzer IRS/SL 10 - 15 micron spectrum of NGC7023
   file = 'ngc7023.dat'
 
   ; create a common block and set options :
@@ -165,7 +208,7 @@ PRO ADVANCED_SPECTRAL_FIT,OPTS
   ;  >0 - fixed
   ; <=0 - optimize
   ; star:
-  ;    0 - no 
+  ;    0 - no
   ;    1 - yes
   ; profile:
   ;   0 - Lorentzian
@@ -190,7 +233,7 @@ PRO ADVANCED_SPECTRAL_FIT,OPTS
   ; query:
   ;  string - search query
   COMMON _func,pahdb,uids,nuids,ncarbon,observation,options,fit,nfit
-  
+
   IF N_PARAMS() EQ 0 THEN options = {model:0, $
                                      input:0D, $
                                      star:0, $
@@ -212,7 +255,7 @@ PRO ADVANCED_SPECTRAL_FIT,OPTS
 
   ; turn wavelength into frequency
   observation->AbscissaUnitsTo,1
-  
+
   ; hide overflow/underflow messages expected with Planck's function
   ; and Gaussian emission profiles
   IF options.model GT 1 OR options.profile EQ 1 THEN BEGIN
@@ -222,7 +265,7 @@ PRO ADVANCED_SPECTRAL_FIT,OPTS
      !EXCEPT = 0
 
   ENDIF
-  
+
   ; read in the default database defined by the environement variable
   ; !AMESPAHDEFAULTDB or the system variable AMESPAHDEFAULTDB. use the
   ; keyword FILENAME if these have not been set
@@ -233,7 +276,7 @@ PRO ADVANCED_SPECTRAL_FIT,OPTS
      ; get complete set of anion, neutral and cation species
      uids = pahdb->getUIDsCompleteChargeSet(-1, nuids)
 
-     ; get species and fill ncarbon 
+     ; get species and fill ncarbon
      species = pahdb->getSpeciesByUID(REFORM(uids, nuids * 3))
 
      ncarbon = REFORM((species->get()).data.nc, 3, nuids)
@@ -242,7 +285,7 @@ PRO ADVANCED_SPECTRAL_FIT,OPTS
      OBJ_DESTROY,species
 
   ENDIF ELSE uids = pahdb->Search(options.query, nuids)
-  
+
   ; optimize or not?
   IF (options.model GT 0 AND options.input LE 0) OR $
      options.width LE 0 OR $
@@ -257,14 +300,14 @@ PRO ADVANCED_SPECTRAL_FIT,OPTS
 
      IF options.model EQ 1 THEN BEGIN
 
-        p0 = [p0, 850D] 
+        p0 = [p0, 850D]
 
         scale = [scale, 750D]
-        
+
      ENDIF ELSE IF options.model GT 1 THEN BEGIN
 
         p0 = [p0, 5.5D]
-     
+
         scale = [scale, 4.5D]
 
      ENDIF
@@ -272,7 +315,7 @@ PRO ADVANCED_SPECTRAL_FIT,OPTS
      IF options.width LE 0 THEN BEGIN
 
         p0 = [p0, 16D]
-     
+
         scale = [scale, 15D]
 
      ENDIF
@@ -280,7 +323,7 @@ PRO ADVANCED_SPECTRAL_FIT,OPTS
      IF options.redshift GT 0 THEN BEGIN
 
         p0 = [p0, -15D]
-     
+
         scale = [scale, -30D]
 
      ENDIF
@@ -288,15 +331,15 @@ PRO ADVANCED_SPECTRAL_FIT,OPTS
      IF options.balance LT 0 THEN BEGIN
 
         p0 = [p0, 1.3D2]
-        
+
         scale = [scale, 1.3D3]
 
      ENDIF
- 
+
      IF options.Tgas LT 0 THEN BEGIN
 
         p0 = [p0, 600D]
-        
+
         scale = [scale, 4D2]
 
      ENDIF
@@ -311,9 +354,9 @@ PRO ADVANCED_SPECTRAL_FIT,OPTS
      IF N_ELEMENTS(param) EQ 1 THEN BEGIN
 
         IF param EQ -1 THEN BEGIN
-        
+
            MESSAGE,"FAILED TO CONVERGE IN "+STRTRIM(STRING(nfit),2)+" ITERATIONS",/INFORMATIONAL
-           
+
            GOTO,FINISH
 
         ENDIF
@@ -340,7 +383,7 @@ PRO ADVANCED_SPECTRAL_FIT,OPTS
         input = param[i++]
 
      ENDIF ELSE input = options.input
-  
+
   ENDIF ELSE input = 0.0D
 
   IF options.width LE 0 THEN BEGIN
@@ -371,7 +414,7 @@ PRO ADVANCED_SPECTRAL_FIT,OPTS
 
      ; store norm of the fit
      norm = fit->getNorm()
-     
+
      ; store the weights of the fitted combined spectra
      f_weights = fit->getWeights()
 
@@ -379,7 +422,7 @@ PRO ADVANCED_SPECTRAL_FIT,OPTS
      f_uids = fit->getUIDS(nf_uids) - 1
 
      nn_uids = 3 * nf_uids
-   
+
      ; store the identifiers of the individual species
      n_uids = REFORM(uids[*, f_uids], nn_uids)
 
@@ -415,39 +458,39 @@ PRO ADVANCED_SPECTRAL_FIT,OPTS
 
      ; clean up
      OBJ_DESTROY,[spectrum]
-     
+
      ; use a working copy
      c = s
 
      ; assign correct weights using the charge balance
      FOR i = 0, nf_uids - 1 DO BEGIN
-      
+
         n_weights[3*i].weight = f_weights[i].weight * 1.6D2 / SQRT(ncarbon[0, f_uids[i]]) / balance
 
         n_weights[3*i].uid = uids[0, f_uids[i]]
-        
+
         n_weights[3*i+1].weight = f_weights[i].weight
 
         n_weights[3*i+1].uid = uids[1, f_uids[i]]
-        
+
         n_weights[3*i+2].weight = f_weights[i].weight * 5.11D-6 * SQRT(ncarbon[2, f_uids[i]]) * SQRT(Tgas) * balance
 
         n_weights[3*i+2].uid = uids[2, f_uids[i]]
 
-        
+
         sel0 = WHERE(s.data.uid EQ uids[0, f_uids[i]])
 
         sel1 = WHERE(s.data.uid EQ uids[1, f_uids[i]])
 
         sel2 = WHERE(s.data.uid EQ uids[2, f_uids[i]])
 
-     
+
         c[sel0].data.intensity = s[sel0].data.intensity * n_weights[3*i].weight
 
         c[sel1].data.intensity = s[sel1].data.intensity * n_weights[3*i+1].weight
-       
+
         c[sel2].data.intensity = s[sel2].data.intensity * n_weights[3*i+2].weight
-         
+
      ENDFOR
 
      fit->Set,Data=c.data,Uids=n_uids,Weights=n_weights
@@ -459,11 +502,11 @@ PRO ADVANCED_SPECTRAL_FIT,OPTS
 
   ; plot the fit
   fit->Plot
-  
+
   key = ''
   IF !D.NAME EQ 'X' THEN READ,key,PROMPT="Press <enter> to continue..."
 
-  fit->Plot,/Residual 
+  fit->Plot,/Residual
 
   IF !D.NAME EQ 'X' THEN READ,key,PROMPT="Press <enter> to continue..."
 
@@ -484,7 +527,7 @@ PRO ADVANCED_SPECTRAL_FIT,OPTS
   xrange = 1D4 / [20D, 3D]
 
   IF NOT OBJ_VALID(transitions) THEN transitions = pahdb->getTransitionsByUID(uids)
-  
+
   spectrum = transitions->Convolve(FWHM=width, Gaussian=options.profile, XRange=xrange)
 
   coadded = spectrum->Coadd(Weights=n_weights)

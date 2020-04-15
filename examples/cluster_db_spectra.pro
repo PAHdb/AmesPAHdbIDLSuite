@@ -1,17 +1,40 @@
-; NASA Ames PAH IR Spectroscopic Database
+; docformat = 'rst'
+
+;+
 ;
-; This is an example of clustering the spectra in the database built
-; around the functionality provided by the Suite and should help
-; confirm that the AmesPAHdbIDLSuite has been properly installed.
-; 
-; Additional information can be found at
-; http://www.astrochem.org/pahdb, in Bauschlicher et al. 2010, The
-; Astrophysical Journal Supplement Series, 189, 341 and in Boersma et
-; al. 2014, The Astrophysical Journal Supplement Series, 211, 8.
+; This is an example of clustering (kmeans) PAH absorption spectra,
+; built around the functionality provided by the AmesPAHdbIDLSuite and
+; should help confirm that the it has been properly installed. The
+; source code is annotated to guide users and developers in the inner
+; workings of the suite.
 ;
-; USAGE
-;   cluster_db_spectra
+; Updated versions of the NASA Ames PAH IR Spectroscopic Database and
+; more information can be found at: `www.astrochemistry.org/pahdb <https://www.astrochemistry.org/pahdb>`.
 ;
+; :Examples:
+;   Call the procedure directly::
+;
+;     IDL> cluster_db_spectra
+;
+; :Author:
+;   Dr. Christiaan Boersma
+;
+; :Copyright:
+;   BSD licensed
+;
+; :History:
+;   Changes::
+;
+;     08-19-2019
+;     Documentation added. Christiaan Boersma.
+;-
+
+;+
+; Procedure performing the clustering analyzes.
+;
+; :Categories:
+;   Example
+;-
 PRO CLUSTER_DB_SPECTRA
 
   ; define FWHM, frequency range, number of points and number of clusters to use
@@ -24,8 +47,8 @@ PRO CLUSTER_DB_SPECTRA
   nclusters = 2
 
   ; read in the default database defined by the environement variable
-  ; !AMESPAHDEFAULTDB or the system variable AMESPAHDEFAULTDB. use
-  ; the keyword FILENAME if these have not been set
+  ; !AMESPAHDEFAULTDB or the system variable AMESPAHDEFAULTDB. use the
+  ; keyword FILENAME if these have not been set
   pahdb = OBJ_NEW('AmesPAHdbIDLSuite')
 
   ; retrieve all transitions for all species from the database
@@ -43,7 +66,7 @@ PRO CLUSTER_DB_SPECTRA
   FOR i = 0, nuids - 1 DO BEGIN
 
      sel = WHERE(spectra.data.uid EQ uids[i])
- 
+
      spectra.data[sel].intensity /=  INT_TABULATED(spectra.grid, spectra.data[sel].intensity)
 
   ENDFOR

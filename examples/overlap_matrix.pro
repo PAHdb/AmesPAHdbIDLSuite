@@ -1,17 +1,59 @@
-; NASA Ames PAH IR Spectroscopic Database
+; docformat = 'rst'
+
+;+
 ;
-; This is an example of clustering the spectra in the database built
-; around the functionality provided by the Suite and should help
-; confirm that the AmesPAHdbIDLSuite has been properly installed.
-; 
-; Additional information can be found at
-; http://www.astrochem.org/pahdb, in Bauschlicher et al. 2010, The
-; Astrophysical Journal Supplement Series, 189, 341 and in Boersma et
-; al. 2014, The Astrophysical Journal Supplement Series, 211, 8.
+; This is an example of clustering (hierarchical) PAH emission spectra
+; and should confirm that the AmesPAHdbIDLSuite has been correctly
+; installed. The source code is annotated to guide users and
+; developers in the inner workings of the suite.
 ;
-; USAGE
-;   overlap_matrix
+; Updated versions of the NASA Ames PAH IR Spectroscopic Database and
+; more information can be found at: `www.astrochemistry.org/pahdb <https://www.astrochemistry.org/pahdb>`.
 ;
+; :Examples:
+;   Call the procedure directly::
+;
+;     IDL> overlap_matrix
+;
+; :Author:
+;   Dr. Christiaan Boersma
+;
+; :Copyright:
+;   BSD licensed
+;
+; :History:
+;   Changes::
+;
+;     08-19-2019
+;     Documentation added. Christiaan Boersma.
+;-
+
+;+
+; Procedure performing a hierarchical split.
+;
+; :Categories:
+;   Example
+;
+; :Params:
+;   matrix: in, required, type=double array (2D)
+;     n by n overlap matrix
+;   depth: in, required, type=int
+;     Current split
+;   max_depth: in, required, type=int
+;     Maximum number of splits
+;   min_bins: in, required, type=int
+;     Minimum number of members required to form a bin
+;   bins: in, required, type=int array (n by max_depth)
+;     Assigned cluster bin
+;   parent: in, required, type=double array (1D)
+;     Parent of current cluster
+;
+; :Keywords:
+;   METRIC: in, optional, type=int
+;     Whether to use a metric distance measure
+;
+; :Private:
+;-
 PRO NODES,matrix,depth,max_depth,min_bins,bins,parent,METRIC=metric
 
   MESSAGE,STRING(FORMAT='("DEPTH:",X,I0)', depth),/INFORMATIONAL
@@ -29,7 +71,7 @@ PRO NODES,matrix,depth,max_depth,min_bins,bins,parent,METRIC=metric
 
      RETURN
 
-  ENDIF 
+  ENDIF
 
   dummy = MIN(matrix, imin, /NAN, SUBSCRIPT_MAX=imax)
 
@@ -57,7 +99,7 @@ PRO NODES,matrix,depth,max_depth,min_bins,bins,parent,METRIC=metric
      IF k[j] EQ ij[0] OR k[j] EQ ij[1] THEN CONTINUE
 
      IF NOT FINITE(matrix[ij[0], k[j]]) OR NOT FINITE(matrix[ij[1], k[j]]) THEN CONTINUE
-     
+
      IF NOT KEYWORD_SET(metric) THEN BEGIN
 
         a = matrix[ij[0], k[j]] ; bin1
@@ -67,7 +109,7 @@ PRO NODES,matrix,depth,max_depth,min_bins,bins,parent,METRIC=metric
         ; if a>b then add k[j] to bin1 - i.e., b<a
 
      ENDIF ELSE BEGIN
-    
+
         b = matrix[ij[0], k[j]] ; bin1
 
         a = matrix[ij[1], k[j]] ; bin2
@@ -87,13 +129,13 @@ PRO NODES,matrix,depth,max_depth,min_bins,bins,parent,METRIC=metric
      ENDIF ELSE BEGIN
 
         bins[k[j],depth] = bin2
-   
+
         m1[k[j],*] = !VALUES.D_NAN
 
         m1[*,k[j]] = !VALUES.D_NAN
 
      ENDELSE
-   
+
   ENDFOR
 
   depth++
@@ -114,6 +156,13 @@ PRO NODES,matrix,depth,max_depth,min_bins,bins,parent,METRIC=metric
 
 END
 
+;+
+; Procedure performing a hierarchical clustering of PAH emission
+; spectra based on their overlap (area).
+;
+; :Categories:
+;   Example
+;-
 PRO OVERLAP_MATRIX
 
   ; define path to save overlap matrix
@@ -131,8 +180,8 @@ PRO OVERLAP_MATRIX
   npoints = 400L
 
   ; read in the default database defined by the environement variable
-  ; !AMESPAHDEFAULTDB or the system variable AMESPAHDEFAULTDB. use
-  ; the keyword FILENAME if these have not been set
+  ; !AMESPAHDEFAULTDB or the system variable AMESPAHDEFAULTDB. use the
+  ; keyword FILENAME if these have not been set
   pahdb = OBJ_NEW('AmesPAHdbIDLSuite')
 
   ; limit ourselves to a certain set of PAHs
@@ -166,7 +215,7 @@ PRO OVERLAP_MATRIX
 
     IF KEYWORD_SET(REBUILD) AND FILE_TEST(path, /READ) THEN MESSAGE,'REBUILDING MATRIX',/INFORMATIONAL $
     ELSE MESSAGE,'BUILDING MATRIX',/INFORMATIONAL
-    
+
     ; define matrix
     matrix = DBLARR(nuids, nuids)
 
@@ -220,17 +269,17 @@ PRO OVERLAP_MATRIX
   parent = 0
 
   max_depth = 3
-  
+
   bins = INTARR(nuids, max_depth)
 
   min_bins = 10
-  
+
   NODES,m,depth,max_depth,min_bins,bins,parent,METRIC=0
 
   min = 0
 
   key = ''
-  
+
   FOR i = 0, max_depth - 1 DO BEGIN
 
      min += 2^i
@@ -254,9 +303,9 @@ PRO OVERLAP_MATRIX
         sel2 = WHERE(spectrum_s.data.uid EQ uids_i[0])
 
         avg = spectrum_s.data[sel2].intensity
-        
+
         FOR k = 1, nsel1 - 1 DO BEGIN
-        
+
            sel2 = WHERE(spectrum_s.data.uid EQ uids_i[k])
 
            avg += spectrum_s.data[sel2].intensity
@@ -268,11 +317,11 @@ PRO OVERLAP_MATRIX
         PLOT,1D4/spectrum_s.grid,1D14*avg,XTITLE='wavelength [micron]',YTITLE='intensity [x10!U-14!N erg cm]',POSITION=[0.15,0.125,0.675,0.9]
 
         XYOUTS,0.18,0.85,STRING(FORMAT='("BIN #:",X,I0,X,"NBIN:",X,I0)', u[j], nsel1),/NORMAL
-    
+
         IF !D.NAME EQ 'X' THEN READ,key,PROMPT="Press <enter> to continue..."
 
      ENDFOR
-    
+
   ENDFOR
-  
+
 END

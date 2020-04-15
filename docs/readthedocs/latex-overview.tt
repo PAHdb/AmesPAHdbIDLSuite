@@ -1,0 +1,46 @@
+\part{Overview}
+
+\section*{Overview}
+
+Thank you for downloading the AmesPAHdbIDLSuite accompanying the NASA Ames PAH IR Spectroscopic Database. Additional and updated information can be found at \\url{https://www.astrochemistry.org/pahdb/} and in Boersma et al.~2014, The Astrophysical Journal Supplement Series, 211, 8 doi:10.1088/0067-0049/211/1/8.
+
+This set of IDL scripts and object classes help working with the database XML-files downloadable from \url{https://www.astrochemistry.org/pahdb/}. Check there regularly for updated versions with bug fixes and enhancements.
+
+The suite has been tested with IDL versions 7.0 through 8.6.1. The AmesPAHdbIDLSuite's version of NNLS requires IDL version 8.0 or higher due to its use of !NULL. Note that it is possible to use of an externally defined NNLS-implementation. See the docs for details. The open source IDL-replacement GDL might be compatible with the suite, although this has not been tested.
+
+Versioning information can be found in the VERSION file. Changes between versions can be found in the CHANGELOG file. A users guide can be found in the docs-directory of the suite.
+
+The instructions on how to install the AmesPAHdbIDLSuite accompanying the NASA Ames PAH IR Spectroscopic Database are as follows:
+
+\begin{enumerate}
+  \item Unpack the suite, e.g., tar xvaf AmesPAHdbIDLSuite.
+  \item Put the files in a directory accessible by IDL or update the IDL !PATH variable, e.g., !PATH = !PATH + ":/path/to/AmesPAHdbIDLSuite/"
+  \item Obtain the XML version(s) of the database from the website https://www.astrochemistry.org/pahdb/
+  \item Place the XML file(s) somewhere and, optionally, set either or both of the system and IDL AMESPAHDEFAULTDB environment variables for the default database file you want to use, e.g. defsysv,'!AMESPAHDEFAULTDB',"/path/to/theoretical.xml" or export AMESPAHDEFAULTDB='/path/to/theoretical.xml' (case-sensitive!)
+  \item Run example programs from the 'examples' directory to verify  proper installation of the suite
+\end{enumerate}
+The suite currently consists of 13 IDL object classes and two helper programs. The main interface to the database is provided by the AmesPAHdbIDLSuite-object, which will parse the dowloaded XML-file utilizing IDL's AmesPAHXMLParser-object. The available PAH data is divided into four parts, each handled by its own object class and providing its own functionality. \textit{1)} The AmesPAHdbIDLSuite\_Species-object, holds the PAH molecular \textit{2)} The AmesPAHdbIDLSuite\_Transitions-object, holds  fundamental vibrational transitions, \textit{3)} The AmesPAHdbIDLSuite\_Laboratory\_Spectrum-object holds the raw laboratory spectrum, and \textit{4)} The AmesPAHdbIDLSuite\_Geometry-objects, holds the geometrical data. The AmesPAHdbIDLSuite-object will return one of these object classes upon request. In addition, the AmesPAHdbIDLSuite\_Transitions-object returns object classes upon convolving, co-adding and fitting spectra; an AmesPAHdbIDLSuite\_Spectrum-, AmesPAHdbIDLSuite\_Coadded\_Spectrum- and AmesPAHdbIDLSuite\_Fitted\_Spectrum-object, respectively. The AmesPAHdbIDLSuite\_Observation-object can handle some commonly used astronomical data formats. The AmesPAHdbIDLSuite\_Browser-object is a graphical user interface to the database that can be used to browse its contents. Lastly, the IDL\_Object-object is a class used to inherit from in IDL versions before 8.0, allowing operator overloaded classes to still compile on earlier IDL versions.\\
+\vspace{1em}
+\textit{The NASA Ames PAH IR Spectroscopic Database is being supported through a directed Work Package at NASA Ames titled: "Laboratory Astrophysics -- The NASA Ames PAH IR Spectroscopic Database"}
+
+[% IF ~just_files %]
+\section*{Directories}
+
+\begin{tabular}[t]{lp{4in}}
+[% FOREACH d IN visible_dirs %][% SCOPE d %]
+\tt [% mg_escape_latex(location) %] & [% overview_comments %] \\
+[% END %][% END %]
+\end{tabular}
+
+[% END %]
+
+\section*{Project statistics}
+
+\begin{tabular}[t]{ll}
+Directories: & [% n_visible_dirs %] \\
+.pro files: & [% n_visible_pro_files %] \\
+.sav files: & [% n_sav_files %] \\
+Routines: & [% n_routines %] \\
+Lines: & [% n_lines %] \\
+[% IF requires_version ne '' %]Required IDL version: & [% requires_version %] \\ [% END %]
+\end{tabular}

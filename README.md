@@ -7,36 +7,32 @@ IR Spectroscopic Database XML-file.
 
 The NASA Ames PAH IR Spectroscopic Database (PAHdb) website is located
 at
-[www.astrochemistry.org/pahdb/](http://www.astrochemistry.org/pahdb/). The
-current stable version of the *AmesPAHdbIDLSuite* is dated August 27,
-2015 and can be obtained from GitHub or the downloads section at the
-PAHdb-website -
-[downloads](http://www.astrochemistry.org/pahdb/downloads).
+[www.astrochemistry.org/pahdb/](https://www.astrochemistry.org/pahdb/). The
+current stable version of the *AmesPAHdbIDLSuite* is dated April 15,
+2020 and can be obtained from
+[GitHub](https://github.com/PAHdb/AmesPAHdbIDLSuite/).
 
-A comprehensive guide on installing and using the *AmesPAHdbIDLSuite*
-can be found at the help section of the PAHdb-website -
-[help](http://www.astrochemistry.org/pahdb/theoretical/2.00/help/amespahdbidlsuite).
-
-Please consult the [README](README) file for additional information.
+A comprehensive guide on using the *AmesPAHdbIDLSuite* can be found
+via PAHdb's [Documentation
+Portal](https://pahdb.github.io/AmesPAHdbIDLSuite/).
 
 ### Prerequisites
 
 The *AmesPAHdbIDLSuite* requires
 [IDL](http://www.harrisgeospatial.com/ProductsandTechnology/Software/IDL.aspx). IDL
-is a registered trademark of
-[Harris Geospatial](http://www.harrisgeospatial.com/).
+is a registered trademark of [Harris
+Geospatial](http://www.harrisgeospatial.com/).
 
 The *AmesPAHdbIDLSuite* is intended to work with a downloaded NASA
 Ames PAH IR Spectroscopic Database XML-file, which can be obtained
-from the downloads section at the PAHdb-website -
-[downloads](http://www.astrochemistry.org/pahdb/downloads).
+from the [downloads](https://www.astrochemistry.org/pahdb/downloads)
+section at the PAHdb-website.
 
 ### Installing
 
-Step by step instructions on installing the *AmesPAHdbIDLSuite* can be
-found in the [INSTALL](INSTALL) file and at the help section of the
-PAHdb-website -
-[help](http://www.astrochemistry.org/pahdb/theoretical/2.00/help/amespahdbidlsuite#installation).
+Step-by-step instructions on installing the *AmesPAHdbIDLSuite* can be
+found in the [INSTALL](INSTALL) file and via the  [Documentation
+Portal](https://pahdb.github.io/AmesPAHdbIDLSuite/).
 
 ## Contributing
 
@@ -66,4 +62,4 @@ This project is licensed under the BSD 3-Clause License - see the
 
 * The NASA Ames PAH IR Spectroscopic Database Team
 * The Astrophysics & Astrochemistry Laboratory at NASA Ames Research
-  Center - [www.astrochemistry.org](http://www.astrochemistry.org)
+  Center - [www.astrochemistry.org](https://www.astrochemistry.org)

@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <title>AmesPAHdbIDLSuite Manual</title>
+
+
+    <link rel="stylesheet" type="text/css" media="all"
+          href="idldoc-resources/main.css" />
+    <link rel="stylesheet" type="text/css" media="print"
+          href="idldoc-resources/main-print.css" />
+
+  </head>
+
+  <body>
+
+    <div class="container">
+
+      <div class="header">
+
+        <div class="breadcrumb">
+
+          <a href="overview.html">Docs</a> &raquo; API
+
+        </div>
+
+        <a class="btn-prev" href="usage.html" title="Usage" accesskey="p"> Previous</a>
+
+        <a class="btn-next" href="sec_3_01_main_interface.html" title="Main Interface" accesskey="n">Next </a>
+
+      </div>
+
+      <div class="content">
+
+        <hr />
+
+        <h1>API</h1>
+
+        <p>
+          The suite currently consists of 13 IDL object classes and two
+          helper programs. The main interface to the database is
+          provided by the  <i>AmesPAHdbIDLSuite</i>-object, which will
+          parse the dowloaded XML-file utilizing IDL's
+          AmesPAHXMLParser-object. The available PAH data is divided
+          into four parts, each handled by its own object class and
+          providing its own functionality.
+        </p>
+
+        <ol>
+
+          <li>The Species-object, holds the PAH molecular properties, </li>
+
+          <li>The Transitions-object, holds the fundamental vibrational transitions,</li>
+
+          <li>The Laboratory_Spectrum-object holds the raw laboratory spectrum, and</li>
+
+          <li>The Geometry-objects, holds the geometrical data.</li>
+
+        </ol>
+
+        <p>
+          The <i>AmesPAHdbIDLSuite</i>-object will return one of these object
+          classes upon request. In addition, the
+          <i>AmesPAHdbIDLSuite</i>_Transitions-object returns object classes
+          upon convolving, co-adding and fitting spectra; an
+          <i>AmesPAHdbIDLSuite</i>_Spectrum-,
+          <i>AmesPAHdbIDLSuite</i>_Coadded_Spectrum- and
+          <i>AmesPAHdbIDLSuite</i>_Fitted_Spectrum-object, respectively. The
+          <i>AmesPAHdbIDLSuite</i>_Observation-object can handle some commonly
+          used astronomical data formats. The
+          <i>AmesPAHdbIDLSuite</i>_Browser-object is a graphical user interface
+          to the database that can be used to browse its
+          contents. Lastly, the IDL_Object-object is a class used to
+          inherit from in IDL versions before 8.0, allowing operator
+          overloaded classes to still compile on these earlier versions.
+        </p>
+
+        <p>
+          The application programming interface (API) and its use is
+          described in turn.
+        </p>
+
+        <ul class="submenu">
+
+          <li><a target="main_frame" href="sec_3_01_main_interface.html">3.1 Main Interface</a></li>
+
+          <li><a target="main_frame" href="sec_3_02_accessing_the_molecular_pah_data.html">3.2 Accessing the Molecular PAH Data</a></li>
+
+          <li><a target="main_frame" href="sec_3_03_working_with_molecular_pah_properties.html">3.3 Working with Molecular PAH Properties</a></li>
+
+          <li><a target="main_frame" href="sec_3_04_working_with_fundamental_vibrational_transitions.html">3.4 Working with Fundamental Vibrational Transitions</a></li>
+
+          <li><a target="main_frame" href="sec_3_05_working_with_molecular_geometric_data.html">3.5 Working with Molecular Geometric Data</a></li>
+
+          <li><a target="main_frame" href="sec_3_06_working_with_raw_laboratory_spectra.html">3.6 Working with Raw Laboratory Spectra</a></li>
+
+          <li><a target="main_frame" href="sec_3_07_working_outside_the_amespahdbidlsuite_object_classes.html">3.7 Working Outside the <i>AmesPAHdbIDLSuite</i> Object Classes</a></li>
+
+          <li><a target="main_frame" href="sec_3_08_creating_pah_spectra.html">3.8 Creating PAH Spectra</a></li>
+
+          <li><a target="main_frame" href="sec_3_09_spectroscopic_database_fitting.html">3.9 Spectroscopic Database Fitting</a></li>
+
+          <li><a target="main_frame" href="sec_3_10_graphical_user_interface.html">3.10 Graphical User Interface</a></li>
+
+        </ul>
+
+      </div>
+
+      <div class="footer">
+
+        <a class="btn-prev" href="usage.html" title="Usage" accesskey="p"> Previous</a>
+
+        <a class="btn-next" href="main_interface.html" title="Main Interface" accesskey="n">Next </a>
+
+        <hr />
+
+        <table class="smaller" summary="footer">
+
+          <tr>
+
+            <td>
+
+              &copy; Copyright 2020, Dr. Christiaan Boersma
+
+            </td>
+
+          </tr>
+
+          <tr>
+
+            <td>
+
+              Built with <a href="https://github.com/mgalloy/idldoc">IDLdoc</a> using <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> elements provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+            </td>
+
+          </tr>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </body>
+
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <title>AmesPAHdbIDLSuite Manual</title>
+
+
+    <link rel="stylesheet" type="text/css" media="all"
+          href="idldoc-resources/main.css" />
+    <link rel="stylesheet" type="text/css" media="print"
+          href="idldoc-resources/main-print.css" />
+
+    <link rel="stylesheet" type="text/css" media="all"
+          href="idldoc-resources/prismjs.css" />
+
+    <script type="text/javascript" src="idldoc-resources/prismjs.js"></script>
+    <script type="text/javascript" src="idldoc-resources/language-idl.js"></script>
+  </head>
+
+  <body>
+
+    <div class="container">
+
+      <div class="header">
+
+        <div class="breadcrumb">
+
+          <a href="overview.html">Docs</a> &raquo; Usage
+
+        </div>
+
+        <a class="btn-prev" href="installation.html" title="Installation" accesskey="p"> Previous</a>
+
+        <a class="btn-next" href="api.html" title="API" accesskey="n">Next </a>
+
+      </div>
+
+      <div class="content">
+
+        <hr />
+
+        <h1>Usage</h1>
+
+        <p>
+          This is the example contained in example.pro located in the
+          examples-directory and shows how the AmesPAHdbIDLSuite is used
+          to display the ('stick') absorption spectrum of coronene
+          (UID=18), apply an emission model and  generate an <i>emission</i>
+          spectrum.
+        </p>
+
+        <pre><code class="language-idl">; read in the default database defined by the environement variable
+; !AMESPAHDEFAULTDB or the system variable AMESPAHDEFAULTDB.  use
+; the keyword FILENAME if these have not been set
+pahdb = OBJ_NEW('AmesPAHdbIDLSuite')
+
+; get the integrated cross-sections for coronene
+transitions = pahdb->getTransitionsByUID(18)
+
+; plot the 'stick' spectrum
+transitions->Plot
+
+key = ''
+read,key,prompt="Press <enter> to continue..."
+
+; calculate the emission spectrum at the temperature reached after
+; absorbing a 4 eV (CGS units) photon
+transitions->CalculatedTemperature,4D * 1.603D-12
+
+; plot the emission 'stick' spectrum at that temperature
+transitions->Plot
+
+read,key,prompt="Press <enter> to continue..."
+
+; convolve the bands with a Lorentzian with
+; FWHM of 30 /cm
+convolved = transitions->Convolve(FWHM=30D)
+
+; plot the convolved spectrum
+convolved->Plot
+
+; clean up
+OBJ_DESTROY,[convolved, transitions, pahdb]</code></pre>
+
+        <p>
+
+          In addition, the PAHdb <a target="_top" href="https://pahdb.github.io/cookbook/index.html">cookbook</a> provides a collection of recipes for data analysis.
+
+        </p>
+
+      </div>
+
+      <div class="footer">
+
+        <a class="btn-prev" href="installation.html" title="Installation" accesskey="p"> Previous</a>
+
+        <a class="btn-next" href="api.html" title="API" accesskey="n">Next </a>
+
+        <hr />
+
+        <table class="smaller" summary="footer">
+
+          <tr>
+
+            <td>
+
+              &copy; Copyright 2020, Dr. Christiaan Boersma
+
+            </td>
+
+          </tr>
+
+          <tr>
+
+            <td>
+              Built with <a href="https://github.com/mgalloy/idldoc">IDLdoc</a> using <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> elements provided by <a href="https://readthedocs.org">Read the Docs</a>.
+            </td>
+
+          </tr>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </body>
+
+</html>
