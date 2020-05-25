@@ -11,6 +11,12 @@
           href="idldoc-resources/main.css" />
     <link rel="stylesheet" type="text/css" media="print"
           href="idldoc-resources/main-print.css" />
+
+    <link rel="stylesheet" type="text/css" media="all"
+          href="idldoc-resources/prismjs.css" />
+
+    <script type="text/javascript" src="idldoc-resources/prismjs.js"></script>
+
   </head>
 
   <body>
@@ -66,6 +72,32 @@
             </p>
             <p class="answer">
               The C-code has been removed from the <i>AmesPAHdbIDLSuite</i> for three reasons. First, The NNLS implementation in the suite now makes use of IDL’s LA_LEAST_SQUARES-routine, which is implemented using LAPACK and therefore very fast. Second, it appears that IDL’s READS-routine has seen some significant speed improvements in recent IDL releases such that the CONVERT_ASCII C-implementation has become obsolete. Third and last, making the C-routines compile and reliable across multiple platforms has proven to be difficult.
+            </p>
+          </li>
+          <li>
+            <p class="question">
+              I am getting schema validation errors, is this an issue and how can I get rid of them?
+            </p>
+            <p class="answer">
+              Schema validation errors typically do not cause a problem. The errors you see could be related to the move from www.astrochem.org to www.astrochemistry.org for the base URL, affecting the used XML namespaces. Re-downloading your database XML-file should solve the problem. As a last resort, you can disable schema validation by setting the 'Check'-keyword to 'Check=0' when creating the AmesPAHdbIDLSuite-object.
+            </p>
+          </li>
+          <li>
+            <p class="question">
+              I am getting an unsupported protocol in URL error, what can I do?
+            </p>
+            <p class="answer">
+              With the recent move to using SSL (https) on our domain (www.astrochemistry.org) IDL's XML-parser fails to download the linked schema for checking the structure of the database file. By setting the 'CHECK'-keyword to '0' in the OBJ_NEW-call will mitigate the problem. Note that you might need to manually remove the corrupted cache file.
+            </p>
+          </li>
+          <li>
+            <p class="question">
+              I am receiving an invalid multi-byte sequence error, what can I do?
+            </p>
+            <p class="answer">
+              It has been reported that on older versions of some operating systems IDL's XML-parser is unable to properly handle the utf-8 characters embedded in the database XML-file. One solution is to move to a more modern version of your operation system. Another possible solution is converting the file to use a different encoding with the following command.
+              <pre><code class="language-bash">xmllint --encode latin1 --output converted.xml file_with_UTF-8.xml</code></pre>
+              Note that characters that cannot be converted are simply removed.
             </p>
           </li>
         </ul>
