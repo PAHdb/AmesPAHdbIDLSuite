@@ -6,7 +6,7 @@ Thank you for downloading the AmesPAHdbIDLSuite accompanying the NASA Ames PAH I
 
 This set of IDL scripts and object classes help working with the database XML-files downloadable from \url{https://www.astrochemistry.org/pahdb/}. Check there regularly for updated versions with bug fixes and enhancements.
 
-The suite has been tested with IDL versions 7.0 through 8.6.1. The AmesPAHdbIDLSuite's version of NNLS requires IDL version 8.0 or higher due to its use of !NULL. Note that it is possible to use of an externally defined NNLS-implementation. See the docs for details. The open source IDL-replacement GDL might be compatible with the suite, although this has not been tested.
+The suite has been tested with IDL versions 7.0 through 8.6.1. The AmesPAHdbIDLSuite's version of NNLS requires IDL version 8.0 or higher due to its use of !NULL. Note that it is possible to use of an externally defined NNLS-implementation. See the docs for details. The open source IDL-replacement GDL is currently incompatible with the suite.
 
 Versioning information can be found in the VERSION file. Changes between versions can be found in the CHANGELOG file. A users guide can be found in the docs-directory of the suite.
 

@@ -21,7 +21,9 @@ Portal](https://pahdb.github.io/AmesPAHdbIDLSuite/).
 The *AmesPAHdbIDLSuite* requires
 [IDL](http://www.harrisgeospatial.com/ProductsandTechnology/Software/IDL.aspx). IDL
 is a registered trademark of [Harris
-Geospatial](http://www.harrisgeospatial.com/).
+Geospatial](http://www.harrisgeospatial.com/). The open source
+IDL-replacement [GDL](https://github.com/gnudatalanguage/gdl) is
+currently incompatible with the suite.
 
 The *AmesPAHdbIDLSuite* is intended to work with a downloaded NASA
 Ames PAH IR Spectroscopic Database XML-file, which can be obtained

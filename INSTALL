@@ -4,8 +4,8 @@ has been tested with IDL versions 7.0 through 8.6.1.
 The AmesPAHdbIDLSuite's version of NNLS requires IDL version 8.0 or
 higher due to its use of !NULL. Note that it is possible to use of an
 externally defined NNLS-implementation. See the docs for details. The
-open source IDL-replacement GDL might be compatible with the suite,
-although this has not been tested.
+open source IDL-replacement GDL is currently incompatible with the
+suite.
 
 1)   Unpack the suite, e.g., tar xvaf AmesPAHdbIDLSuite.
 
