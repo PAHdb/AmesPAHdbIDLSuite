@@ -1,5 +1,10 @@
 CHANGELOG
-
++- 11-09-2020
+   Fix formatting strings to properly display 4-digit UIDs in
+   AmesPAHdbIDLSuite_Transitions__define.pro.
++- 09-04-202
+   Remove extra comma labels when plotting structures PLOT in
+   AmesPAHdbIDLSuite_fitted_spectrum__define.pro.
 +- 10-02-2020
    Make sure to remove continuum when calculating norm and chi-squared
    in AmesPAHdbIDLSuite_Fitted_Spectrum__define.pro

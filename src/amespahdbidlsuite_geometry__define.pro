@@ -215,7 +215,7 @@ FUNCTION AmesPAHdbIDLSuite_Geometry::Plot,UID,NoErase=NoErase,Resolution=Resolut
 
         img_3D[2,*,*] = b[img_byte]
 
-        WRITE_PNG,STRING(FORMAT='(A0,"_UID",I03,".png")', ID),OBJ_CLASS(self),img_3D
+        WRITE_PNG,STRING(FORMAT='(A0,"_UID",I04,".png")', ID),OBJ_CLASS(self),img_3D
      ENDIF
 
      SET_PLOT,_d

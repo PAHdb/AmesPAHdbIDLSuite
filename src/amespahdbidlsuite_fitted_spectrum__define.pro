@@ -25,6 +25,9 @@
 ; :History:
 ;   Changes::
 ;
+;     09-04-202
+;     Remove extra comma labels when plotting structures PLOT.
+;     Christiaan Boersma.
 ;     02-10-2020
 ;     Make sure to remove continuum when calculating norm and
 ;     chi-squared. Christiaan Boersma.
@@ -140,7 +143,7 @@ PRO AmesPAHdbIDLSuite_Fitted_Spectrum::Plot,DistributionSize=DistributionSize,Re
 
      idx = ULINDGEN((*self.database).sizes.nspecies, self.nuids)
 
-     sel =  WHERE((*self.database).data.species[idx MOD (*self.database).sizes.nspecies].uid EQ (*self.uids)[idx / (*self.database).sizes.nspecies]) MOD (*self.database).sizes.nspecies
+     sel = WHERE((*self.database).data.species[idx MOD (*self.database).sizes.nspecies].uid EQ (*self.uids)[idx / (*self.database).sizes.nspecies]) MOD (*self.database).sizes.nspecies
 
      s = OBJ_NEW('AmesPAHdbIDLSuite_Species', Data=(*self.database).data.species[sel], $
                                               UIDs=*self.uids)
@@ -199,7 +202,7 @@ PRO AmesPAHdbIDLSuite_Fitted_Spectrum::Plot,DistributionSize=DistributionSize,Re
 
            TV,img,x,y,XSIZE=!D.X_PX_CM*2.54,YSIZE=!D.Y_PX_CM*2.54,/TRUE,/DEVICE
 
-           XYOUTS,x+1.27*!D.X_PX_CM,y+!D.Y_PX_CM*0.38,STRING(FORMAT='(A0,"(a:",F4.1,",%;f:",F4.1,"%)")',f[i],a_perc[i],f_perc[i]),ALIGNMENT=0.5,/DEVICE,CHARSIZE=0.5
+           XYOUTS,x+1.27*!D.X_PX_CM,y+!D.Y_PX_CM*0.38,STRING(FORMAT='(A0,"(a:",F4.1,"%;f:",F4.1,"%)")',f[i],a_perc[i],f_perc[i]),ALIGNMENT=0.5,/DEVICE,CHARSIZE=0.5
         ENDELSE
      ENDFOR
 
