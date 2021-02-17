@@ -39,6 +39,8 @@
 ; :History:
 ;   Changes::
 ;
+;     10-05-2020
+;     Fix typo in ExtendDatabase. Christiaan Boersma
 ;     11-15-2019
 ;     Check the state of parsing an XML-file in PARSEFILE, which
 ;     avoids caching invalid data. Christiaan Boersma.
@@ -1327,7 +1329,7 @@ PRO AmesPAHdbIDLSuite::ExtendDatabase,Species=Species,Comments=Comments,Referenc
   g = (*self.pahdb).data.geometries
   IF KEYWORD_SET(Geometries) THEN  g = [g, Geometries]
   l = (*self.pahdb).data.laboratory
-  IF KEYWORD_SET(Laboratory) THEN  r = [r, Laboratory]
+  IF KEYWORD_SET(Laboratory) THEN  l = [l, Laboratory]
 
   (*self.pahdb) = {filename:(*self.pahdb).filename, $
                    type:(*self.pahdb).type, $

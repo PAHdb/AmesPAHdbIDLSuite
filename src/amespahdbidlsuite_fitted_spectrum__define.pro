@@ -25,7 +25,10 @@
 ; :History:
 ;   Changes::
 ;
-;     09-04-202
+;     02-17-2021
+;     Overload Intersect to ensure weights are also 
+;     intersected. Christiaan Boersma.
+;     09-04-2020
 ;     Remove extra comma labels when plotting structures PLOT.
 ;     Christiaan Boersma.
 ;     02-10-2020
@@ -778,6 +781,41 @@ FUNCTION AmesPAHdbIDLSuite_Fitted_Spectrum::Select,selector,property,Count
   Count = 0
 
   RETURN,0
+END
+
+;+
+; Updates Data and Weigths to the Intersection with UIDs
+;
+; :Params:
+;   UIDs: in, required, type="long or long array"
+;     UIDs to consider for Difference
+;   Count: out, optional, type=long
+;     Number of UIDs
+;
+; :Categories:
+;   SET OPERATIONS
+;
+; :Private:
+;-
+PRO AmesPAHdbIDLSuite_Fitted_Spectrum::Intersect,UIDs,Count
+
+  COMPILE_OPT IDL2
+
+  ON_ERROR,2
+
+  self->AmesPAHdbIDLSuite_Data::Intersect,UIDs,Count
+
+  IF Count EQ 0 THEN RETURN
+
+  nuids = N_ELEMENTS(UIDs)
+
+  nweights = N_ELEMENTS(*self.weights)
+
+  idx = ULINDGEN(nweights, nuids)
+
+  select = WHERE((*self.weights)[idx MOD nweights].uid EQ UIDs[idx / nweights], nselect) MOD nweights
+
+  *self.weights = (*self.weights)[select]
 END
 
 ;+

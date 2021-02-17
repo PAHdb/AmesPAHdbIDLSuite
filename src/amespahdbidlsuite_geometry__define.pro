@@ -25,6 +25,8 @@
 ; :History:
 ;   Changes::
 ;
+;     29-02-2021
+;     Saving PNG-files now works for species with UIDs larger than 999.
 ;     10-10-2017
 ;     Refactored and now using LA_TRIQL and LA_TRIRED instead of TRIQL
 ;     and TRIRED in DIAGONALIZE. Christiaan Boersma.
@@ -433,7 +435,7 @@ FUNCTION AmesPAHdbIDLSuite_Geometry::Structure,UID,Background=Background,Save=Sa
         ENDIF
      ENDIF
 
-     WRITE_PNG,STRING(FORMAT='(I03,".png")', UID),image
+     WRITE_PNG,STRING(FORMAT='(I04,".png")', UID),image
   ENDIF
 
   OBJ_DESTROY,[grBuffer, grView, grImage]

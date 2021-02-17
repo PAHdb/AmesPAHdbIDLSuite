@@ -1,10 +1,18 @@
 CHANGELOG
++- 02-17-2021
+   Overload Intersect to ensure weights are also intersected in 
+   AmesPAHdbIDLSuite_fitted_spectrum__define.pro
 +- 11-09-2020
    Fix formatting strings to properly display 4-digit UIDs in
    AmesPAHdbIDLSuite_Transitions__define.pro.
-+- 09-04-202
++- 29-02-2021
+   Saving PNG-files now works for species with UIDs larger than 999 in
+   AmesPAHdbIDLSuite_Geometry__define.pro
++- 09-04-2020
    Remove extra comma labels when plotting structures PLOT in
    AmesPAHdbIDLSuite_fitted_spectrum__define.pro.
++- 10-05-2020
+   Fix typo in ExtendDatabase in AmesPAHdbIDLSuite__define.pro
 +- 10-02-2020
    Make sure to remove continuum when calculating norm and chi-squared
    in AmesPAHdbIDLSuite_Fitted_Spectrum__define.pro
