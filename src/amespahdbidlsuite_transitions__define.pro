@@ -27,6 +27,9 @@
 ; :History:
 ;   Changes::
 ;
+;     11-09-2020
+;     Fix formatting strings to properly display 4-digit UIDs.
+;     Christiaan Boersma
 ;     01-21-2020
 ;     Fix equations for the Drude profiles, making sure they are in
 ;     frequency-space. Christiaan Boersma
@@ -1576,8 +1579,8 @@ PRO AmesPAHdbIDLSuite_Transitions::Cascade,E,Approximate=Approximate,IDLBridge=I
 
     timer = SYSTIME(/SECONDS)
 
-    PRINT,FORMAT='("SPECIES                          :",X,I3,"/",I3)',i+1,self.nuids
-    PRINT,FORMAT='("UID                              :",X,I3)',(*self.uids)[i]
+    PRINT,FORMAT='("SPECIES                          :",X,I4,"/",I4)',i+1,self.nuids
+    PRINT,FORMAT='("UID                              :",X,I4)',(*self.uids)[i]
 
     IF KEYWORD_SET(Approximate) OR KEYWORD_SET(Star) OR KEYWORD_SET(ISRF) THEN BEGIN
 
@@ -1815,8 +1818,8 @@ PRO AmesPAHdbIDLSuite_Transitions::CalculatedTemperature,E,Approximate=Approxima
 
    timer = SYSTIME(/SECONDS)
 
-   PRINT,FORMAT='("SPECIES                          :",X,I3,"/",I3)',i+1,self.nuids
-   PRINT,FORMAT='("UID                              :",X,I3)',(*self.uids)[i]
+   PRINT,FORMAT='("SPECIES                          :",X,I4,"/",I4)',i+1,self.nuids
+   PRINT,FORMAT='("UID                              :",X,I4)',(*self.uids)[i]
 
     IF KEYWORD_SET(Approximate) OR KEYWORD_SET(Star) OR KEYWORD_SET(ISRF) THEN BEGIN
 

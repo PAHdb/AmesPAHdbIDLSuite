@@ -55,7 +55,7 @@
               Does the <i>AmesPAHdbIDLSuite</i> work with GDL?
             </p>
             <p class="answer">
-              The <i>AmesPAHdbIDLSuite</i> is currently incompatible with <a href="http://gnudatalanguage.sourceforge.net">GDL</a>, the open source alternative to IDL.
+              The <i>AmesPAHdbIDLSuite</i> <b>might</b> is currently incompatible with <a href="http://gnudatalanguage.sourceforge.net">GDL</a>, the open source alternative to IDL.
             </p>
           </li>
 	  <li>
@@ -91,14 +91,14 @@
             </p>
           </li>
           <li>
-          <p class="question">
-            I am receiving an invalid multi-byte sequence error, what can I do?
-          </p>
-          <p class="answer">
-            It has been reported that on older versions of some operating systems IDL's XML-parser is unable to properly handle the utf-8 characters embedded in the database XML-file. One solution is to move to a more modern version of your operation system. Another possible solution is converting the file to use a different encoding with the following command.
-            <pre><code class="language-bash">xmllint --encode latin1 --output converted.xml file_with_UTF-8.xml</code></pre>
-            Note that characters that cannot be converted are simply removed.
-          </p>
+            <p class="question">
+              I am receiving an invalid multi-byte sequence error, what can I do?
+            </p>
+            <p class="answer">
+              It has been reported that on older versions of some operating systems IDL's XML-parser is unable to properly handle the utf-8 characters embedded in the database XML-file. One solution is to move to a more modern version of your operation system. Another possible solution is converting the file to use a different encoding with the following command.
+              <pre><code class="language-bash">xmllint --encode latin1 --output converted.xml file_with_UTF-8.xml</code></pre>
+              Note that characters that cannot be converted are simply removed.
+            </p>
           </li>
         </ul>
 
