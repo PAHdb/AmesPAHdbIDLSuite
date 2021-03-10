@@ -25,6 +25,9 @@
 ; :History:
 ;   Changes::
 ;
+;     10-03-2021
+;     Added DESCRIPTION to avoid crash on calling HELP. Christiaan
+;     Boersma.
 ;     29-02-2021
 ;     Saving PNG-files now works for species with UIDs larger than 999.
 ;     10-10-2017
@@ -39,6 +42,28 @@
 ;     02-01-2015
 ;     First version of the file. Christiaan Boersma.
 ;-
+;+
+;  Output geometry description.
+;
+;  :Params:
+;     Str: out, optional, type="string array"
+;       Ouput to Str
+;
+; :Categories:
+;   INFORMATIVE
+;-
+PRO AmesPAHdbIDLSuite_Geometry::Description,Str
+
+  COMPILE_OPT IDL2
+
+  ON_ERROR,2
+
+  Str = ""
+
+  IF N_PARAMS() GT 0 THEN RETURN
+
+  PRINT,""
+END
 
 ;+
 ;  Plot the chemical structure.

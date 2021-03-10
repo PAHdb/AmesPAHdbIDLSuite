@@ -1,4 +1,7 @@
 CHANGELOG
++- 10-03-2021
+    Added Description to avoid crash on calling HELP in
+    AmesPAHdbIDLSuite_Geometry__define.pro
 +- 02-17-2021
    Overload Intersect to ensure weights are also intersected in 
    AmesPAHdbIDLSuite_fitted_spectrum__define.pro
