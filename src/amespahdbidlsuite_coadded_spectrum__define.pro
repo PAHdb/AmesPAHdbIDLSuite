@@ -23,6 +23,8 @@
 ; :History:
 ;   Changes::
 ;
+;     04-30-2021
+;     Remove duplicated SET and CLEANUP methods. Christiaan Boersma.
 ;     12-13-2018
 ;     Now writing files as IPAC-tables. Christiaan Boersma.
 ;     05-03-2015
@@ -259,101 +261,6 @@ END
 
 ;+
 ; Populates the AmesPAHdbIDLSuite_CoAdded_Spectrum-instance.
-;
-; :Params:
-;   Struct: in, optional, type=struct
-;     Data structure
-;
-; :Keywords:
-;   Type: in, optional, type=string
-;     Type of Data
-;   Version: in, optional, type=string
-;    Versioning information
-;   Data: in, optional, type=struct
-;     Data structure
-;   PAHdb: in, optional, type=pointer
-;     Pointer to parsed database file
-;   Uids: in, optional, type="long array (1D)"
-;     UIDs in Data
-;   Model: in, optional, type=string
-;     References
-;   Units: in, optional, type="AmesPAHdb_Units_S struct"
-;     Comments
-;   Shift: in, optional, type=float
-;     Shift
-;   Grid: in, optional, type="float array"
-;     Grid
-;   Profile: in, optional, type=string
-;     Profile
-;   FWHM: in, optional, type=float
-;     FWHM
-;   Weights: in, optional, type=struct
-;     Weights
-;   Averaged: in, optional, type=int
-;     Whether the spectra were averaged
-;
-; :Categories:
-;   SET/GET
-;-
-PRO AmesPAHdbIDLSuite_Coadded_Spectrum::Set,Struct,Type=Type,Version=Version,Data=Data,PAHdb=PAHdb,Uids=Uids,Model=Model,Units=Units,Shift=Shift,Grid=Grid,Profile=Profile,FWHM=FWHM,Weights=Weights,Averaged=Averaged
-
-  IF N_PARAMS() GT 0 THEN BEGIN
-
-     tags = TAG_NAMES(Struct)
-
-     tag = WHERE(tags EQ 'TYPE', ntype)
-
-     IF ntype EQ 1 THEN BEGIN
-
-        IF Struct.(tag) EQ OBJ_CLASS(self)+'_S' THEN BEGIN
-
-           tag = WHERE(tags EQ 'WEIGHTS', nweights)
-
-           IF NOT KEYWORD_SET(Weights) AND nweights EQ 1 THEN BEGIN
-
-              IF PTR_VALID(weights) THEN PTR_FREE,self.weights
-
-              self.weights = PTR_NEW(Struct.(tag))
-           ENDIF
-
-           IF NOT KEYWORD_SET(Averaged) THEN self.averaged = Struct.averaged
-        ENDIF
-
-        self->AmesPAHdbIDLSuite_Spectrum::Set,Struct,Type=Type,Version=Version,Data=Data,PAHdb=PAHdb,Uids=Uids,Model=Model,Units=Units,Shift=Shift,Grid=Grid,Profile=Profile,FWHM=FWHM
-     ENDIF
-  ENDIF ELSE self->AmesPAHdbIDLSuite_Spectrum::Set,Type=Type,Version=Version,Data=Data,PAHdb=PAHdb,Uids=Uids,Model=Model,Units=Units,Shift=Shift,Grid=Grid,Profile=Profile,FWHM=FWHM
-
-  IF KEYWORD_SET(Weights) THEN BEGIN
-
-     IF PTR_VALID(self.weights) THEN PTR_FREE,self.weights
-
-     self.weights = PTR_NEW(Weights)
-  ENDIF
-
-  IF KEYWORD_SET(Averaged) THEN self.averaged = Averaged
-END
-
-;+
-; Clean-up an AmesPAHdbIDLSuite_Coadded_Spectrum-instance
-;
-; :Categories:
-;   CLASS
-;
-; :Private:
-;-
-PRO AmesPAHdbIDLSuite_Coadded_Spectrum::Cleanup
-
-  COMPILE_OPT IDL2
-
-  ON_ERROR,2
-
-  IF PTR_VALID(self.weights) THEN PTR_FREE,self.weights
-
-  self->AmesPAHdbIDLSuite_Spectrum::Cleanup
-END
-
-;+
-; Create an AmesPAHdbIDLSuite_Coadded_Spectrum-instance
 ;
 ; :Returns:
 ;   AmesPAHdbIDLSuite_Coadded_Spectrum-instance

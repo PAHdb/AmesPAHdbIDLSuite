@@ -1,16 +1,34 @@
 CHANGELOG
++- 04-30-2021
+   Added GETERROR in
+   AmesPAHdbIDLSuite_Fitted_Spectrum__define.pro. Fix parsing
+   of ASCII-files, accommodate reading IPAC tables, and Sort
+   observation upon unit conversion in 
+   AmesPAHdbIDLSuite_Observation__define. Updated spectrum of
+   NGC7023 used in examples to include uncertainties.
+   Refactored FIT to make use of matrix operation in
+   AmesPAHdbIDLSuite_Spectrum__define. Added example showing how
+   to employ a Monte Carlo approach for fitting to derive uncertainties.
++- 04-30-2021
+   Remove duplicated Coaded_Spectrum::SET and
+   Coaded_Spectrum::CLEANUP methods in
+   AmesPAHdbIDLSuite_Spectrum__define.pro
++- 03-31-2021
+   Intersect now calls Spectrum::INTERSECT instead of
+   Data::INTERSECT in
+   AmesPAHdbIDLSuite_fitted_spectrum__define.pro. 
 +- 10-03-2021
-    Added Description to avoid crash on calling HELP in
-    AmesPAHdbIDLSuite_Geometry__define.pro
+   Added Description to avoid crash on calling HELP in
+   AmesPAHdbIDLSuite_Geometry__define.pro
 +- 02-17-2021
    Overload Intersect to ensure weights are also intersected in 
-   AmesPAHdbIDLSuite_fitted_spectrum__define.pro
+   AmesPAHdbIDLSuite_fitted_spectrum__define.pro.
 +- 11-09-2020
    Fix formatting strings to properly display 4-digit UIDs in
    AmesPAHdbIDLSuite_Transitions__define.pro.
 +- 29-02-2021
    Saving PNG-files now works for species with UIDs larger than 999 in
-   AmesPAHdbIDLSuite_Geometry__define.pro
+   AmesPAHdbIDLSuite_Geometry__define.pro.
 +- 09-04-2020
    Remove extra comma labels when plotting structures PLOT in
    AmesPAHdbIDLSuite_fitted_spectrum__define.pro.
