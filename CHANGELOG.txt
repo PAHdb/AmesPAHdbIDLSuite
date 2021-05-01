@@ -1,4 +1,7 @@
 CHANGELOG
++- 05-01-2021
+   Expanded example using Monte Carlo approah for fitting to derive
+   uncertainties.
 +- 04-30-2021
    Added GETERROR in
    AmesPAHdbIDLSuite_Fitted_Spectrum__define.pro. Fix parsing

@@ -39,7 +39,7 @@
 PRO MC_FIT_A_SPECTRUM
 
   ; the Spitzer IRS/SL 10 - 15 micron spectrum of NGC7023
-  file = '/Users/boersma/Downloads/AOR4190720.txt' ;;'ngc7023.dat'
+  file = 'ngc7023.dat'
 
   ; read observations into AmesPAHdbIDLSuite_Observation
   observation = OBJ_NEW('AmesPAHdbIDLSuite_Observation', $
@@ -83,6 +83,8 @@ PRO MC_FIT_A_SPECTRUM
   fit = spectrum->Fit(observation)
 
   ; store results
+  fits = fit->getFit()
+
   results = fit->getBreakdown()
 
   errors = fit->getError()
@@ -99,19 +101,23 @@ PRO MC_FIT_A_SPECTRUM
   OBJ_DESTROY,[observation]
 
   ; Monte Carlo runs
+  nruns = 1024
+
   ny = N_ELEMENTS(observation_s.data.y)
 
-  FOR run = 0L, 1023 DO BEGIN
+  FOR run = 0L, nruns - 1L DO BEGIN
 
     ; permutate spectrum
     y = observation_s.data.y - $
         observation_s.data.continuum + $
-        observation_s.data.ystdev * (2D * RANDOMU(seed, ny) - 1D)
+        observation_s.data.ystdev * (2D * RANDOMU(seed, ny, /DOUBLE) - 1D)
 
     ; fit the spectrum using NNLS
     fit = spectrum->Fit(y)
 
     ; store results
+    fits = [fits, fit->getFit()]
+
     results = [results, fit->getBreakdown()]
 
     errors = [errors, fit->getError()]
@@ -134,26 +140,33 @@ PRO MC_FIT_A_SPECTRUM
   FOR i = 0, ntags - 1 DO $
     PRINT,FORMAT='(A8,X,F6.2,X,F6.2,X,F6.2,X,F6.2,X,F6.3)', $
           tags[i],MIN(results.(i)),MAX(results.(i)),MEDIAN(results.(i)), MEAN(results.(i)),STDDEV(results.(i))
-  PRINT,FORMAT='(A8,X,F6.2,X,F6.2,X,F6.2,X,F6.2,X,F6.3)','ERROR',MIN(errors),MAX(errors),MEDIAN(errors),MEAN(errors),STDEV(errors)
+  PRINT,FORMAT='(A8,X,F6.2,X,F6.2,X,F6.2,X,F6.2,X,F6.3)','ERROR',MIN(errors),MAX(errors),MEDIAN(errors),MEAN(errors),STDDEV(errors)
 
   ; display results for charge
   PLOT,1D4/observation_s.data.x,observation_s.data.y-observation_s.data.continuum,XTITLE='wavelength [micron]',YTITLE='surface brightness [MJy/sr]'
 
-  classes = REFORM(classes, ny, 1025)
+  fits = REFORM(fits, ny, nruns + 1)
+
+  m_fits = MOMENT(fits, DIMENSION=2, MAXMOMENT=2)
+  ERRPLOT,1D4/observation_s.data.x,m_fits[*,0]-SQRT(m_fits[*,1]),m_fits[*,0]+SQRT(m_fits[*,1]),THICK=4
+  OPLOT,1D4/observation_s.data.x,m_fits[*,0],THICK=4
+  XYOUTS,0.85,0.80,'FIT',/NORMAL,/ALIGN
+
+  classes = REFORM(classes, ny, nruns + 1)
 
   m_anion = MOMENT(classes.anion, DIMENSION=2, MAXMOMENT=2)
   ERRPLOT,1D4/observation_s.data.x,m_anion[*,0]-SQRT(m_anion[*,1]),m_anion[*,0]+SQRT(m_anion[*,1]),COLOR=2
   OPLOT,1D4/observation_s.data.x,m_anion[*,0],COLOR=2
-  XYOUTS,0.8,0.8,'ANION',COLOR=2,/NORMAL,/ALIGN
+  XYOUTS,0.8,0.75,'ANION',COLOR=2,/NORMAL,/ALIGN
 
   m_neutral = MOMENT(classes.neutral, DIMENSION=2, MAXMOMENT=2)
   ERRPLOT,1D4/observation_s.data.x,m_neutral[*,0]-SQRT(m_neutral[*,1]),m_neutral[*,0]+SQRT(m_neutral[*,1]),COLOR=3
   OPLOT,1D4/observation_s.data.x,m_neutral[*,0],COLOR=3
-  XYOUTS,0.8,0.75,'NEUTRAL',COLOR=3,/NORMAL,/ALIGN
+  XYOUTS,0.8,0.70,'NEUTRAL',COLOR=3,/NORMAL,/ALIGN
 
   m_cation = MOMENT(classes.cation, DIMENSION=2, MAXMOMENT=2)
   ERRPLOT,1D4/observation_s.data.x,m_cation[*,0]-SQRT(m_cation[*,1]),m_cation[*,0]+SQRT(m_cation[*,1]),COLOR=4
   OPLOT,1D4/observation_s.data.x,m_cation[*,0],COLOR=4
-  XYOUTS,0.8,0.70,'CATION',COLOR=4,/NORMAL,/ALIGN
+  XYOUTS,0.8,0.65,'CATION',COLOR=4,/NORMAL,/ALIGN
 
 END
