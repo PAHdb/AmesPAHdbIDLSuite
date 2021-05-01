@@ -25,6 +25,9 @@
 ; :History:
 ;   Changes::
 ;
+;     04-30-2021
+;     Refactored FIT to make use of matrix operation.
+;     Christiaan Boersma.
 ;     09-19-2017
 ;     Fixed !NULL value in return for FWHM in FIT.
 ;     06-27-2016
@@ -422,16 +425,7 @@ FUNCTION AmesPAHdbIDLSuite_Spectrum::Fit,observation,error,EXTERNAL_NNLS=externa
 
   ny = N_ELEMENTS(observation_s.data.y)
 
-  nparam = self.nuids
-
-  matrix = DBLARR(nparam, ny, /NOZERO)
-
-  FOR i = 0L, nparam - 1 DO BEGIN
-
-    select = WHERE((*self.data).uid EQ (*self.uids)[i])
-
-    matrix[i, *] = (*self.data)[select].intensity
-  ENDFOR
+  matrix = TRANSPOSE(REFORM((*self.data).intensity, ny, self.nuids))
 
   m = matrix
 
@@ -446,7 +440,7 @@ FUNCTION AmesPAHdbIDLSuite_Spectrum::Fit,observation,error,EXTERNAL_NNLS=externa
 
      b /= observation_s.data.ystdev
 
-     FOR i = 0L, nparam - 1 DO m[i, *] /= observation_s.data.ystdev
+     m /= TRANSPOSE(REBIN(observation_s.data.ystdev, ny, self.nuids))
 
      method = 'NNLC'
   ENDIF ELSE BEGIN
@@ -480,12 +474,12 @@ FUNCTION AmesPAHdbIDLSuite_Spectrum::Fit,observation,error,EXTERNAL_NNLS=externa
      PRINT,"                   USING EXTERNAL NNLS                   "
      PRINT,"========================================================="
      PRINT
-     weights = DBLARR(nparam, /NOZERO)
+     weights = DBLARR(self.nuids, /NOZERO)
      enorm = 0D
-     w = DBLARR(nparam)
-     indx = LONARR(nparam)
+     w = DBLARR(self.nuids)
+     indx = LONARR(self.nuids)
      mode = 0
-     NNLS,m,ny,nparam,b,weights,enorm,w,indx,mode
+     NNLS,m,ny,self.nuids,b,weights,enorm,w,indx,mode
   ENDELSE
 
   valid = WHERE(weights GT 0, nvalid)

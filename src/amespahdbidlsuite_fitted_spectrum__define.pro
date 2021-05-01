@@ -25,6 +25,11 @@
 ; :History:
 ;   Changes::
 ;
+;     04-30-2021
+;     Added GETERROR. Christiaan Boersma.
+;     03-31-2021
+;     Intersect now calls Spectrum::Intersect instead of
+;     Data::Intersect. Christiaan Boersma.
 ;     02-17-2021
 ;     Overload Intersect to ensure weights are also 
 ;     intersected. Christiaan Boersma.
@@ -803,7 +808,7 @@ PRO AmesPAHdbIDLSuite_Fitted_Spectrum::Intersect,UIDs,Count
 
   ON_ERROR,2
 
-  self->AmesPAHdbIDLSuite_Data::Intersect,UIDs,Count
+  self->AmesPAHdbIDLSuite_Spectrum::Intersect,UIDs,Count
 
   IF Count EQ 0 THEN RETURN
 
@@ -1185,6 +1190,26 @@ FUNCTION AmesPAHdbIDLSuite_Fitted_Spectrum::GetChiSquared
   IF NOT PTR_VALID(self.observation) THEN RETURN,-1
 
   RETURN,TOTAL(((*self.observation).data.y-(*self.observation).data.continuum-self->getFit())^2 / (*self.observation).data.ystdev, /NAN)
+END
+
+;+
+; Retrieves the error for the fit.
+;
+; :Returns:
+;   float
+;
+; :Categories:
+;   SET/GET
+;-
+FUNCTION AmesPAHdbIDLSuite_Fitted_Spectrum::GetError
+
+  COMPILE_OPT IDL2
+
+  ON_ERROR,2
+
+  RETURN,INT_TABULATED(*self.grid, ABS(self->getResidual())) / $
+         INT_TABULATED(*self.grid, $
+                      (*self.observation).data.y-(*self.observation).data.continuum)
 END
 
 ;+

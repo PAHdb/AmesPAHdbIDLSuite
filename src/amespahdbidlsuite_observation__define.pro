@@ -25,6 +25,9 @@
 ; :History:
 ;   Changes::
 ;
+;     04-30-2021
+;     Fix parsing of ASCII-files and accommondate IPAC tables.
+;     Sort data when chaning units. Christiaan Boersma.
 ;     07-07-2016
 ;     Removed extraneous spaces after last column when writing to file
 ;     in WRITE. Now using TEMPORARY where appropriate. Christiaan Boersma.
@@ -257,6 +260,14 @@ PRO AmesPAHdbIDLSuite_Observation::AbscissaUnitsTo,xunit
      4: (*self.data).x = 1D4 * TEMPORARY((*self.data).x)
   ENDCASE
 
+
+  ; sort
+
+  srt = SORT((*self.data).x)
+
+  (*self.data) = (*self.data)[srt]
+
+  ; update units
 
   self.units.abscissa.unit = xunit
 
@@ -591,7 +602,9 @@ PRO AmesPAHdbIDLSuite_Observation::ReadFromTextFile,Units=Units
 
      IF STRLEN(line) EQ 0 THEN CONTINUE
 
-     IF STRMID(0, 1) EQ '#' THEN CONTINUE
+     IF STRMID(line, 0, 1) EQ '#' OR $
+        STRMID(line, 0, 1) EQ '\' OR $
+        STRMID(line, 0, 1) EQ '|' THEN CONTINUE
 
      strs = STRSPLIT(line, /EXTRACT, COUNT=nstrs)
 
@@ -609,11 +622,11 @@ PRO AmesPAHdbIDLSuite_Observation::ReadFromTextFile,Units=Units
 
            IF nstrs GT 3 THEN BEGIN
 
-              d.yerr = DOUBLE(strs[3])
+              d.ystdev = DOUBLE(strs[3])
 
               IF nstrs GT 4 THEN BEGIN
 
-                 d.xerr = DOUBLE(strs[4])
+                 d.xstdev = DOUBLE(strs[4])
               ENDIF
            ENDIF
         ENDIF
