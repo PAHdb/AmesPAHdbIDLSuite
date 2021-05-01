@@ -2,10 +2,10 @@
 
 ;+
 ;
-; This is an example of fitting an astronomical spectrum and should
-; confirm that the AmesPAHdbIDLSuite has been correctly installed. The
-; source code is annotated to guide users and developers in the inner
-; workings of the suite.
+; This is an example of fitting an astronomical spectrum using a Monte Carlo
+; approachand should confirm that the AmesPAHdbIDLSuite has been correctly
+; installed. The source code is annotated to guide users and developers in
+; the inner workings of the suite.
 ;
 ; Updated versions of the NASA Ames PAH IR Spectroscopic Database and
 ; more information can be found at: `www.astrochemistry.org/pahdb <https://www.astrochemistry.org/pahdb>`.

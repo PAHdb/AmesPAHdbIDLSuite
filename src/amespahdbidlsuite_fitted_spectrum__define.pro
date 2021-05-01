@@ -1196,7 +1196,7 @@ END
 ; Retrieves the error for the fit.
 ;
 ; :Returns:
-;   string
+;   float
 ;
 ; :Categories:
 ;   SET/GET
