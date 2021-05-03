@@ -3,7 +3,7 @@
 ;+
 ;
 ; This is an example of fitting an astronomical spectrum using a Monte Carlo
-; approachand should confirm that the AmesPAHdbIDLSuite has been correctly
+; approach and should confirm that the AmesPAHdbIDLSuite has been correctly
 ; installed. The source code is annotated to guide users and developers in
 ; the inner workings of the suite.
 ;

@@ -28,7 +28,8 @@
 ;   Changes::
 ;
 ;     05-02-2021
-;     Changed formatting strings. Christiaan Boersma.
+;     Changed formatting strings to avoid glitch. Christiaan
+;     Boersma.
 ;     11-09-2020
 ;     Fix formatting strings to properly display 4-digit UIDs.
 ;     Christiaan Boersma
