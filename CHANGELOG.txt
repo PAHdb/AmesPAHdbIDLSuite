@@ -1,6 +1,11 @@
 CHANGELOG
++- 05-02-2021
+   Added NOTICE-keyword to FIT in
+   AmesPAHdbIDLSuite_Spectrum__define.pro. Changed formatting strings
+   to avoid glitch in AmesPAHdbIDLSuite_Transitions__define.pro.
+   Extended Monte Carlo fitting example.
 +- 05-01-2021
-   Expanded example using Monte Carlo approah for fitting to derive
+   Expanded example using Monte Carlo approach for fitting to derive
    uncertainties.
 +- 04-30-2021
    Added GETERROR in
@@ -232,7 +237,7 @@ CHANGELOG
    AmesPAHdbIDLSuite_Observations__define.pro.
 -+ 04-24-2015
    Refactored GETRESIDUAL and GETBREAKDOWN to use GETFIT and other
-   small fixes in AmesPAHdbIDLSuite__Fitted_Spectrum__define.pro.
+   small fixes in AmesPAHdbIDLSuite_Fitted_Spectrum__define.pro.
 -+ 04-21-2015
    Updated CASCADE_IDLBRIDGE and
    AMESPAHDBIDLSUITE_TRANSITIONS__IDLBRIDGE_CALLBACK progress
@@ -242,10 +247,10 @@ CHANGELOG
    AmesPAHdbIDLSuite__define.pro. Removed duplicate charge tokens from
    TOKENIZEWORDS in AmesPAHdbIDLSuite__define.pro.
 -+ 04-15-2015
-    Refactored CONVOLE in AmesPAHdbIDLSuite__Transitions.pro.
+    Refactored CONVOLE in AmesPAHdbIDLSuite_Transitions_define.pro.
 -+ 04-14-2015
    Changed id to uid and xmin|xmax to DOUBLE in CONVOLVE in
-   AmesPAHdbIDLSutie__Transitions.pro.
+   AmesPAHdbIDLSutie_Transitions__define.pro.
 -+ 04-10-2015
    There is no energy-tag in AmesPAHdbIDLSuite_XMLParser__define.pro.
 -+ 04-08-2015

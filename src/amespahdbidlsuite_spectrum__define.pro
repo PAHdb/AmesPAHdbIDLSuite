@@ -25,6 +25,8 @@
 ; :History:
 ;   Changes::
 ;
+;     05-02-2021
+;     Added NOTICE-keyword to FIT. Christiaan Boersma.
 ;     04-30-2021
 ;     Refactored FIT to make use of matrix operation.
 ;     Christiaan Boersma.
@@ -362,16 +364,20 @@ END
 ;
 ;  :Keywords:
 ;    EXTERNAL_NNLS: in, optional, type=int
-;     Whether to use a
+;     Whether to use an externally defined NNLS-routine.
+;    NOTICE: in, optional, type=int, default=1
+;     Whether to show notices
 ;
 ; :Categories:
 ;   FITTING
 ;-
-FUNCTION AmesPAHdbIDLSuite_Spectrum::Fit,observation,error,EXTERNAL_NNLS=external_nnls
+FUNCTION AmesPAHdbIDLSuite_Spectrum::Fit,observation,error,EXTERNAL_NNLS=external_nnls,Notice=Notice
 
   COMPILE_OPT IDL2
 
   ON_ERROR,2
+
+  IF SIZE(Notice, /TYPE) EQ 0 THEN Notice = 1
 
   type = SIZE(observation, /STRUCTURE)
 
@@ -432,11 +438,14 @@ FUNCTION AmesPAHdbIDLSuite_Spectrum::Fit,observation,error,EXTERNAL_NNLS=externa
   b = observation_s.data.y - observation_s.data.continuum
 
   IF has_error THEN BEGIN
-     PRINT
-     PRINT,"========================================================="
-     PRINT,"                     DOING NNLC                          "
-     PRINT,"========================================================="
-     PRINT
+
+     IF Notice THEN BEGIN
+       PRINT
+       PRINT,"========================================================="
+       PRINT,"                     DOING NNLC                          "
+       PRINT,"========================================================="
+       PRINT
+     ENDIF
 
      b /= observation_s.data.ystdev
 
@@ -444,11 +453,13 @@ FUNCTION AmesPAHdbIDLSuite_Spectrum::Fit,observation,error,EXTERNAL_NNLS=externa
 
      method = 'NNLC'
   ENDIF ELSE BEGIN
-     PRINT
-     PRINT,"========================================================="
-     PRINT,"                     DOING NNLS                          "
-     PRINT,"========================================================="
-     PRINT
+     IF Notice THEN BEGIN
+       PRINT
+       PRINT,"========================================================="
+       PRINT,"                     DOING NNLS                          "
+       PRINT,"========================================================="
+       PRINT
+     ENDIF
 
      method = 'NNLS'
   ENDELSE
@@ -469,11 +480,13 @@ FUNCTION AmesPAHdbIDLSuite_Spectrum::Fit,observation,error,EXTERNAL_NNLS=externa
      self.state = 0
      RETURN,OBJ_NEW()
   ENDIF ELSE BEGIN
-     PRINT
-     PRINT,"========================================================="
-     PRINT,"                   USING EXTERNAL NNLS                   "
-     PRINT,"========================================================="
-     PRINT
+     IF Notice THEN BEGIN
+       PRINT
+       PRINT,"========================================================="
+       PRINT,"                   USING EXTERNAL NNLS                   "
+       PRINT,"========================================================="
+       PRINT
+     ENDIF
      weights = DBLARR(self.nuids, /NOZERO)
      enorm = 0D
      w = DBLARR(self.nuids)
@@ -494,16 +507,18 @@ FUNCTION AmesPAHdbIDLSuite_Spectrum::Fit,observation,error,EXTERNAL_NNLS=externa
      RETURN,OBJ_NEW()
   ENDIF
 
-  PRINT
-  PRINT,"========================================================="
-  PRINT," NOTICE: PLEASE TAKE CONSIDERABLE CARE WHEN INTERPRETING "
-  PRINT," THESE RESULTS AND PUTTING THEM IN AN ASTRONOMICAL       "
-  PRINT," CONTEXT. THERE ARE MANY SUBTLETIES THAT NEED TO BE TAKEN"
-  PRINT," INTO ACCOUNT, RANGING FROM PAH SIZE, INCLUSION OF       "
-  PRINT," HETEROATOMS, ETC. TO DETAILS OF THE APPLIED EMISSION    "
-  PRINT," MODEL, BEFORE ANY THOROUGH ASSESSMENT CAN BE MADE.      "
-  PRINT,"========================================================="
-  PRINT
+  IF Notice THEN BEGIN
+    PRINT
+    PRINT,"========================================================="
+    PRINT," NOTICE: PLEASE TAKE CONSIDERABLE CARE WHEN INTERPRETING "
+    PRINT," THESE RESULTS AND PUTTING THEM IN AN ASTRONOMICAL       "
+    PRINT," CONTEXT. THERE ARE MANY SUBTLETIES THAT NEED TO BE TAKEN"
+    PRINT," INTO ACCOUNT, RANGING FROM PAH SIZE, INCLUSION OF       "
+    PRINT," HETEROATOMS, ETC. TO DETAILS OF THE APPLIED EMISSION    "
+    PRINT," MODEL, BEFORE ANY THOROUGH ASSESSMENT CAN BE MADE.      "
+    PRINT,"========================================================="
+    PRINT
+  ENDIF
 
   _weights = REPLICATE({AmesPAHdbIDLSuite_Weights_S, $
                         uid:0L, $
