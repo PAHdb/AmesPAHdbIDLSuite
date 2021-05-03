@@ -3,7 +3,7 @@
 ;+
 ;
 ; This is an example of fitting an astronomical spectrum using a Monte Carlo
-; approachand should confirm that the AmesPAHdbIDLSuite has been correctly
+; approach and should confirm that the AmesPAHdbIDLSuite has been correctly
 ; installed. The source code is annotated to guide users and developers in
 ; the inner workings of the suite.
 ;
@@ -80,7 +80,7 @@ PRO MC_FIT_A_SPECTRUM
   OBJ_DESTROY,[transitions]
 
   ; fit the spectrum using NNLC
-  fit = spectrum->Fit(observation)
+  fit = spectrum->Fit(observation, Notice=0)
 
   ; store results
   fits = fit->getFit()
@@ -107,13 +107,16 @@ PRO MC_FIT_A_SPECTRUM
 
   FOR run = 0L, nruns - 1L DO BEGIN
 
+    ; show progress
+    PRINT,FORMAT='(80("' + STRING(8B) + '"),"mc run:",X,I4,"/",I4,$)',run+1L,nruns
+
     ; permutate spectrum
     y = observation_s.data.y - $
         observation_s.data.continuum + $
         observation_s.data.ystdev * (2D * RANDOMU(seed, ny, /DOUBLE) - 1D)
 
-    ; fit the spectrum using NNLS
-    fit = spectrum->Fit(y)
+    ; fit the spectrum using NNLC
+    fit = spectrum->Fit(y, observation_s.data.ystdev, Notice=0)
 
     ; store results
     fits = [fits, fit->getFit()]
@@ -127,6 +130,10 @@ PRO MC_FIT_A_SPECTRUM
     ; clean up fit
     OBJ_DESTROY,[fit]
   ENDFOR
+
+  PRINT
+  PRINT,"done!"
+  PRINT
 
   ; clean up
   OBJ_DESTROY,[spectrum, pahdb]
@@ -143,7 +150,8 @@ PRO MC_FIT_A_SPECTRUM
   PRINT,FORMAT='(A8,X,F6.2,X,F6.2,X,F6.2,X,F6.2,X,F6.3)','ERROR',MIN(errors),MAX(errors),MEDIAN(errors),MEAN(errors),STDDEV(errors)
 
   ; display results for charge
-  PLOT,1D4/observation_s.data.x,observation_s.data.y-observation_s.data.continuum,XTITLE='wavelength [micron]',YTITLE='surface brightness [MJy/sr]'
+  PLOT,1D4/observation_s.data.x,observation_s.data.y-observation_s.data.continuum,PSYM=0,XTITLE='wavelength [micron]',YTITLE='surface brightness [MJy/sr]'
+  ERRPLOT,1D4/observation_s.data.x,observation_s.data.y-observation_s.data.continuum-observation_s.data.ystdev,observation_s.data.y-observation_s.data.continuum+observation_s.data.ystdev
 
   fits = REFORM(fits, ny, nruns + 1)
 
@@ -157,16 +165,16 @@ PRO MC_FIT_A_SPECTRUM
   m_anion = MOMENT(classes.anion, DIMENSION=2, MAXMOMENT=2)
   ERRPLOT,1D4/observation_s.data.x,m_anion[*,0]-SQRT(m_anion[*,1]),m_anion[*,0]+SQRT(m_anion[*,1]),COLOR=2
   OPLOT,1D4/observation_s.data.x,m_anion[*,0],COLOR=2
-  XYOUTS,0.8,0.75,'ANION',COLOR=2,/NORMAL,/ALIGN
+  XYOUTS,0.85,0.75,'ANION',COLOR=2,/NORMAL,/ALIGN
 
   m_neutral = MOMENT(classes.neutral, DIMENSION=2, MAXMOMENT=2)
   ERRPLOT,1D4/observation_s.data.x,m_neutral[*,0]-SQRT(m_neutral[*,1]),m_neutral[*,0]+SQRT(m_neutral[*,1]),COLOR=3
   OPLOT,1D4/observation_s.data.x,m_neutral[*,0],COLOR=3
-  XYOUTS,0.8,0.70,'NEUTRAL',COLOR=3,/NORMAL,/ALIGN
+  XYOUTS,0.85,0.70,'NEUTRAL',COLOR=3,/NORMAL,/ALIGN
 
   m_cation = MOMENT(classes.cation, DIMENSION=2, MAXMOMENT=2)
   ERRPLOT,1D4/observation_s.data.x,m_cation[*,0]-SQRT(m_cation[*,1]),m_cation[*,0]+SQRT(m_cation[*,1]),COLOR=4
   OPLOT,1D4/observation_s.data.x,m_cation[*,0],COLOR=4
-  XYOUTS,0.8,0.65,'CATION',COLOR=4,/NORMAL,/ALIGN
+  XYOUTS,0.85,0.65,'CATION',COLOR=4,/NORMAL,/ALIGN
 
 END

@@ -27,6 +27,9 @@
 ; :History:
 ;   Changes::
 ;
+;     05-02-2021
+;     Changed formatting strings to avoid glitch. Christiaan
+;     Boersma.
 ;     11-09-2020
 ;     Fix formatting strings to properly display 4-digit UIDs.
 ;     Christiaan Boersma
@@ -1136,7 +1139,7 @@ PRO AmesPAHdbIDLSuite_Transitions__IDLBridge_Callback,Status,Error,ObjRef,UserDa
      ELSE IF timer LT 86400 THEN remaining = STRING(FORMAT='(I02,"h",I02,"m",I02,"s")', timer / 3600, (timer MOD 3600) / 60, (timer MOD 3600) MOD 60) $
      ELSE remaining = STRING(FORMAT='(I3,"d",I02,"h",I02,"m")', timer / 86400, (timer MOD 86400) / 3600, (timer MOD 86400) MOD 3600)
 
-     PRINT,FORMAT='(80("' + STRING(8B) + '"),"SPECIES                          :",X,I0' + digits_s + ',"/",I0' + digits_s + ',X,"~",A0,X,"remaining",$)',i,nuids,remaining
+     PRINT,FORMAT='(80("' + STRING(8B) + '"),"SPECIES                          :",X,I0' + digits_s + ',"/",I0' + digits_s + ',X,"~",A-10,X,"remaining",$)',i,nuids,remaining
 
      IF i LT nuids THEN Objref->Execute,STRING(FORMAT='("AmesPAHdbIDLSuite_Transitions__IDLBridge_Execute,",I,",",I)', uids[i], i++),/NOWAIT
   ENDIF ELSE IF Status EQ 3 THEN BEGIN
@@ -2450,7 +2453,7 @@ FUNCTION AmesPAHdbIDLSuite_Transitions::Convolve,XRange=XRange,FWHM=FWHM,Npoints
            ELSE IF timer LT 86400 THEN remaining = STRING(FORMAT='(I02,"h",I02,"m",I02,"s")', timer / 3600, (timer MOD 3600) / 60, (timer MOD 3600) MOD 60) $
            ELSE remaining = STRING(FORMAT='(I3,"d",I02,"h",I02,"m")', timer / 86400, (timer MOD 86400) / 3600, (timer MOD 86400) MOD 3600)
 
-           PRINT,FORMAT='(80("' + STRING(8B) + '"),"SPECIES                          :",X,I0' + digits_s + ',"/",I0' + digits_s + ',X,"~",A0,X,"remaining",$)',i+1,self.nuids,remaining
+           PRINT,FORMAT='(80("' + STRING(8B) + '"),"SPECIES                          :",X,I0' + digits_s + ',"/",I0' + digits_s + ',X,"~",A-10,X,"remaining",$)',i+1,self.nuids,remaining
         ENDIF
      ENDFOR
 
