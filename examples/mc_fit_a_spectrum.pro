@@ -113,7 +113,8 @@ PRO MC_FIT_A_SPECTRUM
     ; permutate spectrum
     y = observation_s.data.y - $
         observation_s.data.continuum + $
-        observation_s.data.ystdev * (2D * RANDOMU(seed, ny, /DOUBLE) - 1D)
+        ;;observation_s.data.ystdev * (2D * RANDOMU(seed, ny, /DOUBLE) - 1D)
+        observation_s.data.ystdev * RANDOMU(seed, ny, /DOUBLE, /NORMAL), $
 
     ; fit the spectrum using NNLC
     fit = spectrum->Fit(y, observation_s.data.ystdev, Notice=0)
