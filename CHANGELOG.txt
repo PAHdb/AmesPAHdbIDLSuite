@@ -1,4 +1,14 @@
 CHANGELOG
++-06-02-2021
+   Add message to show when blackbody stellar model is used for 
+   AmesPAHdbIDLSuite_Transitions::Cascade in
+   AmesPAHdbIDLSuite_Transitions__define.pro.
++-05-03-2021
+   Speed-up a number of methods by avoiding repeated linear
+   searches with WHERE and work around self.uids and self.data.uid 
+   not having the same order in AmesPAHdbIDLSuite_Transitions__define.pro.
+   Avoid potential issues when self.uids and self.data.uid don't have the
+   same ordering in AmesPAHdbIDLSuite_Spectrum__define.
 +- 05-02-2021
    Added NOTICE-keyword to FIT in
    AmesPAHdbIDLSuite_Spectrum__define.pro. Changed formatting strings

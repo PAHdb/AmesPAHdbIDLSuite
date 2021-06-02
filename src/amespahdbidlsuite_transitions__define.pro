@@ -27,6 +27,12 @@
 ; :History:
 ;   Changes::
 ;
+;     06-02-2021
+;     Add message to show when blackbody stellar model is used for
+;     CASCADE. Christiaan Boersma.
+;     Speed-up a number of methods by avoiding repeated linear
+;     searches with WHERE and work around self.uids and self.data.uid 
+;     not having the same order. Christiaan Boersma.
 ;     05-02-2021
 ;     Changed formatting strings to avoid glitch. Christiaan
 ;     Boersma.
@@ -143,9 +149,15 @@ PRO AmesPAHdbIDLSuite_Transitions::Plot,Wavelength=Wavelength,Stick=Stick,Oplot=
 
   IF NOT KEYWORD_SET(Color) THEN Color=2
 
+  range = [-1, UNIQ((*self.data).uid)]
+
   FOR i = 0, self.nuids - 1 DO BEGIN
 
-     select = WHERE((*self.data).uid EQ (*self.uids)[i])
+     u0 = range[i] + 1
+
+     u1 = range[i + 1]
+
+     select = LINDGEN(u1 - u0 + 1) + u0
 
      self->AmesPAHdbIDLSuite_Plot::Oplot,x[select],(*self.data)[select].intensity,COLOR=Color+i,Stick=Stick
   ENDFOR
@@ -174,14 +186,18 @@ PRO AmesPAHdbIDLSuite_Transitions::Print
 
   ON_ERROR,2
 
+  range = [-1, UNIQ((*self.data).uid)]
+
   FOR i = 0L, self.nuids - 1 DO BEGIN
+
+     uid = (*self.data)[range[i+1]].uid
 
      PRINT
      PRINT,"========================================================="
 
      PRINT,OBJ_CLASS(self)
 
-     PRINT,"UID: "+STRING(FORMAT='(I-0)', (*self.uids)[i])
+     PRINT,"UID: "+STRING(FORMAT='(I-0)', uid)
 
      PRINT,FORMAT='(A-20,2X,A-36,$)', self.units.abscissa.str, self.units.ordinate.str
 
@@ -189,7 +205,13 @@ PRO AmesPAHdbIDLSuite_Transitions::Print
 
      PRINT
 
-     select = WHERE((*self.data).uid EQ (*self.uids)[i], nselect)
+     u0 = range[i] + 1
+
+     u1 = range[i + 1]
+
+     select = LINDGEN(u1 - u0 + 1) + u0
+
+     nselect = N_ELEMENTS(select)
 
      FOR j = 0L, nselect - 1 DO BEGIN
 
@@ -277,9 +299,14 @@ PRO AmesPAHdbIDLSuite_Transitions::Write,Filename
   PRINTF,funit,FORMAT='("\",A0)',hdr[0:WHERE(STRPOS(hdr, 'END') EQ 0)]
   PRINTF,funit,STRJOIN(cols, STRING( 10B ))
 
+  range = [-1, UNIQ((*self.data).uid)]
   FOR i = 0L, self.nuids - 1L DO BEGIN
-     select = WHERE((*self.data).uid EQ (*self.uids)[i], nsel)
-     FOR j = 0L, nsel - 1L DO PRINTF,FORMAT='(X,F25.6,X,F25.6,X,I)',funit,(*self.data)[select[j]].frequency,(*self.data)[select[j]].intensity,(*self.uids)[i]
+     uid = (*self.data)[range[i+1]].uid
+     u0 = range[i] + 1
+     u1 = range[i + 1]
+     select = LINDGEN(u1 - u0 + 1) + u0
+     nselect = N_ELEMENTS(select)
+     FOR j = 0L, nsel - 1L DO PRINTF,FORMAT='(X,F25.6,X,F25.6,X,I)',funit,(*self.data)[select[j]].frequency,(*self.data)[select[j]].intensity,uid
   ENDFOR
   CLOSE,funit
   FREE_LUN,funit
@@ -1012,19 +1039,31 @@ PRO AmesPAHdbIDLSuite_Transitions__IDLBridge_Execute,uid,offset
 
   COMMON IDLBridge__AmesPAHData, shmmap, data, n_data, nuids, E, doApproximate, doStar, doISRF, doConvolved, doStellarModel, i
 
-  select = WHERE(shmmap[1:n_data] EQ uid, nselect)
+  uids = LONG(shmmap, (1 + 2 * n_data) * 8, nuids)
+
+  j = (WHERE(uids EQ uid))[0]
+
+  range = [-1L, LONG(shmmap, (1 + 2 * n_data) * 8 + nuids * 4, nuids)]
+
+  u0 = range[j] + 1
+
+  u1 = range[j + 1]
+
+  select = LINDGEN(u1 - u0 + 1) + u0
+
+  nselect = N_ELEMENTS(select)
 
   COMMON AmesPAHdbIDLSuite_Models_C, nc, charge, Ein, frequencies, intensities, TStar, frequency, StarModel
 
-  frequencies = shmmap[1+n_data+select]
+  frequencies = shmmap[1+select]
 
-  intensities = shmmap[1+2*n_data+select]
+  intensities = shmmap[1+n_data+select]
 
   IF doApproximate OR doStar OR doISRF THEN BEGIN
 
-     nc = shmmap[1+3*n_data+3*nuids+offset]
+     nc = shmmap[1+2*n_data+4*nuids+offset]
 
-     charge = shmmap[1+3*n_data+4*nuids+offset]
+     charge = shmmap[1+2*n_data+5*nuids+offset]
   ENDIF
 
   IF doStar OR doISRF THEN BEGIN
@@ -1033,7 +1072,7 @@ PRO AmesPAHdbIDLSuite_Transitions__IDLBridge_Execute,uid,offset
 
      Ein = MeanEnergyFunc__AmesPAHdbIDLSuite(ISRF=doISRF, StellarModel=doStellarModel)
 
-     shmmap[1+3*n_data+2*nuids+offset] = SQRT(MeanEnergySquaredFunc__AmesPAHdbIDLSuite(ISRF=doISRF, StellarModel=doStellarModel) - Ein^2)
+     shmmap[1+2*n_data+3*nuids+offset] = SQRT(MeanEnergySquaredFunc__AmesPAHdbIDLSuite(ISRF=doISRF, StellarModel=doStellarModel) - Ein^2)
 
      IF doConvolved THEN NPhot = NumberOfPhotonsFunc__AmesPAHdbIDLSuite(ISRF=doISRF, StellarModel=doStellarModel)
   ENDIF ELSE Ein = E
@@ -1066,9 +1105,9 @@ PRO AmesPAHdbIDLSuite_Transitions__IDLBridge_Execute,uid,offset
      ENDIF
   ENDELSE
 
-  shmmap[1+3*n_data+offset] = FX_ROOT([2.73D, 2500, 5000], func1, /DOUBLE, TOL=1D-5)
+  shmmap[1+2*n_data+nuids+offset] = FX_ROOT([2.73D, 2500, 5000], func1, /DOUBLE, TOL=1D-5)
 
-  shmmap[1+3*n_data+nuids+offset] = Ein
+  shmmap[1+2*n_data+2*nuids+offset] = Ein
 
   IF (doStar OR doISRF) AND doConvolved THEN BEGIN
 
@@ -1078,10 +1117,10 @@ PRO AmesPAHdbIDLSuite_Transitions__IDLBridge_Execute,uid,offset
 
         frequency = frequencies[i]
 
-        shmmap[1+2*n_data+select[i]] *= QROMB(func3, 2.5D3, 1.1D5, K=7, EPS=1D-6)
+        shmmap[1+n_data+select[i]] *= QROMB(func3, 2.5D3, 1.1D5, K=7, EPS=1D-6)
      ENDFOR
 
-     shmmap[1+2*n_data+select] /= Nphot
+     shmmap[1+n_data+select] /= Nphot
   ENDIF ELSE BEGIN
 
      FOR i = 0L, nselect - 1 DO BEGIN
@@ -1090,11 +1129,11 @@ PRO AmesPAHdbIDLSuite_Transitions__IDLBridge_Execute,uid,offset
 
         frequency = frequencies[i]
 
-        shmmap[1+2*n_data+select[i]] *= QROMB(func2, 2.73D, shmmap[1+3*n_data+offset], K=7, EPS=1D-6)
+        shmmap[1+n_data+select[i]] *= QROMB(func2, 2.73D, shmmap[1+2*n_data+nuids+offset], K=7, EPS=1D-6)
      ENDFOR
   ENDELSE
 
-  IF doApproximate THEN shmmap[1+2*n_data+select] *= 2.48534271218563D-23 * nc / TotalCrossSection
+  IF doApproximate THEN shmmap[1+n_data+select] *= 2.48534271218563D-23 * nc / TotalCrossSection
 END
 
 ;+
@@ -1156,7 +1195,6 @@ PRO AmesPAHdbIDLSuite_Transitions__IDLBridge_Callback,Status,Error,ObjRef,UserDa
      PRINT
   ENDIF
 END
-
 
 ;+
 ;  Callback function to calculate the number of photons given a blackbody radiation field.
@@ -1225,7 +1263,7 @@ PRO AmesPAHdbIDLSuite_Transitions::Cascade_IDLBridge,E,Approximate=Approximate,S
 
   n_data = N_ELEMENTS(*self.data)
 
-  shmmap_size = 1 + 3 * n_data + 5 * self.nuids
+  shmmap_size = 1 + 2 * n_data + 6 * self.nuids
 
   IF KEYWORD_SET(StellarModel) THEN shmmap_size += 2 * N_ELEMENTS(StarModel) + 1
 
@@ -1233,7 +1271,9 @@ PRO AmesPAHdbIDLSuite_Transitions::Cascade_IDLBridge,E,Approximate=Approximate,S
 
   idx = ULINDGEN(n_species, self.nuids)
 
-  select = WHERE((*self.database).data.species[idx MOD n_species].uid EQ (*self.uids)[idx / n_species]) MOD n_species
+  u = UNIQ((*self.data).uid)
+
+  select = WHERE((*self.database).data.species[idx MOD n_species].uid EQ ((*self.data)[u].uid)[idx / n_species]) MOD n_species
 
   SHMMAP,'AmesPAHdbIDLSuite_SHMMAP',shmmap_size,/DOUBLE
 
@@ -1242,14 +1282,14 @@ PRO AmesPAHdbIDLSuite_Transitions::Cascade_IDLBridge,E,Approximate=Approximate,S
   IF KEYWORD_SET(StellarModel) THEN BEGIN
 
      shmmap[0] = TEMPORARY([DOUBLE(n_data), $
-                            DOUBLE((*self.data).uid), $
                             (*self.data).frequency, $
                             (*self.data).intensity, $
+                            DOUBLE([*(self.data)[u].uid, u], 0, self.nuids), $
                             DBLARR(self.nuids), $
                             DBLARR(self.nuids), $
                             DBLARR(self.nuids), $
-                            (*self.database).data.species[select].nc, $
-                            (*self.database).data.species[select].charge, $
+                            DOUBLE((*self.database).data.species[select].nc), $
+                            DOUBLE((*self.database).data.species[select].charge), $
                             DOUBLE(N_ELEMENTS(StarModel)), $
                             StarModel.frequency, $
                             StarModel.intensity])
@@ -1258,14 +1298,14 @@ PRO AmesPAHdbIDLSuite_Transitions::Cascade_IDLBridge,E,Approximate=Approximate,S
   ENDIF ELSE BEGIN
 
      shmmap[0] = TEMPORARY([DOUBLE(n_data), $
-                            DOUBLE((*self.data).uid), $
                             (*self.data).frequency, $
                             (*self.data).intensity, $
+                            DOUBLE([(*self.data)[u].uid, u], 0, self.nuids), $
                             DBLARR(self.nuids), $
                             DBLARR(self.nuids), $
                             DBLARR(self.nuids), $
-                            (*self.database).data.species[select].nc, $
-                            (*self.database).data.species[select].charge])
+                            DOUBLE((*self.database).data.species[select].nc), $
+                            DOUBLE((*self.database).data.species[select].charge)])
 
      IF NOT KEYWORD_SET(ISRF) THEN Ein = E $
      ELSE Ein = 0
@@ -1311,9 +1351,9 @@ PRO AmesPAHdbIDLSuite_Transitions::Cascade_IDLBridge,E,Approximate=Approximate,S
         'COMMON AmesPAHdbIDLSuite_Models_C, nc, charge, Ein, frequencies, intensities, TStar, frequency, StarModel & ' + $
         'IF (doStar OR doISRF) AND doStellarModel THEN ' + $
         'BEGIN & ' + $
-        'StarModel = REPLICATE({AmesPAHdb_StellarModel_S, frequency:0D, intensity:0D}, shmmap[1+3*n_data+5*nuids]) & ' + $
-        'StarModel.frequency = shmmap[1+3*n_data+5*nuids+1:1+3*n_data+5*nuids+shmmap[1+3*n_data+5*nuids]] & ' + $
-        'StarModel.intensity = shmmap[1+3*n_data+5*nuids+shmmap[1+3*n_data+5*nuids]+1:*] & ' + $
+        'StarModel = REPLICATE({AmesPAHdb_StellarModel_S, frequency:0D, intensity:0D}, shmmap[1+2*n_data+6*nuids]) & ' + $
+        'StarModel.frequency = shmmap[1+2*n_data+6*nuids+1:1+2*n_data+6*nuids+shmmap[1+2*n_data+6*nuids]] & ' + $
+        'StarModel.intensity = shmmap[1+2*n_data+6*nuids+shmmap[1+2*n_data+6*nuids]+1:*] & ' + $
         'ENDIF & ' + $
         '!EXCEPT = 0'
 
@@ -1342,17 +1382,17 @@ PRO AmesPAHdbIDLSuite_Transitions::Cascade_IDLBridge,E,Approximate=Approximate,S
 
   OBJ_DESTROY,IDLBridges
 
-  (*self.data).intensity = shmmap[1+2*n_data:3*n_data] * (*self.data).frequency^3
+  (*self.data).intensity = shmmap[1+n_data:2*n_data] * (*self.data).frequency^3
 
   (*self.model).Temperature.uid = *self.uids
 
-  (*self.model).Temperature.T = shmmap[1+3*n_data:3*n_data+self.nuids]
+  (*self.model).Temperature.T = shmmap[1+2*n_data+self.nuids:2*n_data+2*self.nuids]
 
   (*self.model).Energy.uid = *self.uids
 
-  (*self.model).Energy.E = shmmap[1+3*n_data+self.nuids:3*n_data+2*self.nuids]
+  (*self.model).Energy.E = shmmap[1+2*n_data+2*self.nuids:2*n_data+3*self.nuids]
 
-  (*self.model).Energy.sigma = shmmap[1+3*n_data+2*self.nuids:3*n_data+3*self.nuids]
+  (*self.model).Energy.sigma = shmmap[1+2*n_data+3*self.nuids:2*n_data+4*self.nuids]
 
   SHMUNMAP,'AmesPAHdbIDLSuite_SHMMAP'
 END
@@ -1473,7 +1513,14 @@ PRO AmesPAHdbIDLSuite_Transitions::Cascade,E,Approximate=Approximate,IDLBridge=I
      PRINT," CALCULATED EFFECTIVE TEMPERATURE: "+STRING(FORMAT='(I0,$)', TStar)+" Kelvin"
      PRINT,"========================================================="
      PRINT
-  ENDIF ELSE IF KEYWORD_SET(Star) THEN TStar = E
+  ENDIF ELSE IF KEYWORD_SET(Star) THEN BEGIN
+     TStar = E
+     PRINT
+     PRINT,"========================================================="
+     PRINT,"           BLACKBODY TEMPERATURE: "+STRING(FORMAT='(I0,$)', TStar)+" Kelvin"
+     PRINT,"========================================================="
+     PRINT
+  END
 
   IF KEYWORD_SET(ISRF) AND N_PARAMS() GT 0 THEN BEGIN
      PRINT
@@ -1578,16 +1625,20 @@ PRO AmesPAHdbIDLSuite_Transitions::Cascade,E,Approximate=Approximate,IDLBridge=I
   PRINT
   PRINT,"========================================================="
 
+  range = [-1, UNIQ((*self.data).uid)]
+
   FOR i = 0L, self.nuids - 1 DO BEGIN
+
+    uid = (*self.data)[range[i+1]].uid
 
     timer = SYSTIME(/SECONDS)
 
     PRINT,FORMAT='("SPECIES                          :",X,I4,"/",I4)',i+1,self.nuids
-    PRINT,FORMAT='("UID                              :",X,I4)',(*self.uids)[i]
+    PRINT,FORMAT='("UID                              :",X,I4)',uid
 
     IF KEYWORD_SET(Approximate) OR KEYWORD_SET(Star) OR KEYWORD_SET(ISRF) THEN BEGIN
 
-       select = WHERE((*self.database).data.species.uid EQ (*self.uids)[i])
+       select = WHERE((*self.database).data.species.uid EQ uid)
 
        nc = (*self.database).data.species[select].nc
 
@@ -1603,13 +1654,19 @@ PRO AmesPAHdbIDLSuite_Transitions::Cascade,E,Approximate=Approximate,IDLBridge=I
        IF KEYWORD_SET(Convolved) THEN NPhot = NumberOfPhotonsFunc__AmesPAHdbIDLSuite(ISRF=ISRF, StellarModel=StellarModel)
     ENDIF ELSE Ein = E
 
-    (*self.model).energy[i].uid = (*self.uids)[i]
+    (*self.model).energy[i].uid = uid
 
     (*self.model).energy[i].E = Ein
 
     PRINT,"MEAN ABSORBED ENERGY             : "+STRTRIM(STRING(FORMAT='(G-8.4)',(*self.model).energy[i].E / 1.6021765D-12), 2)+" +/- "+STRTRIM(STRING(FORMAT='(G8.4)', (*self.model).energy[i].sigma / 1.6021765D-12),2)+" eV"
 
-    select = WHERE((*self.data).uid EQ (*self.uids)[i], nselect)
+    u0 = range[i] + 1
+
+    u1 = range[i + 1]
+
+    select = LINDGEN(u1 - u0 + 1) + u0
+
+    nselect = N_ELEMENTS(select)
 
     IF KEYWORD_SET(Approximate) THEN totalcrosssection = TOTAL((*self.data)[select].intensity)
 
@@ -1617,7 +1674,7 @@ PRO AmesPAHdbIDLSuite_Transitions::Cascade,E,Approximate=Approximate,IDLBridge=I
 
     intensities = (*self.data)[select].intensity
 
-    (*self.model).temperature[i].uid = (*self.uids)[i]
+    (*self.model).temperature[i].uid = uid
 
     (*self.model).temperature[i].T = FX_ROOT([2.73D, 2500, 5000], func1, /DOUBLE, TOL=1D-5)
 
@@ -1817,12 +1874,16 @@ PRO AmesPAHdbIDLSuite_Transitions::CalculatedTemperature,E,Approximate=Approxima
   PRINT
   PRINT,"========================================================="
 
+  range = [-1, UNIQ((*self.data).uid)]
+
   FOR i = 0L, self.nuids - 1 DO BEGIN
 
-   timer = SYSTIME(/SECONDS)
+    uid = (*self.data)[range[i+1]].uid
 
-   PRINT,FORMAT='("SPECIES                          :",X,I4,"/",I4)',i+1,self.nuids
-   PRINT,FORMAT='("UID                              :",X,I4)',(*self.uids)[i]
+    timer = SYSTIME(/SECONDS)
+
+    PRINT,FORMAT='("SPECIES                          :",X,I4,"/",I4)',i+1,self.nuids
+    PRINT,FORMAT='("UID                              :",X,I4)',uid
 
     IF KEYWORD_SET(Approximate) OR KEYWORD_SET(Star) OR KEYWORD_SET(ISRF) THEN BEGIN
 
@@ -1840,17 +1901,21 @@ PRO AmesPAHdbIDLSuite_Transitions::CalculatedTemperature,E,Approximate=Approxima
        (*self.model).energy[i].sigma = SQRT(MeanEnergySquaredFunc__AmesPAHdbIDLSuite(ISRF=ISRF, StellarModel=StellarModel) - Ein^2)
     ENDIF ELSE Ein = E
 
-    (*self.model).energy[i].uid = (*self.uids)[i]
+    (*self.model).energy[i].uid = uid
 
     (*self.model).energy[i].E = Ein
 
     PRINT,"MEAN ABSORBED ENERGY             : "+STRTRIM(STRING(FORMAT='(G-8.4)',(*self.model).energy[i].E / 1.6021765D-12), 2)+" +/- "+STRTRIM(STRING(FORMAT='(G8.4)', (*self.model).energy[i].sigma / 1.6021765D-12),2)+" eV"
 
-    select = WHERE((*self.data).uid EQ (*self.uids)[i])
+    u0 = range[i] + 1
+
+    u1 = range[i + 1]
+
+    select = LINDGEN(u1 - u0 + 1) + u0
 
     frequencies = (*self.data)[select].frequency
 
-    (*self.model).temperature[i].uid = (*self.uids)[i]
+    (*self.model).temperature[i].uid = uid
 
     (*self.model).temperature[i].T = FX_ROOT([2.73D, 2500, 5000], func, /DOUBLE, TOL=1D-5)
 
@@ -2397,6 +2462,8 @@ FUNCTION AmesPAHdbIDLSuite_Transitions::Convolve,XRange=XRange,FWHM=FWHM,Npoints
                     intensity:0D, $
                     uid:0L}, self.nuids * NPoints)
 
+  range = [-1, UNIQ((*self.data).uid)]
+
   IF SIZE(FWHM, /TYPE) NE 8 THEN BEGIN
 
      IF NOT KEYWORD_SET(Anharmonics) THEN BEGIN
@@ -2409,38 +2476,44 @@ FUNCTION AmesPAHdbIDLSuite_Transitions::Convolve,XRange=XRange,FWHM=FWHM,Npoints
 
      FOR i = 0L, self.nuids - 1 DO BEGIN
 
-        uid = WHERE((*self.data).uid EQ (*self.uids)[i])
+        uid = (*self.data)[range[i+1]].uid
+
+        u0 = range[i] + 1
+
+        u1 = range[i + 1]
+
+        select = LINDGEN(u1 - u0 + 1) + u0
 
         IF KEYWORD_SET(Anharmonics) THEN BEGIN
 
-           select = WHERE((*self.model).temperature.uid EQ (*self.uids)[i], nselect)
+           tsel = WHERE((*self.model).temperature.uid EQ uid, nselect)
 
            IF nselect EQ 0 THEN BEGIN
               PRINT
               PRINT,"========================================================="
-              PRINT,"    TEMPERATURE NOT FOUND FOR SPECIES: UID="+STRTRIM(STRING((*self.uids)[i]),2)
+              PRINT,"    TEMPERATURE NOT FOUND FOR SPECIES: UID="+STRTRIM(STRING(uid),2)
               PRINT,"========================================================="
               PRINT
               self.state = 0
               RETURN,OBJ_NEW()
            ENDIF
 
-           Tmax = (*self.model).temperature[select].T
+           Tmax = (*self.model).temperature[tsel].T
 
-           ;select = WHERE((*self.database).data.species.uid EQ (*self.uids)[i])
+           ;;ssel = WHERE((*self.database).data.species.uid EQ uid)
 
-           ;nc = DOUBLE((*self.database).data.species[select].nc)
+           ;;csel = DOUBLE((*self.database).data.species[select].nc)
 
-           frequencies = (*self.data)[uid].frequency
+           frequencies = (*self.data)[select].frequency
         ENDIF
 
-        data[i*NPoints:(i + 1)*NPoints-1].uid = (*self.uids)[i]
+        data[i*NPoints:(i + 1)*NPoints-1].uid = uid
 
-        select = WHERE((*self.data)[uid].frequency GE xmin - clip * width AND (*self.data)[uid].frequency LE xmax + clip * width, ndata)
+        fsel = WHERE((*self.data)[select].frequency GE xmin - clip * width AND (*self.data)[select].frequency LE xmax + clip * width, ndata)
 
         FOR j = 0L, ndata - 1 DO BEGIN
 
-           IF (*self.data)[uid[select[j]]].intensity GT 0 THEN data[i*NPoints:(i + 1)*NPoints-1].intensity += (*self.data)[uid[select[j]]].intensity * self->LineProfile(x, (*self.data)[uid[select[j]]].frequency, width, Gaussian=Gaussian, Drude=Drude, Conserve=Conserve, Anharmonics=Anharmonics)
+           IF (*self.data)[select[fsel[j]]].intensity GT 0 THEN data[i*NPoints:(i + 1)*NPoints-1].intensity += (*self.data)[select[fsel[j]]].intensity * self->LineProfile(x, (*self.data)[select[fsel[j]]].frequency, width, Gaussian=Gaussian, Drude=Drude, Conserve=Conserve, Anharmonics=Anharmonics)
         ENDFOR
 
         IF KEYWORD_SET(Anharmonics) THEN BEGIN
@@ -2486,32 +2559,38 @@ FUNCTION AmesPAHdbIDLSuite_Transitions::Convolve,XRange=XRange,FWHM=FWHM,Npoints
 
      FOR i = 0L, self.nuids - 1 DO BEGIN
 
-        uid = WHERE((*self.data).uid EQ (*self.uids)[i])
+        uid = (*self.data)[range[i+1]].uid
 
-        data[i*NPoints:(i + 1)*NPoints-1].uid = (*self.uids)[i]
+        u0 = range[i] + 1
 
-        select = WHERE((*self.data)[uid].frequency GE xmin - clip * width[0] AND (*self.data)[uid].frequency LE FWHM[1].treshold, ndata)
+        u1 = range[i + 1]
+
+        select = LINDGEN(u1 - u0 + 1) + u0
+
+        data[i*NPoints:(i + 1)*NPoints-1].uid = uid
+
+        fsel = WHERE((*self.data)[select].frequency GE xmin - clip * width[0] AND (*self.data)[select].frequency LE FWHM[1].treshold, ndata)
 
         FOR k = 0, ndata - 1 DO BEGIN
 
-           IF (*self.data)[uid[select[k]]].intensity GT 0 THEN data[i*NPoints:(i + 1)*NPoints-1].intensity += (*self.data)[uid[select[k]]].intensity * self->LineProfile(x, (*self.data)[uid[select[k]]].frequency, width[0], Gaussian=Gaussian, Drude=Drude, Conserve=Conserve, Anharmonics=Anharmonics)
+           IF (*self.data)[select[fsel[k]]].intensity GT 0 THEN data[i*NPoints:(i + 1)*NPoints-1].intensity += (*self.data)[select[fsel[k]]].intensity * self->LineProfile(x, (*self.data)[select[fsel[k]]].frequency, width[0], Gaussian=Gaussian, Drude=Drude, Conserve=Conserve, Anharmonics=Anharmonics)
         ENDFOR
 
         FOR j = 1, nregion - 2 DO BEGIN
 
-           select = WHERE((*self.data)[uid].frequency GE FWHM[j].treshold AND (*self.data)[uid].frequency LT FWHM[j+1].treshold, ndata)
+           fsel = WHERE((*self.data)[select].frequency GE FWHM[j].treshold AND (*self.data)[select].frequency LT FWHM[j+1].treshold, ndata)
 
            FOR k = 0, ndata - 1 DO BEGIN
 
-              IF (*self.data)[uid[select[k]]].intensity GT 0 THEN data[i*NPoints:(i + 1)*NPoints-1].intensity += (*self.data)[uid[select[k]]].intensity * self->LineProfile(x, (*self.data)[uid[select[k]]].frequency, width[j], Gaussian=Gaussian, Drude=Drude, Conserve=Conserve, Anharmonics=Anharmonics)
+              IF (*self.data)[select[fsel[k]]].intensity GT 0 THEN data[i*NPoints:(i + 1)*NPoints-1].intensity += (*self.data)[select[fsel[k]]].intensity * self->LineProfile(x, (*self.data)[select[fsel[k]]].frequency, width[j], Gaussian=Gaussian, Drude=Drude, Conserve=Conserve, Anharmonics=Anharmonics)
            ENDFOR
         ENDFOR
 
-        select = WHERE((*self.data)[uid].frequency GE FWHM[j].treshold AND (*self.data)[uid].frequency LT xmax + clip * width[j], ndata)
+        fsel = WHERE((*self.data)[select].frequency GE FWHM[j].treshold AND (*self.data)[select].frequency LT xmax + clip * width[j], ndata)
 
         FOR k = 0, ndata - 1 DO BEGIN
 
-           IF (*self.data)[uid[select[k]]].intensity GT 0 THEN data[i*NPoints:(i + 1)*NPoints-1].intensity += (*self.data)[uid[select[k]]].intensity * self->LineProfile(x, (*self.data)[uid[select[k]]].frequency, width[j], Gaussian=Gaussian, Drude=Drude, Conserve=Conserve, Anharmonics=Anharmonics)
+           IF (*self.data)[select[fsel[k]]].intensity GT 0 THEN data[i*NPoints:(i + 1)*NPoints-1].intensity += (*self.data)[select[fsel[k]]].intensity * self->LineProfile(x, (*self.data)[select[fsel[k]]].frequency, width[j], Gaussian=Gaussian, Drude=Drude, Conserve=Conserve, Anharmonics=Anharmonics)
         ENDFOR
      ENDFOR
   ENDELSE
@@ -2542,7 +2621,7 @@ FUNCTION AmesPAHdbIDLSuite_Transitions::Convolve,XRange=XRange,FWHM=FWHM,Npoints
                  Version=self.version, $
                  Data=data, $
                  PAHdb=self.database, $
-                 Uids=*self.uids, $
+                 Uids=(*self.data)[range[1:*]].uid, $
                  Model=*self.model, $
                  Units=units, $
                  Shift=self.shift, $
