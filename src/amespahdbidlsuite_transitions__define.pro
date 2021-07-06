@@ -27,6 +27,8 @@
 ; :History:
 ;   Changes::
 ;
+;     07-06-2021
+;     Cleaned up progress bar. Christiaan Boersma.
 ;     06-02-2021
 ;     Add message to show when blackbody stellar model is used for
 ;     CASCADE. Christiaan Boersma.
@@ -1170,15 +1172,15 @@ PRO AmesPAHdbIDLSuite_Transitions__IDLBridge_Callback,Status,Error,ObjRef,UserDa
 
      digits_s = STRTRIM(STRING(FIX(ALOG10(nuids)) + 1), 2)
 
-     timer = FLOAT(nuids - i) * FLOAT(SYSTIME(/SECONDS) - timer_start) / FLOAT(i + 1)
+     timer = FLOAT(nuids - i - 1L) * FLOAT(SYSTIME(/SECONDS) - timer_start) / FLOAT(i + 1L)
 
-     IF timer LT 1 THEN remaining = STRING(FORMAT='(I03,"ms")', timer * 1D3) $
-     ELSE IF timer LT 60 THEN remaining = STRING(FORMAT='(I02,"s")', timer) $
-     ELSE IF timer LT 3600 THEN remaining = STRING(FORMAT='(I02,"m",I02,"s")', timer / 60, timer MOD 60) $
-     ELSE IF timer LT 86400 THEN remaining = STRING(FORMAT='(I02,"h",I02,"m",I02,"s")', timer / 3600, (timer MOD 3600) / 60, (timer MOD 3600) MOD 60) $
-     ELSE remaining = STRING(FORMAT='(I3,"d",I02,"h",I02,"m")', timer / 86400, (timer MOD 86400) / 3600, (timer MOD 86400) MOD 3600)
+     IF timer LT 1.0 THEN remaining = STRING(FORMAT='(I03,"ms")', timer * 1E3) $
+     ELSE IF timer LT 60.0 THEN remaining = STRING(FORMAT='(I02,"s")', timer) $
+     ELSE IF timer LT 3600.0 THEN remaining = STRING(FORMAT='(I02,"m",I02,"s")', timer / 60, timer MOD 60) $
+     ELSE IF timer LT 86400.0 THEN remaining = STRING(FORMAT='(I02,"h",I02,"m",I02,"s")', timer / 3600.0, (timer MOD 3600) / 60.0, (timer MOD 3600) MOD 60) $
+     ELSE remaining = STRING(FORMAT='(I3,"d",I02,"h",I02,"m")', timer / 86400.0, (timer MOD 86400) / 3600.0, (timer MOD 86400) MOD 3600)
 
-     PRINT,FORMAT='(80("' + STRING(8B) + '"),"SPECIES                          :",X,I0' + digits_s + ',"/",I0' + digits_s + ',X,"~",A-10,X,"remaining",$)',i,nuids,remaining
+     PRINT,FORMAT='("' + STRING(13B) +'SPECIES                          :",X,I0' + digits_s + ',"/",I0' + digits_s + ',X,"~",A-10,X,"remaining",$)',i+1L,nuids,remaining
 
      IF i LT nuids THEN Objref->Execute,STRING(FORMAT='("AmesPAHdbIDLSuite_Transitions__IDLBridge_Execute,",I,",",I)', uids[i], i++),/NOWAIT
   ENDIF ELSE IF Status EQ 3 THEN BEGIN
@@ -1710,11 +1712,11 @@ PRO AmesPAHdbIDLSuite_Transitions::Cascade,E,Approximate=Approximate,IDLBridge=I
 
     timer = SYSTIME(/SECONDS) - timer
 
-    IF timer LT 1 THEN PRINT,FORMAT='("TIME                             :",X,I-3,X,"MILLISECONDS")', timer*1D3 $
+    IF timer LT 1.0 THEN PRINT,FORMAT='("TIME                             :",X,I-3,X,"MILLISECONDS")', timer*1E3 $
     ELSE IF timer LT 60 THEN PRINT,FORMAT='("TIME                             :",X,I02,X,"SECONDS")', timer $
-    ELSE IF timer LT 3600 THEN PRINT,FORMAT='("TIME                             :",X,I02,X,"MINUTES",X,I02,X,"SECONDS")', timer / 60, timer MOD 60 $
-    ELSE IF timer LT 86400 THEN PRINT,'("TIME                             :",X,I02,X,"HOURS",X,I02,X,"MINUTES",X,I02,X"SECONDS")', timer / 3600, (timer MOD 3600) / 60, (timer MOD 3600) MOD 60 $
-    ELSE PRINT,'("TIME                             :",X,I3,X,"DAYS",X,I02,X,"HOURS",X,I02,X,"MINUTES")', timer / 86400, (timer MOD 86400) / 3600, (timer MOD 86400) MOD 3600
+    ELSE IF timer LT 3600 THEN PRINT,FORMAT='("TIME                             :",X,I02,X,"MINUTES",X,I02,X,"SECONDS")', timer / 60.0, timer MOD 60 $
+    ELSE IF timer LT 86400 THEN PRINT,'("TIME                             :",X,I02,X,"HOURS",X,I02,X,"MINUTES",X,I02,X"SECONDS")', timer / 3600.0, (timer MOD 3600) / 60.0, (timer MOD 3600) MOD 60 $
+    ELSE PRINT,'("TIME                             :",X,I3,X,"DAYS",X,I02,X,"HOURS",X,I02,X,"MINUTES")', timer / 86400.0, (timer MOD 86400) / 3600.0, (timer MOD 86400) MOD 3600
  ENDFOR
 
   PRINT,"========================================================="
@@ -1925,11 +1927,11 @@ PRO AmesPAHdbIDLSuite_Transitions::CalculatedTemperature,E,Approximate=Approxima
 
     timer = SYSTIME(/SECONDS) - timer
 
-    IF timer LT 1 THEN PRINT,FORMAT='("TIME                             :",X,I-3,X,"MILLISECONDS")', timer*1D3 $
+    IF timer LT 1.0 THEN PRINT,FORMAT='("TIME                             :",X,I-3,X,"MILLISECONDS")', timer*1E3 $
     ELSE IF timer LT 60 THEN PRINT,FORMAT='("TIME                             :",X,I02,X,"SECONDS")', timer $
-    ELSE IF timer LT 3600 THEN PRINT,FORMAT='("TIME                             :",X,I02,X,"MINUTES",X,I02,X,"SECONDS")', timer / 60, timer MOD 60 $
-    ELSE IF timer LT 86400 THEN PRINT,'("TIME                             :",X,I02,X,"HOURS",X,I02,X,"MINUTES",X,I02,X"SECONDS")', timer / 3600, (timer MOD 3600) / 60, (timer MOD 3600) MOD 60 $
-    ELSE PRINT,'("TIME                             :",X,I3,X,"DAYS",X,I02,X,"HOURS",X,I02,X,"MINUTES")', timer / 86400, (timer MOD 86400) / 3600, (timer MOD 86400) MOD 3600
+    ELSE IF timer LT 3600 THEN PRINT,FORMAT='("TIME                             :",X,I02,X,"MINUTES",X,I02,X,"SECONDS")', timer / 60.0, timer MOD 60 $
+    ELSE IF timer LT 86400 THEN PRINT,'("TIME                             :",X,I02,X,"HOURS",X,I02,X,"MINUTES",X,I02,X"SECONDS")', timer / 3600,.0 (timer MOD 3600) / 60.0, (timer MOD 3600) MOD 60 $
+    ELSE PRINT,'("TIME                             :",X,I3,X,"DAYS",X,I02,X,"HOURS",X,I02,X,"MINUTES")', timer / 86400.0, (timer MOD 86400) / 3600.0, (timer MOD 86400) MOD 3600
   ENDFOR
 
   PRINT,"========================================================="
@@ -2518,15 +2520,15 @@ FUNCTION AmesPAHdbIDLSuite_Transitions::Convolve,XRange=XRange,FWHM=FWHM,Npoints
 
         IF KEYWORD_SET(Anharmonics) THEN BEGIN
 
-           timer = FLOAT(self.nuids - i - 1) * FLOAT(SYSTIME(/SECONDS) - timer_start) / FLOAT(i + 1)
+           timer = FLOAT(self.nuids - i - 1L) * FLOAT(SYSTIME(/SECONDS) - timer_start) / FLOAT(i + 1L)
 
-           IF timer LT 1 THEN remaining = STRING(FORMAT='(I03,"ms")', timer * 1D3) $
-           ELSE IF timer LT 60 THEN remaining = STRING(FORMAT='(I02,"s")', timer) $
-           ELSE IF timer LT 3600 THEN remaining = STRING(FORMAT='(I02,"m",I02,"s")', timer / 60, timer MOD 60) $
-           ELSE IF timer LT 86400 THEN remaining = STRING(FORMAT='(I02,"h",I02,"m",I02,"s")', timer / 3600, (timer MOD 3600) / 60, (timer MOD 3600) MOD 60) $
-           ELSE remaining = STRING(FORMAT='(I3,"d",I02,"h",I02,"m")', timer / 86400, (timer MOD 86400) / 3600, (timer MOD 86400) MOD 3600)
+           IF timer LT 1.0 THEN remaining = STRING(FORMAT='(I03,"ms")', timer * 1E3) $
+           ELSE IF timer LT 60.0 THEN remaining = STRING(FORMAT='(I02,"s")', timer) $
+           ELSE IF timer LT 3600.0 THEN remaining = STRING(FORMAT='(I02,"m",I02,"s")', timer / 60, timer MOD 60) $
+           ELSE IF timer LT 86400.0 THEN remaining = STRING(FORMAT='(I02,"h",I02,"m",I02,"s")', timer / 3600.0, (timer MOD 3600) / 60.0, (timer MOD 3600) MOD 60) $
+           ELSE remaining = STRING(FORMAT='(I3,"d",I02,"h",I02,"m")', timer / 86400.0, (timer MOD 86400) / 3600.0, (timer MOD 86400) MOD 3600)
 
-           PRINT,FORMAT='(80("' + STRING(8B) + '"),"SPECIES                          :",X,I0' + digits_s + ',"/",I0' + digits_s + ',X,"~",A-10,X,"remaining",$)',i+1,self.nuids,remaining
+           PRINT,FORMAT='("' + STRING(13B) +'SPECIES                          :",X,I0' + digits_s + ',"/",I0' + digits_s + ',X,"~",A-10,X,"remaining",$)',i+1L,self.nuids,remaining
         ENDIF
      ENDFOR
 

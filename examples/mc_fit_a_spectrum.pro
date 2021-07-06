@@ -24,6 +24,8 @@
 ; :History:
 ;   Changes::
 ;
+;     07-06-2021
+;     Cleaned up progress bar. Christiaan Boersma.
 ;     04-30-2021
 ;     First version. Christiaan Boersma.
 ;-
@@ -108,7 +110,7 @@ PRO MC_FIT_A_SPECTRUM
   FOR run = 0L, nruns - 1L DO BEGIN
 
     ; show progress
-    PRINT,FORMAT='(80("' + STRING(8B) + '"),"mc run:",X,I4,"/",I4,$)',run+1L,nruns
+    PRINT,FORMAT='("' + STRING(13B) + 'mc run:",X,I4,"/",I4,$)',run+1L,nruns
 
     ; permutate spectrum
     y = observation_s.data.y - $

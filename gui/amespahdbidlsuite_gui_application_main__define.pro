@@ -16,6 +16,8 @@
 ; :History:
 ;   Changes::
 ;
+;     07-06-2021
+;     Cleaned up some progress bar. Christiaan Boersma.
 ;     12-31-2015
 ;     First version of the file. Christiaan Boersma.
 ;-
@@ -140,7 +142,7 @@ PRO AmesPAHdbIDLSuite_GUI_Application_Main::LoadIcons
 
         icons[i, *, *, *] = TVRD(TRUE=3)
 
-        PRINT,FORMAT='(9("'+STRING(8B)+'"),I04,"/",I04,$)', i + 1, species_s.nuids
+        PRINT,FORMAT='("'+STRING(13B)+'",I04,"/",I04,$)', i + 1, species_s.nuids
      ENDFOR
 
      PRINT
