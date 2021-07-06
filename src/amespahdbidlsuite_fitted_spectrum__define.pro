@@ -25,13 +25,16 @@
 ; :History:
 ;   Changes::
 ;
+;     06-23-2021
+;     Get sorting right for GETERROR, added error from GETERROR
+;     to DESCRIPTION, and call Plot::Init. Christiaan Boersma.
 ;     04-30-2021
 ;     Added GETERROR. Christiaan Boersma.
 ;     03-31-2021
 ;     Intersect now calls Spectrum::Intersect instead of
 ;     Data::Intersect. Christiaan Boersma.
 ;     02-17-2021
-;     Overload Intersect to ensure weights are also 
+;     Overload Intersect to ensure weights are also
 ;     intersected. Christiaan Boersma.
 ;     09-04-2020
 ;     Remove extra comma labels when plotting structures PLOT.
@@ -82,11 +85,11 @@ PRO AmesPAHdbIDLSuite_Fitted_Spectrum::Description,Str
 
   self->AmesPAHdbIDLSuite_Spectrum::Description,Str
 
-  Str = [Str, STRING(FORMAT='(A-12,":",X,A0)', "fit", self->getMethod())]
-
-  Str = [Str, STRING(FORMAT='(A-12,":",X,g-8.3)', "|_norm", self->getNorm())]
-
-  Str = [Str, STRING(FORMAT='(A-12,":",X,g-8.3)', "|_chisquared", self->getChiSquared())]
+  Str = [Str, $
+         STRING(FORMAT='(A-12,":",X,A0)', "fit", self->getMethod()), $
+         STRING(FORMAT='(A-12,":",X,g-8.3)', "|_norm", self->getNorm()), $
+         STRING(FORMAT='(A-12,":",X,g-8.3)', "|_chisquared", self->getChiSquared()), $
+         STRING(FORMAT='(A-12,":",X,g-8.3)', "|_error", self->getError())]
 
   Str = STRJOIN(Str, "!C")
 
@@ -950,6 +953,7 @@ FUNCTION AmesPAHdbIDLSuite_Fitted_Spectrum::GetBreakdown,Small=Small,Flux=Flux,A
 
   select = WHERE((*self.database).data.species[idx MOD ndata].uid EQ (*self.uids)[idx / ndata]) MOD ndata
 
+  ;; TODO: Is this useful information? Provide number of solos/etc. for the average PAH?
   breakdown.solo = TOTAL((*self.database).data.species[select].nsolo)
 
   breakdown.duo = TOTAL((*self.database).data.species[select].nduo)
@@ -1207,9 +1211,12 @@ FUNCTION AmesPAHdbIDLSuite_Fitted_Spectrum::GetError
 
   ON_ERROR,2
 
-  RETURN,INT_TABULATED(*self.grid, ABS(self->getResidual())) / $
-         INT_TABULATED(*self.grid, $
-                      (*self.observation).data.y-(*self.observation).data.continuum)
+  srt = SORT(*self.grid)
+  x = *self.grid
+  y = (*self.observation).data.y-(*self.observation).data.continuum
+  res = ABS(self->getResidual())
+
+  RETURN,INT_TABULATED(x[srt], res[srt]) / INT_TABULATED(x[srt], y[srt])
 END
 
 ;+
@@ -1299,6 +1306,8 @@ FUNCTION AmesPAHdbIDLSuite_Fitted_Spectrum::Init,Struct,Type=Type,Version=Versio
   COMPILE_OPT IDL2
 
   ON_ERROR,2
+
+  self.state = self->AmesPAHdbIDLSuite_Plot::Init()
 
   IF N_PARAMS() GT 0 THEN self->Set,Struct,Type=Type,Version=Version,Data=Data,PAHdb=PAHdb,Uids=Uids,Model=Model,Units=Units,Shift=Shift,Grid=Grid,Profile=Profile,FWHM=FWHM,Observation=Observation,Weights=Weights,Method=Method $
   ELSE self->Set,Type=Type,Version=Version,Data=Data,PAHdb=PAHdb,Uids=Uids,Model=Model,Units=Units,Shift=Shift,Grid=Grid,Profile=Profile,FWHM=FWHM,Observation=Observation,Weights=Weights,Method=Method
