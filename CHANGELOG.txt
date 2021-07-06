@@ -1,4 +1,14 @@
 CHANGELOG
++- 07-06-2021
+  Cleaned up some progress bar in 
+  AmesPAHdbIDLSuite_Transitions__define.pro, mc_fit_spectrum.pro,
+  and random_mixtures.pro.
++- 06-23-2021
+   Get sorting right for AmesPAHdbIDLSuite_Fitted_Spectrum::GetError,
+   added error from AmesPAHdbIDLSuite_Fitted_Spectrum::GetError
+   to AmesPAHdbIDLSuite_Fitted_Spectrum::Description, and call 
+   AmesPAHdbIDLSuite_Plot::Init in 
+   inAmesPAHdbIDLSuite_Fitted_Spectrum__define.pro.
 +-06-02-2021
    Add message to show when blackbody stellar model is used for 
    AmesPAHdbIDLSuite_Transitions::Cascade in
