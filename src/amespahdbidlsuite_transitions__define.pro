@@ -1930,7 +1930,7 @@ PRO AmesPAHdbIDLSuite_Transitions::CalculatedTemperature,E,Approximate=Approxima
     IF timer LT 1.0 THEN PRINT,FORMAT='("TIME                             :",X,I-3,X,"MILLISECONDS")', timer*1E3 $
     ELSE IF timer LT 60 THEN PRINT,FORMAT='("TIME                             :",X,I02,X,"SECONDS")', timer $
     ELSE IF timer LT 3600 THEN PRINT,FORMAT='("TIME                             :",X,I02,X,"MINUTES",X,I02,X,"SECONDS")', timer / 60.0, timer MOD 60 $
-    ELSE IF timer LT 86400 THEN PRINT,'("TIME                             :",X,I02,X,"HOURS",X,I02,X,"MINUTES",X,I02,X"SECONDS")', timer / 3600,.0 (timer MOD 3600) / 60.0, (timer MOD 3600) MOD 60 $
+    ELSE IF timer LT 86400 THEN PRINT,'("TIME                             :",X,I02,X,"HOURS",X,I02,X,"MINUTES",X,I02,X"SECONDS")', timer / 3600.0, (timer MOD 3600) / 60.0, (timer MOD 3600) MOD 60 $
     ELSE PRINT,'("TIME                             :",X,I3,X,"DAYS",X,I02,X,"HOURS",X,I02,X,"MINUTES")', timer / 86400.0, (timer MOD 86400) / 3600.0, (timer MOD 86400) MOD 3600
   ENDFOR
 
