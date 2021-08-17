@@ -27,13 +27,15 @@
 ; :History:
 ;   Changes::
 ;
+;     08-17-2021
+;     Re-enable (`old-style`) anharmonic profiles. Christiaan Boersma.
 ;     07-06-2021
 ;     Cleaned up progress bar. Christiaan Boersma.
 ;     06-02-2021
 ;     Add message to show when blackbody stellar model is used for
 ;     CASCADE. Christiaan Boersma.
 ;     Speed-up a number of methods by avoiding repeated linear
-;     searches with WHERE and work around self.uids and self.data.uid 
+;     searches with WHERE and work around self.uids and self.data.uid
 ;     not having the same order. Christiaan Boersma.
 ;     05-02-2021
 ;     Changed formatting strings to avoid glitch. Christiaan
@@ -2073,17 +2075,17 @@ FUNCTION GaussianFunc__AmesPAHdbIDLSuite,T
 
   COMMON AmesPAHdbIDLSuite_Anharmonics_C, frequencies, nu0, nu, gamma, nc, Tmax, ref_freq, ref_e, ref_shift, ref_width, ref_ifreq, ref_ie
 
-  ;x0 = nu0 - (0.0115D + 0.000942D * nc) * T
+  x0 = nu0 - (0.0115D + 0.000942D * nc) * T
 
-  ;width = (11D - 0.004D * nu0) + 5D-3 * T
+  width = (11D - 0.004D * nu0) + 5D-3 * T
 
-  i = INTERPOL(ref_ifreq, ref_freq, nu0)
+  ;i = INTERPOL(ref_ifreq, ref_freq, nu0)
 
-  j = INTERPOL(ref_ie, ref_e, TOTAL(frequencies / (EXP(1.4387751D * frequencies / T) - 1D))) ; /cm
+  ;j = INTERPOL(ref_ie, ref_e, TOTAL(frequencies / (EXP(1.4387751D * frequencies / T) - 1D))) ; /cm
 
-  x0 = nu0 - INTERPOLATE(ref_shift, i, j)
+  ;x0 = nu0 - INTERPOLATE(ref_shift, i, j)
 
-  width = INTERPOLATE(ref_width, i, j)
+  ;width = INTERPOLATE(ref_width, i, j)
 
   IF ABS(nu - x0) GE 11D * width THEN RETURN,0D
 
@@ -2443,14 +2445,14 @@ FUNCTION AmesPAHdbIDLSuite_Transitions::Convolve,XRange=XRange,FWHM=FWHM,Npoints
 
      COMMON AmesPAHdbIDLSuite_Anharmonics_C, frequencies, nu0, nu, gamma, nc, Tmax, ref_freq, ref_e, ref_shift, ref_width, ref_ifreq, ref_ie
 
-     RESTORE,'energy_surfaces.sav'
-     istart = 168
-     ref_freq = pos_vs_e_x[istart:*,0]
-     ref_e = REFORM(tem[0,*])
-     ref_shift = pos_vs_e_fit[istart:*, *]
-     ref_width = wid_vs_e_fit_upp[istart:*, *]
-     ref_ifreq = DINDGEN(N_ELEMENTS(ref_freq))
-     ref_ie = DINDGEN(N_ELEMENTS(ref_e))
+     ;RESTORE,'energy_surfaces.sav'
+     ;istart = 168
+     ;ref_freq = pos_vs_e_x[istart:*,0]
+     ;ref_e = REFORM(tem[0,*])
+     ;ref_shift = pos_vs_e_fit[istart:*, *]
+     ;ref_width = wid_vs_e_fit_upp[istart:*, *]
+     ;ref_ifreq = DINDGEN(N_ELEMENTS(ref_freq))
+     ;ref_ie = DINDGEN(N_ELEMENTS(ref_e))
      width = 20D
      digits_s = STRTRIM(STRING(FIX(ALOG10(self.nuids)) + 1), 2)
      timer_start = SYSTIME(/SECONDS)
@@ -2502,9 +2504,9 @@ FUNCTION AmesPAHdbIDLSuite_Transitions::Convolve,XRange=XRange,FWHM=FWHM,Npoints
 
            Tmax = (*self.model).temperature[tsel].T
 
-           ;;ssel = WHERE((*self.database).data.species.uid EQ uid)
+           ssel = WHERE((*self.database).data.species.uid EQ uid)
 
-           ;;csel = DOUBLE((*self.database).data.species[select].nc)
+           nc = DOUBLE((*self.database).data.species[ssel].nc)
 
            frequencies = (*self.data)[select].frequency
         ENDIF
