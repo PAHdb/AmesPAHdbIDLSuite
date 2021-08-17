@@ -1,4 +1,8 @@
 CHANGELOG
++- 08-17-2021
+   Don't try and access pointer when it is not set in
+   AmesPAHdbIDLSuite_Spectrum::Description in
+   AmesPAHdbIDLSuite_Fitted_Spectrum__define.pro.
 +- 07-06-2021
   Cleaned up some progress bar in 
   AmesPAHdbIDLSuite_Transitions__define.pro, mc_fit_spectrum.pro,

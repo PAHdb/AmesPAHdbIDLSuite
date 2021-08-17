@@ -25,6 +25,9 @@
 ; :History:
 ;   Changes::
 ;
+;     08-17-2021
+;     Don't try and access pointer when it is not set in DESCRIPTION.
+;     Christiaan Boersma.
 ;     05-03-2021
 ;     Avoid potential issues when self.uids and self.data.uid don't have 
 ;     the same ordering. Christiaan Boersma.
@@ -73,20 +76,24 @@ PRO AmesPAHdbIDLSuite_Spectrum::Description,Str
 
   Str = [Str, STRING(FORMAT='(A-12,":",X,A-0)', "profile", self.profile)]
 
-  IF SIZE(*self.fwhm, /TYPE) EQ 8 THEN BEGIN
+  IF PTR_VALID(self.fwhm) THEN BEGIN
 
-     IF N_ELEMENTS((*self.fwhm)) GT 4 THEN fwhm = (*self.fwhm)[0:3].fwhm $
-     ELSE fwhm = (*self.fwhm).fwhm
+    IF SIZE(*self.fwhm, /TYPE) EQ 8 THEN BEGIN
 
-     fwhm = STRJOIN(STRTRIM(STRING(FORMAT='(g-7.3)', fwhm), 2), ",")
+      IF N_ELEMENTS((*self.fwhm)) GT 4 THEN fwhm = (*self.fwhm)[0:3].fwhm $
+      ELSE fwhm = (*self.fwhm).fwhm
 
-     fwhm += ",..."
+      fwhm = STRJOIN(STRTRIM(STRING(FORMAT='(g-7.3)', fwhm), 2), ",")
 
-     Str = [Str, STRING(FORMAT='(A-12,":",X,A-0,X,A-0)', "FWHM", fwhm, "cm!U-1!N")]
+      fwhm += ",..."
 
-     Str = [Str, STRING(FORMAT='(A-12,":",X,A-0)', "|_sectioned", "yes")]
+      Str = [Str, STRING(FORMAT='(A-12,":",X,A-0,X,A-0)', "FWHM", fwhm, "cm!U-1!N")]
 
-  ENDIF ELSE Str = [Str, STRING(FORMAT='(A-12,":",X,g-8.4,X,A-0)', "FWHM", *self.fwhm, "cm!U-1!N")]
+      Str = [Str, STRING(FORMAT='(A-12,":",X,A-0)', "|_sectioned", "yes")]
+
+    ENDIF ELSE Str = [Str, STRING(FORMAT='(A-12,":",X,g-8.4,X,A-0)', "FWHM", *self.fwhm, "cm!U-1!N")]
+
+  ENDIF
 
   Str = STRJOIN(Str, "!C")
 
