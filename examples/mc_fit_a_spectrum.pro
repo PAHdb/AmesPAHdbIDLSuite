@@ -24,6 +24,8 @@
 ; :History:
 ;   Changes::
 ;
+;     04-27-2022
+;     Use MCFit instead of Fit. Christiaan Boersma.
 ;     07-06-2021
 ;     Cleaned up progress bar. Christiaan Boersma.
 ;     04-30-2021
@@ -81,20 +83,8 @@ PRO MC_FIT_A_SPECTRUM
   ; clean up transitions
   OBJ_DESTROY,[transitions]
 
-  ; fit the spectrum using NNLC
-  fit = spectrum->Fit(observation, Notice=0)
-
-  ; store results
-  fits = fit->getFit()
-
-  results = fit->getBreakdown()
-
-  errors = fit->getError()
-
-  classes = fit->getClasses()
-
-  ; clean up fit
-  OBJ_DESTROY,[fit]
+  ; fit the spectrum using Monte Carlo approach
+  mcfit = spectrum->MCFit(observation, 1024)
 
   ; get observations struct
   observation_s = observation.Get()
@@ -102,82 +92,37 @@ PRO MC_FIT_A_SPECTRUM
   ; clean up observation
   OBJ_DESTROY,[observation]
 
-  ; Monte Carlo runs
-  nruns = 1024
-
-  ny = N_ELEMENTS(observation_s.data.y)
-
-  FOR run = 0L, nruns - 1L DO BEGIN
-
-    ; show progress
-    PRINT,FORMAT='("' + STRING(13B) + 'mc run:",X,I4,"/",I4,$)',run+1L,nruns
-
-    ; permutate spectrum
-    y = observation_s.data.y - $
-        observation_s.data.continuum + $
-        ;;observation_s.data.ystdev * (2D * RANDOMU(seed, ny, /DOUBLE) - 1D)
-        observation_s.data.ystdev * RANDOMU(seed, ny, /DOUBLE, /NORMAL), $
-
-    ; fit the spectrum using NNLC
-    fit = spectrum->Fit(y, observation_s.data.ystdev, Notice=0)
-
-    ; store results
-    fits = [fits, fit->getFit()]
-
-    results = [results, fit->getBreakdown()]
-
-    errors = [errors, fit->getError()]
-
-    classes = [classes, fit->getClasses()]
-
-    ; clean up fit
-    OBJ_DESTROY,[fit]
-  ENDFOR
-
-  PRINT
-  PRINT,"done!"
-  PRINT
-
   ; clean up
-  OBJ_DESTROY,[spectrum, pahdb]
+  OBJ_DESTROY,[spectrum]
 
   ; print results
-  tags = TAG_NAMES(results)
+  mcbd = mcfit->GetBreakdown()
+  
+  tags = TAG_NAMES(mcbd)
 
-  ntags = N_TAGS(results)
+  ntags = N_TAGS(mcbd)
 
-  PRINT,FORMAT='(A8,X,A6,X,A6,X,A6,X,A6,X,A6)','','MIN','MAX','MEDIAN','MEAN','STDEV'
+  PRINT,FORMAT='(A8,X,A6,X,A6)','','MEAN','STDEV'
   FOR i = 0, ntags - 1 DO $
-    PRINT,FORMAT='(A8,X,F6.2,X,F6.2,X,F6.2,X,F6.2,X,F6.3)', $
-          tags[i],MIN(results.(i)),MAX(results.(i)),MEDIAN(results.(i)), MEAN(results.(i)),STDDEV(results.(i))
-  PRINT,FORMAT='(A8,X,F6.2,X,F6.2,X,F6.2,X,F6.2,X,F6.3)','ERROR',MIN(errors),MAX(errors),MEDIAN(errors),MEAN(errors),STDDEV(errors)
+    PRINT,FORMAT='(A8,X,F6.2,X,F6.3)',tags[i],mcbd.(i)[0],SQRT(mcbd.(i)[1])
+  err = mcfit->GetError()
+  PRINT,FORMAT='(A8,X,F6.2,X,F6.3)','ERROR',err[0],err[1]
 
-  ; display results for charge
-  PLOT,1D4/observation_s.data.x,observation_s.data.y-observation_s.data.continuum,PSYM=0,XTITLE='wavelength [micron]',YTITLE='surface brightness [MJy/sr]'
-  ERRPLOT,1D4/observation_s.data.x,observation_s.data.y-observation_s.data.continuum-observation_s.data.ystdev,observation_s.data.y-observation_s.data.continuum+observation_s.data.ystdev
+  mcfit->Plot,/Wavelength
 
-  fits = REFORM(fits, ny, nruns + 1)
+  key = ''
+  IF !D.NAME EQ 'X' THEN READ,key,PROMPT="Press <enter> to continue..."
 
-  m_fits = MOMENT(fits, DIMENSION=2, MAXMOMENT=2)
-  ERRPLOT,1D4/observation_s.data.x,m_fits[*,0]-SQRT(m_fits[*,1]),m_fits[*,0]+SQRT(m_fits[*,1]),THICK=4
-  OPLOT,1D4/observation_s.data.x,m_fits[*,0],THICK=4
-  XYOUTS,0.85,0.80,'FIT',/NORMAL,/ALIGN
+  mcfit->Plot,/Wavelength,/Size
 
-  classes = REFORM(classes, ny, nruns + 1)
+  IF !D.NAME EQ 'X' THEN READ,key,PROMPT="Press <enter> to continue..."
 
-  m_anion = MOMENT(classes.anion, DIMENSION=2, MAXMOMENT=2)
-  ERRPLOT,1D4/observation_s.data.x,m_anion[*,0]-SQRT(m_anion[*,1]),m_anion[*,0]+SQRT(m_anion[*,1]),COLOR=2
-  OPLOT,1D4/observation_s.data.x,m_anion[*,0],COLOR=2
-  XYOUTS,0.85,0.75,'ANION',COLOR=2,/NORMAL,/ALIGN
+  mcfit->Plot,/Wavelength,/Charge
 
-  m_neutral = MOMENT(classes.neutral, DIMENSION=2, MAXMOMENT=2)
-  ERRPLOT,1D4/observation_s.data.x,m_neutral[*,0]-SQRT(m_neutral[*,1]),m_neutral[*,0]+SQRT(m_neutral[*,1]),COLOR=3
-  OPLOT,1D4/observation_s.data.x,m_neutral[*,0],COLOR=3
-  XYOUTS,0.85,0.70,'NEUTRAL',COLOR=3,/NORMAL,/ALIGN
+  IF !D.NAME EQ 'X' THEN READ,key,PROMPT="Press <enter> to continue..."
 
-  m_cation = MOMENT(classes.cation, DIMENSION=2, MAXMOMENT=2)
-  ERRPLOT,1D4/observation_s.data.x,m_cation[*,0]-SQRT(m_cation[*,1]),m_cation[*,0]+SQRT(m_cation[*,1]),COLOR=4
-  OPLOT,1D4/observation_s.data.x,m_cation[*,0],COLOR=4
-  XYOUTS,0.85,0.65,'CATION',COLOR=4,/NORMAL,/ALIGN
+  mcfit->Plot,/Wavelength,/Composition
+
+  OBJ_DESTROY,[mcfit, pahdb]
 
 END

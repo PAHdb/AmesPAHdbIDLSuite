@@ -1,4 +1,15 @@
 CHANGELOG
++- 04-27-2022
+   Refactored plotting of residual in
+   AmesPAHdbIDLSuite_Fitted_Spectrum::Plot and corrected logic
+   flow in AmesPAHdbIDLSuite_Fitted_Spectrum::Set in
+   AmesPAHdbIDLSuite_Fitted_Spectrum__define.pro. Added
+   AmesPAHdbIDLSuite_Spectrum::MCFit and corrected small typos in
+   description of AmesPAHdbIDLSuite_Spectrum::Fit in
+   AmesPAHdbIDLSuite_Spectrum__define.pro. Added NOTICE-keyword and
+   check for no abscissa units  in
+   AmesPAHdbIDLSuite_Observation::AbscissaUnitsTo in
+   AmesPAHdbIDLSuite_Observation__define.pro
 +- 08-17-2021
    Don't try and access pointer when it is not set in
    AmesPAHdbIDLSuite_Spectrum::Description in

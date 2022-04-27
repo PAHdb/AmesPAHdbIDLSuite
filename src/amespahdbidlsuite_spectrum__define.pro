@@ -25,6 +25,9 @@
 ; :History:
 ;   Changes::
 ;
+;     04-27-2022
+;     Added MCFIT and corrected small typos in description of FIT.
+;     Christiaan Boersma.
 ;     08-17-2021
 ;     Don't try and access pointer when it is not set in DESCRIPTION.
 ;     Christiaan Boersma.
@@ -364,17 +367,17 @@ END
 ;  Perform a spectroscopic fit.
 ;
 ;  :Returns:
-;    AmesPAHdb_Fitted_Spectrum
+;    AmesPAHdbIDLSuite_Fitted_Spectrum
 ;
 ;  :Params:
-;    observation: in, required, type="double array (1D) or AmesPAHdbIDL_Suite_Observation"
+;    observation: in, required, type="double array (1D) or AmesPAHdbIDLSuite_Observation"
 ;      Observed spectrum
 ;    error: in, optional, type="double array (1D)"
 ;      Uncertainties associated with observation
 ;
 ;  :Keywords:
 ;    EXTERNAL_NNLS: in, optional, type=int
-;     Whether to use an externally defined NNLS-routine.
+;     Whether to use an externally defined NNLS-routine
 ;    NOTICE: in, optional, type=int, default=1
 ;     Whether to show notices
 ;
@@ -397,7 +400,7 @@ FUNCTION AmesPAHdbIDLSuite_Spectrum::Fit,observation,error,EXTERNAL_NNLS=externa
 
      IF OBJ_CLASS(observation) EQ 'AMESPAHDBIDLSUITE_OBSERVATION' THEN BEGIN
 
-        observation->AbscissaUnitsTo,1
+        observation->AbscissaUnitsTo,1,Notice=Notice
 
         observation_s = observation->get()
 
@@ -566,6 +569,102 @@ FUNCTION AmesPAHdbIDLSuite_Spectrum::Fit,observation,error,EXTERNAL_NNLS=externa
                  Observation=observation_s, $
                  Weights=_weights, $
                  Method=method)
+END
+
+;+
+;  Perform spectroscopic fits using a Monte Carlo approach.
+;
+;  :Returns:
+;    AmesPAHdbIDLSuite_MCFitted_Spectrum
+;
+;  :Params:
+;    observation: in, required, type="double array (1D) or AmesPAHdbIDLSuite_Observation"
+;      Observed spectrum
+;    error: in, required, type="double array (1D)"
+;      Uncertainties associated with observation
+;    samples: in, required, type=int
+;      Number of Monte Carlo samples
+;
+;  :Keywords:
+;    UNIFORM: in, optional, type-int
+;     Whether to use a uniform rather than a normal distribution to permutate the errors.
+;    EXTERNAL_NNLS: in, optional, type=int
+;     Whether to use an externally defined NNLS-routine.
+;
+; :Categories:
+;   FITTING
+;-
+FUNCTION AmesPAHdbIDLSuite_Spectrum::MCFit,observation,error,samples,EXTERNAL_NNLS=external_nnls,Uniform=Uniform
+
+  COMPILE_OPT IDL2
+
+  ON_ERROR,2
+
+  type = SIZE(observation, /STRUCTURE)
+
+  IF type.type_name EQ 'OBJREF' THEN BEGIN
+
+    samples = error
+
+    obs = observation
+
+    obs_s = obs->Get()
+
+    y = obs_s.data.y
+    ystdev = obs_s.data.ystdev
+  ENDIF ELSE BEGIN
+
+     IF N_PARAMS() GT 1 THEN $
+       obs = OBJ_NEW('AmesPAHdbIDLSuite_Observation', $
+                      X=*self.grid, $
+                      Y=observation, $
+                      ErrY=error) $
+     ELSE $
+       obs = OBJ_NEW('AmesPAHdbIDLSuite_Observation', $
+                     X=*self.grid, $
+                     Y=observation)
+
+     y = observation
+     ystdev = error
+  ENDELSE
+
+  ny = N_ELEMENTS(y)
+
+  obj = OBJARR(samples)
+
+  PRINT
+  PRINT,"========================================================="
+  PRINT,"                 DOING MONTE CARLO                       "
+  PRINT,"========================================================="
+  PRINT
+
+  PRINT
+  PRINT,"========================================================="
+  IF KEYWORD_SET(Uniform) THEN $ 
+     PRINT,"           DRAWING FROM UNIFORM DISTRIBUTION             " $
+   ELSE $
+     PRINT,"            DRAWING FROM NORMAL DISTRIBUTION          "
+  PRINT,"========================================================="
+  PRINT
+
+  PRINT
+  PRINT,"========================================================="
+  FOR i = 0L, samples - 1L DO BEGIN
+  
+    PRINT,FORMAT='("' + STRING(13B) + 'mc:",X,I5,"/",I5,$)',i+1L,samples
+
+    obs->Set,Y=y + ystdev * (NOT KEYWORD_SET(Uniform) ? RANDOMU(seed, ny, /DOUBLE, /NORMAL) $
+                                                      : (2D * RANDOMU(seed, ny, /DOUBLE, /UNIFORM) - 1D))
+
+    obj[i] = self->Fit(obs, Notice=0)
+  ENDFOR
+  PRINT
+  PRINT,"========================================================="
+
+  RETURN,OBJ_NEW('AmesPAHdbIDLSuite_MCFitted_Spectrum', $
+                  Type=self.type, $
+                  Obj=obj, $
+                  Distribution=KEYWORD_SET(Uniform) ? 'uniform' : 'normal')
 END
 
 ;+

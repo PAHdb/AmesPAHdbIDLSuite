@@ -25,6 +25,9 @@
 ; :History:
 ;   Changes::
 ;
+;     04-27-2022
+;     Refactored plotting of residual in PLOT and corrected logic
+;     flow in SET. Christiaan Boersma.
 ;     06-23-2021
 ;     Get sorting right for GETERROR, added error from GETERROR
 ;     to DESCRIPTION, and call Plot::Init. Christiaan Boersma.
@@ -333,11 +336,11 @@ PRO AmesPAHdbIDLSuite_Fitted_Spectrum::Plot,DistributionSize=DistributionSize,Re
 
      y = -100D * self->getResidual() / (*self.observation).data.y
 
-     ystdev = -100 * (*self.observation).data.ystdev / (*self.observation).data.y
+     ystdev = 100 * (*self.observation).data.ystdev / (*self.observation).data.y
 
      self->AmesPAHdbIDLSuite_Plot::Plot,x,y,XRANGE=[MIN(x - obs_xstdev), MAX(x + obs_xstdev)],YRANGE=[MIN(y - ystdev), MAX(y + ystdev)],XTITLE=xunits,YTITLE='residual!C[%]',POSITION=[0.2,0.2,0.95,0.45],/NoData,/NOERASE,_EXTRA=EXTRA
 
-     self->AmesPAHdbIDLSuite_Plot::OplotError,x,0*x,100*(*self.observation).data.ystdev/(*self.observation).data.y,obs_xstdev,Color=14
+     self->AmesPAHdbIDLSuite_Plot::OplotError,x,0*x,ystdev,obs_xstdev,Color=14
 
      self->AmesPAHdbIDLSuite_Plot::Oplot,!X.CRANGE,[0,0],Color=14,LINESTYLE=5
 
@@ -615,9 +618,9 @@ PRO AmesPAHdbIDLSuite_Fitted_Spectrum::Set,Struct,Type=Type,Version=Version,Data
 
               self.weights = PTR_NEW(Struct.weights)
            ENDIF
-        ENDIF
 
-        IF NOT KEYWORD_SET(Method) THEN self.method = Struct.method
+           IF NOT KEYWORD_SET(Method) THEN self.method = Struct.method
+        ENDIF
 
         self->AmesPAHdbIDLSuite_Spectrum::Set,Struct,Type=Type,Version=Version,Data=Data,PAHdb=PAHdb,Uids=Uids,Model=Model,Units=Units,Shift=Shift,Grid=Grid,Profile=Profile,FWHM=FWHM
      ENDIF
