@@ -24,6 +24,8 @@
 ; :History:
 ;   Changes::
 ;
+;     07-06-2021
+;     Cleaned up progress bar. Christiaan Boersma.
 ;     08-19-2019
 ;     Documentation added. Christiaan Boersma.
 ;-
@@ -83,9 +85,9 @@ PRO RANDOM_MIXTURES
 
   charge = DBLARR(5, n)
 
-  FOR i = 0, n - 1 DO BEGIN
+  FOR i = 0L, n - 1L DO BEGIN
 
-     PRINT,FORMAT='(4("' + STRING(8B) + '"),I4,$)',i+1
+     PRINT,FORMAT='("' + STRING(13B) + '",I4,$)',i+1L
 
      abundance = RANDOMU(seed, nuids, /UNIFORM)
 
@@ -133,7 +135,7 @@ PRO RANDOM_MIXTURES
 
   ENDFOR
 
-  PRINT,FORMAT='(4("' + STRING(8B) + '"),"done!")'
+  PRINT,FORMAT='(4("' +  + '"),"done!")'
 
   FOR i = 0, n - 1 DO samples[i, *] /= TOTAL(samples[i, *])
 

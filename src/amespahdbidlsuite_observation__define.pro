@@ -25,6 +25,9 @@
 ; :History:
 ;   Changes::
 ;
+;     04-27-2022
+;     Added NOTICE-keyword and check for no abscissa units ABSCISSAUNITSTO.
+;     Christiaan Boersma.
 ;     04-30-2021
 ;     Fix parsing of ASCII-files and accommondate IPAC tables.
 ;     Sort data when chaning units. Christiaan Boersma.
@@ -85,7 +88,6 @@ PRO AmesPAHdbIDLSuite_Observation::Plot,Stick=Stick,Fill=Fill,Oplot=Oplot,Color=
 
   self->AmesPAHdbIDLSuite_Plot::Restore
 END
-
 
 ;+
 ; Write the astronomical spectrum to file as an IPAC-table.
@@ -181,11 +183,24 @@ END
 ; :Categories:
 ;   MANIPULATE
 ;-
-PRO AmesPAHdbIDLSuite_Observation::AbscissaUnitsTo,xunit
+PRO AmesPAHdbIDLSuite_Observation::AbscissaUnitsTo,xunit,Notice=Notice
 
   COMPILE_OPT IDL2
 
   ON_ERROR,2
+
+  IF SIZE(Notice, /TYPE) EQ 0 THEN Notice = 1
+
+  IF self.units.abscissa.unit EQ 0 THEN BEGIN
+    IF Notice THEN BEGIN
+      PRINT
+      PRINT,"========================================================="
+      PRINT,"            NO ABSCISSA-UNITS - NOTHING DONE             "
+      PRINT,"========================================================="
+      PRINT
+     ENDIF
+     RETURN
+  ENDIF
 
   xunits = [{unit:1, $
              str:'frequency [cm!U-1!N]'}, $
@@ -226,11 +241,13 @@ PRO AmesPAHdbIDLSuite_Observation::AbscissaUnitsTo,xunit
   ENDIF
 
   IF self.units.abscissa.unit EQ xunit THEN BEGIN
-     PRINT
-     PRINT,"========================================================="
-     PRINT,"  ABSCISSA-UNITS ALREADY: "+xunits[select].str+" - NOTHING DONE"
-     PRINT,"========================================================="
-     PRINT
+    IF Notice THEN BEGIN
+      PRINT
+      PRINT,"========================================================="
+      PRINT,"  ABSCISSA-UNITS ALREADY: "+xunits[select].str+" - NOTHING DONE"
+      PRINT,"========================================================="
+      PRINT
+     ENDIF
      RETURN
   ENDIF
 
