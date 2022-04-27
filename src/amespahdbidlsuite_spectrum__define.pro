@@ -586,7 +586,7 @@ END
 ;      Number of Monte Carlo samples
 ;
 ;  :Keywords:
-;    UNIFORM: in, optional, type-int
+;    UNIFORM: in, optional, type=int
 ;     Whether to use a uniform rather than a normal distribution to permutate the errors.
 ;    EXTERNAL_NNLS: in, optional, type=int
 ;     Whether to use an externally defined NNLS-routine.
