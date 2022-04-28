@@ -7,7 +7,11 @@ CHANGELOG
    in AmesPAHdbIDLSuite_Fitted_Spectrum::GetErrors in
    AmesPAHdbIDLSuite_Fitted_Spectrum__define.pro and in
    AmesPAHdbIDLSuite_MCFitted_Spectrum::GetErrors in
-   AmesPAHdbIDLSuite_MCFitted_Spectrum__define.pro
+   AmesPAHdbIDLSuite_MCFitted_Spectrum__define.pro. Handle piecewise
+   errors in AmesPAHdbIDLSuite_Fitted_Spectrum::Description in
+   AmesPAHdbIDLSuite_MCFitted_Spectrum__define.pro.
+    Use piecewise errors in
+    AmesPAHdbIDLSuite_MCFitted_Spectrum::Description and add filter.
 +- 04-27-2022
    Refactored plotting of residual in
    AmesPAHdbIDLSuite_Fitted_Spectrum::Plot and corrected logic

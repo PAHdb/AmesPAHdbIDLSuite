@@ -25,7 +25,8 @@
 ; :History:
 ;   Changes::
 ;     04-28-2022
-;     Return piecewise errors in GETERRORS. Christiaan Boersma.
+;     Return piecewise errors in GETERRORS and handle piecewise.
+;     errors in DESCRIPTION. Christiaan Boersma.
 ;     04-27-2022
 ;     Refactored plotting of residual in PLOT and corrected logic
 ;     flow in SET. Christiaan Boersma.
@@ -89,11 +90,21 @@ PRO AmesPAHdbIDLSuite_Fitted_Spectrum::Description,Str
 
   self->AmesPAHdbIDLSuite_Spectrum::Description,Str
 
+  err = self->getError()
+
   Str = [Str, $
          STRING(FORMAT='(A-12,":",X,A0)', "fit", self->getMethod()), $
          STRING(FORMAT='(A-12,":",X,g-8.3)', "|_norm", self->getNorm()), $
          STRING(FORMAT='(A-12,":",X,g-8.3)', "|_chisquared", self->getChiSquared()), $
-         STRING(FORMAT='(A-12,":",X,g-8.3)', "|_error", self->getError())]
+         STRING(FORMAT='(A-12,":",X,g-8.3)', "|_error", err.(0))]
+
+  tags = STRLOWCASE(TAG_NAMES(err))
+
+  ntags = N_TAGS(err)
+  FOR i = 1L, ntags - 1L DO $
+    IF err.(i) GE 0.0D THEN $
+      Str = [Str, $
+             STRING(FORMAT='(A-12,":",X,g-8.3)', "|_" + tags[i], err.(i))]
 
   Str = STRJOIN(Str, "!C")
 
