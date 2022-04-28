@@ -769,24 +769,24 @@ FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetError
 
   ON_ERROR,2
 
-  grid = (*self.obj)[0]->GetGrid()
-  srt = SORT(grid)
-  x = grid[srt]
-
-  obs = (*self.obj)[0]->GetObservation()
-  y = obs.data[srt].y - obs.data[srt].continuum
-
-  int = INT_TABULATED(x, y)
-
   nobj = N_ELEMENTS(*self.obj)
-  err = DBLARR(nobj)
-  FOR i = 0L,  nobj - 1L DO BEGIN
 
-    res = ABS((*self.obj)[i]->getResidual())
-    err[i] = INT_TABULATED(x, res[srt]) / int
-  ENDFOR
+  tags = ['err',  'e127',  'e112',  'e77', 'e62', 'e33']
+  
+  mcerr = REPLICATE(CREATE_STRUCT(NAME='AmesPAHdb_Piecewise_Error', $
+                                  tags, -1.0D, -1.0D, -1.0D, -1.0D, -1.0D, -1.0D), $
+                                  nobj)
 
-  RETURN,MOMENT(err)
+  FOR i = 0L, nobj - 1L DO mcerr[i] = (*self.obj)[i]->GetError()
+
+  arr = MAKE_ARRAY(4, VALUE=-1.0D)
+  err = CREATE_STRUCT(NAME='AmesPAHdb_Piecewise_MCError', $
+                      tags, arr, arr, arr, arr, arr, arr)
+
+  ntags = N_ELEMENTS(tags)
+  FOR i = 0, ntags - 1L DO err.(i) = MOMENT(mcerr.(i), /DOUBLE)
+
+  RETURN,err
 END
 
 ;+

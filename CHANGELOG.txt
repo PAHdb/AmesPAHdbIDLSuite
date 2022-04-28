@@ -1,4 +1,13 @@
 CHANGELOG
++- 04-28-2022
+   Clean up AmesPAHdbIDLSuite_Observation instance in
+   AmesPAHdbIDLSuite_Spectrum::MCFit in 
+   AmesPAHdbIDLSuite_Spectrum__define.pro when
+   internally generated. Return piecewise errors
+   in AmesPAHdbIDLSuite_Fitted_Spectrum::GetErrors in
+   AmesPAHdbIDLSuite_Fitted_Spectrum__define.pro and in
+   AmesPAHdbIDLSuite_MCFitted_Spectrum::GetErrors in
+   AmesPAHdbIDLSuite_MCFitted_Spectrum__define.pro
 +- 04-27-2022
    Refactored plotting of residual in
    AmesPAHdbIDLSuite_Fitted_Spectrum::Plot and corrected logic
@@ -7,9 +16,11 @@ CHANGELOG
    AmesPAHdbIDLSuite_Spectrum::MCFit and corrected small typos in
    description of AmesPAHdbIDLSuite_Spectrum::Fit in
    AmesPAHdbIDLSuite_Spectrum__define.pro. Added NOTICE-keyword and
-   check for no abscissa units  in
+   check for no abscissa units in
    AmesPAHdbIDLSuite_Observation::AbscissaUnitsTo in
-   AmesPAHdbIDLSuite_Observation__define.pro
+   AmesPAHdbIDLSuite_Observation__define.pro. Implement
+   AmesPAHdbIDLSuite_MCFitted_Spectrum in
+   AmesPAHdbIDLSuite_MCFitted_Spectrum__define.pro.
 +- 08-17-2021
    Don't try and access pointer when it is not set in
    AmesPAHdbIDLSuite_Spectrum::Description in
