@@ -24,7 +24,8 @@
 ;
 ; :History:
 ;   Changes::
-;
+;     04-28-2022
+;     Return piecewise errors in GETERRORS. Christiaan Boersma.
 ;     04-27-2022
 ;     Refactored plotting of residual in PLOT and corrected logic
 ;     flow in SET. Christiaan Boersma.
@@ -1203,7 +1204,7 @@ END
 ; Retrieves the error for the fit.
 ;
 ; :Returns:
-;   float
+;   Structure
 ;
 ; :Categories:
 ;   SET/GET
@@ -1215,11 +1216,32 @@ FUNCTION AmesPAHdbIDLSuite_Fitted_Spectrum::GetError
   ON_ERROR,2
 
   srt = SORT(*self.grid)
-  x = *self.grid
-  y = (*self.observation).data.y-(*self.observation).data.continuum
-  res = ABS(self->getResidual())
+  x = (*self.grid)[srt]
+  y = ((*self.observation).data.y-(*self.observation).data.continuum)[srt]
+  r = (ABS(self->getResidual()))[srt]
 
-  RETURN,INT_TABULATED(x[srt], res[srt]) / INT_TABULATED(x[srt], y[srt])
+  tags = ['err',  'e127',  'e112',  'e77', 'e62', 'e33']
+  piecewise = CREATE_STRUCT(NAME='AmesPAHdb_Piecewise_Error', $
+                            tags, -1.0D, -1.0D, -1.0D, -1.0D, -1.0D, -1.0D)
+
+  range = [[MIN(x, MAX=xmax), xmax], $
+           [ 754.0,  855.0], $
+           [ 855.0, 1000.0], $
+           [1000.0, 1495.0], $
+           [1495.0, 1712.0], $
+           [3000.0, 3125.0]]
+
+  ntags = N_ELEMENTS(tags)
+  FOR i = 0L, ntags - 1L DO BEGIN
+  
+    sel = WHERE(x GE range[0, i] AND x LE range[1, i], nsel)
+
+    IF nsel EQ 0 THEN CONTINUE
+
+    piecewise.(i) = INT_TABULATED(x[sel], r[sel]) / INT_TABULATED(x[sel], y[sel])
+  ENDFOR
+
+  RETURN,piecewise
 END
 
 ;+

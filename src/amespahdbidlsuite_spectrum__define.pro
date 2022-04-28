@@ -25,6 +25,9 @@
 ; :History:
 ;   Changes::
 ;
+;     04-28-2022
+;     Clean up OBSERVATION in MCFIT when internally generated.
+;     Christiaan Boersma.
 ;     04-27-2022
 ;     Added MCFIT and corrected small typos in description of FIT.
 ;     Christiaan Boersma.
@@ -660,6 +663,8 @@ FUNCTION AmesPAHdbIDLSuite_Spectrum::MCFit,observation,error,samples,EXTERNAL_NN
   ENDFOR
   PRINT
   PRINT,"========================================================="
+
+  IF type.type_name NE 'OBJREF' THEN OBJ_DESTROY,obs
 
   RETURN,OBJ_NEW('AmesPAHdbIDLSuite_MCFitted_Spectrum', $
                   Type=self.type, $
