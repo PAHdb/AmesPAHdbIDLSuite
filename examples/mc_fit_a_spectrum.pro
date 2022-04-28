@@ -24,6 +24,8 @@
 ; :History:
 ;   Changes::
 ;
+;     04-28-2022
+;     Adapt for piecewise errors. Christiaan Boersma.
 ;     04-27-2022
 ;     Use MCFit instead of Fit. Christiaan Boersma.
 ;     07-06-2021
@@ -105,8 +107,14 @@ PRO MC_FIT_A_SPECTRUM
   PRINT,FORMAT='(A8,X,A6,X,A6)','','MEAN','STDEV'
   FOR i = 0, ntags - 1 DO $
     PRINT,FORMAT='(A8,X,F6.2,X,F6.3)',tags[i],mcbd.(i)[0],SQRT(mcbd.(i)[1])
-  err = mcfit->GetError()
-  PRINT,FORMAT='(A8,X,F6.2,X,F6.3)','ERROR',err[0],err[1]
+  mcerr = mcfit->GetError()
+
+  tags = TAG_NAMES(mcerr)
+
+  ntags = N_TAGS(mcerr)
+
+  FOR i = 0, ntags - 1 DO $
+    PRINT,FORMAT='(A8,X,F6.2,X,F6.3)',tags[i],mcerr.(i)[0],mcerr.(i)[1]
 
   mcfit->Plot,/Wavelength
 

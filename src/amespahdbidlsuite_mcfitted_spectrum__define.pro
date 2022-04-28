@@ -25,6 +25,8 @@
 ; :History:
 ;   Changes::
 ;
+;     04-28-2022
+;     Use piecewise errors in DESCRIPTION and add filter. Christiaan Boersma.
 ;     04-25-2022
 ;     First version of the file. Christiaan Boersma.
 ;-
@@ -47,10 +49,33 @@ PRO AmesPAHdbIDLSuite_MCFitted_Spectrum::Description,Str
 
   (*self.obj)[0]->Description,Str
 
+  Str = STRSPLIT(Str, "!C", /REGEX, /EXTRACT)
+
+  err = self->getError()
+
+  tags = STRLOWCASE(TAG_NAMES(err))
+
+  filter = ['norm', 'chisquared', 'error', tags[1:*]]
+
+  nfilter = N_ELEMENTS(filter)
+  FOR i = 0L, nfilter - 1L DO BEGIN
+    
+      keep = WHERE(STRMID(Str, 0, 2 + STRLEN(filter[i])) NE "|_" + filter[i])
+
+      Str = Str[keep]
+  ENDFOR
+
   Str = [Str, $
          STRING(FORMAT='(A-12,":",X,A0)', "Monte Carlo"), $
          STRING(FORMAT='(A-12,":",X,A0)', "|_draw", self.distribution), $
-         STRING(FORMAT='(A-12,":",X,I0)', "|_samples", N_ELEMENTS(*self.obj))]
+         STRING(FORMAT='(A-12,":",X,I0)', "|_samples", N_ELEMENTS(*self.obj)), $
+         STRING(FORMAT='(A-12,":",X,g-4.2,"!M'+STRING( 177B )+'",g-11.2)', "|_error", err.(0)[0], err.(0)[1])]
+
+  ntags = N_TAGS(err)
+  FOR i = 1L, ntags - 1L DO $
+    IF err.(i)[0] GE 0.0D THEN $
+      Str = [Str, $
+      STRING(FORMAT='(A-12,":",X,g-4.2,"!M'+STRING( 177B )+'",g-11.2)', "|_" + tags[i], err.(i)[0], err.(i)[1])]
 
   Str = STRJOIN(Str, "!C")
 
