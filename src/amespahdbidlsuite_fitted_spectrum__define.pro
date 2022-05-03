@@ -24,8 +24,12 @@
 ;
 ; :History:
 ;   Changes::
+;
+;     05-03-2022
+;     Align integration ranges with Python code in GETERROR.
+;     Christiaan Boersma
 ;     04-28-2022
-;     Return piecewise errors in GETERRORS and handle piecewise.
+;     Return piecewise errors in GETERROR and handle piecewise.
 ;     errors in DESCRIPTION. Christiaan Boersma.
 ;     04-27-2022
 ;     Refactored plotting of residual in PLOT and corrected logic
@@ -1240,7 +1244,7 @@ FUNCTION AmesPAHdbIDLSuite_Fitted_Spectrum::GetError
            [ 855.0, 1000.0], $
            [1000.0, 1495.0], $
            [1495.0, 1712.0], $
-           [3000.0, 3125.0]]
+           [2900.0, 3125.0]]
 
   ntags = N_ELEMENTS(tags)
   FOR i = 0L, ntags - 1L DO BEGIN
