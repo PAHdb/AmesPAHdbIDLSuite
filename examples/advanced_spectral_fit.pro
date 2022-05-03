@@ -26,6 +26,9 @@
 ; :History:
 ;   Changes::
 ;
+;     05-03-2022
+;     Add plotting size distribution. Exclude fully-dehydrogenated PAHs.
+;     Plot using wavelength. Christiaan Boersma.
 ;     08-19-2019
 ;     Documentation added. Christiaan Boersma.
 ;-
@@ -243,7 +246,7 @@ PRO ADVANCED_SPECTRAL_FIT,OPTS
                                      balance:0, $
                                      Tgas:0, $
                                      minimize:0, $
-                                     query:"o=0 mg=0 fe=0 si=0 chx=0 ch2=0 c>=25"} $
+                                     query:"o=0 mg=0 fe=0 si=0 chx=0 ch2=0 c>=25 h>0"} $
   ELSE options = OPTS
 
   nfit = 0
@@ -506,19 +509,23 @@ PRO ADVANCED_SPECTRAL_FIT,OPTS
   key = ''
   IF !D.NAME EQ 'X' THEN READ,key,PROMPT="Press <enter> to continue..."
 
-  fit->Plot,/Residual
+  fit->Plot,/Residual,/Wavelength
 
   IF !D.NAME EQ 'X' THEN READ,key,PROMPT="Press <enter> to continue..."
 
-  fit->Plot,/Charge
+  fit->Plot,/Charge,/Wavelength
 
   IF !D.NAME EQ 'X' THEN READ,key,PROMPT="Press <enter> to continue..."
 
-  fit->Plot,/Size
+  fit->Plot,/Size,/Wavelength
 
   IF !D.NAME EQ 'X' THEN READ,key,PROMPT="Press <enter> to continue..."
 
-  fit->Plot,/Composition
+  fit->Plot,/Composition,/Wavelength
+
+  IF !D.NAME EQ 'X' THEN READ,key,PROMPT="Press <enter> to continue..."
+
+  fit->Plot,/DistributionSize
 
   IF !D.NAME EQ 'X' THEN READ,key,PROMPT="Press <enter> to continue..."
 

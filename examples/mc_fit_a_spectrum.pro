@@ -24,6 +24,8 @@
 ; :History:
 ;   Changes::
 ;
+;     05-03-2022
+;     Add plotting size distribution. Christiaan Boersma.
 ;     04-28-2022
 ;     Adapt for piecewise errors. Christiaan Boersma.
 ;     04-27-2022
@@ -130,6 +132,10 @@ PRO MC_FIT_A_SPECTRUM
   IF !D.NAME EQ 'X' THEN READ,key,PROMPT="Press <enter> to continue..."
 
   mcfit->Plot,/Wavelength,/Composition
+
+  IF !D.NAME EQ 'X' THEN READ,key,PROMPT="Press <enter> to continue..."
+
+  mcfit->Plot,/DistributionSize,NBins=10L,Min=20,Max=200
 
   OBJ_DESTROY,[mcfit, pahdb]
 

@@ -24,6 +24,8 @@
 ; :History:
 ;   Changes::
 ;
+;     05-03-2022
+;     Add plotting size distribution. Christiaan Boersma.
 ;     08-19-2019
 ;     Documentation added. Christiaan Boersma.
 ;-
@@ -93,6 +95,10 @@ PRO FIT_A_SPECTRUM
   IF !D.NAME EQ 'X' THEN READ,key,PROMPT="Press <enter> to continue..."
 
   fit->Plot,/Wavelength,/Composition
+
+  IF !D.NAME EQ 'X' THEN READ,key,PROMPT="Press <enter> to continue..."
+
+  fit->Plot,/DistributionSize,NBins=10L,Min=20,Max=200
 
   IF !D.NAME EQ 'X' THEN READ,key,PROMPT="Press <enter> to continue..."
 
