@@ -25,6 +25,10 @@
 ; :History:
 ;   Changes::
 ;
+;     05-03-2022
+;     Remove extraneous plot in GETSIZEDISTRIBUTION. Refactor GETCHISQUARED,
+;     GETNORM, and GETRESIDUAL, making sure use of proper uncertainties.
+;     Christiaan Boersma.
 ;     04-28-2022
 ;     Use piecewise errors in DESCRIPTION and add filter. Christiaan Boersma.
 ;     04-25-2022
@@ -463,13 +467,10 @@ FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetResidual
 
   ON_ERROR,2
 
-  obs = (*self.obj)[0].GetObservation()
-  y = obs.data.y - obs.data.continuum
-
   nobj = N_ELEMENTS(*self.obj)
 
-  res = DBLARR(nobj, N_ELEMENTS(y))
-  FOR i = 0L, nobj - 1L DO res[i, *] = y - (*self.obj)[i]->GetFit()
+  res = DBLARR(nobj, N_ELEMENTS((*self.obj)[0]->GetGrid()))
+  FOR i = 0L, nobj - 1L DO res[i, *] = (*self.obj)[i]->GetResidual()
   
   RETURN,MOMENT(res, DIMENSION=1)
 END
@@ -492,7 +493,6 @@ FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetFit
   nobj = N_ELEMENTS(*self.obj)
 
   spc = DBLARR(nobj, N_ELEMENTS((*self.obj)[0]->GetGrid()))
-
   FOR i = 0L, nobj - 1L DO spc[i, *] = (*self.obj)[i]->GetFit()
 
   RETURN,MOMENT(spc, DIMENSION=1)
@@ -569,9 +569,6 @@ FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetSizeDistribution,NBins=nbins,Mi
   size = min + (max - min) * DINDGEN(nbins + 1) / DOUBLE(nbins)
 
   dist = DBLARR(nbins, nobj)
-
-
-  PLOT,(*his[0]).size,(*his[0]).distribution,PSYM=10,YRANGE=[0,1.5]
 
   FOR i = 0L, nobj - 1L DO BEGIN
 
@@ -743,12 +740,10 @@ FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetNorm
 
   ON_ERROR,2
 
-  obs = (*self.obj)[0]->GetObservation()
-  y = obs.data.y - obs.data.continuum
-
   nobj = N_ELEMENTS(*self.obj)
+
   nrm = DBLARR(nobj)
-  FOR i = 0L,  nobj - 1L DO nrm[i] = SQRT(TOTAL((y - (*self.obj)[i]->getFit())^2, /NAN))
+  FOR i = 0L,  nobj - 1L DO nrm[i] = (*self.obj)[i]->getNorm()
   
   RETURN,MOMENT(nrm)
 END
@@ -768,14 +763,11 @@ FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetChiSquared
 
   ON_ERROR,2
 
-  obs = (*self.obj)[0]->GetObservation()
-  y = obs.data.y - obs.data.continuum
-  ystdev = obs.data.ystdev
-
   nobj = N_ELEMENTS(*self.obj)
+
   chi = DBLARR(nobj)
-  FOR i = 0L,  nobj - 1L DO chi[i] = TOTAL((y - (*self.obj)[i]->getFit())^2 / ystdev, /NAN)
-  
+  FOR i = 0L,  nobj - 1L DO chi[i] = (*self.obj)[i]->GetChiSquared()
+    
   RETURN,MOMENT(chi)
 END
 

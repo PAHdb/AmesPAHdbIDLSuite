@@ -1,159 +1,260 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
   <head>
-    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
     <title>AmesPAHdbIDLSuite Manual</title>
 
+    <link
+      rel="stylesheet"
+      type="text/css"
+      media="all"
+      href="idldoc-resources/main.css"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      media="print"
+      href="idldoc-resources/main-print.css"
+    />
 
-    <link rel="stylesheet" type="text/css" media="all"
-          href="idldoc-resources/main.css" />
-    <link rel="stylesheet" type="text/css" media="print"
-          href="idldoc-resources/main-print.css" />
-
-    <link rel="stylesheet" type="text/css" media="all"
-          href="idldoc-resources/prismjs.css" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      media="all"
+      href="idldoc-resources/prismjs.css"
+    />
 
     <script type="text/javascript" src="idldoc-resources/prismjs.js"></script>
-    <script type="text/javascript" src="idldoc-resources/language-idl.js"></script>
-
+    <script
+      type="text/javascript"
+      src="idldoc-resources/language-idl.js"
+    ></script>
   </head>
 
   <body>
-
     <div class="container">
-
       <div class="header">
-
         <div class="breadcrumb">
-
-          <a href="overview.html">Docs</a> &raquo; <a href="api.html">API</a> &raquo; Spectroscopic Database Fitting
-
+          <a href="overview.html">Docs</a> &raquo;
+          <a href="api.html">API</a> &raquo; Spectroscopic Database Fitting
         </div>
 
-        <a class="btn-prev" href="sec_3_08_creating_pah_spectra.html"" title="Creating PAH Spectra" accesskey="p"> Previous</a>
+        <a
+          class="btn-prev"
+          href="sec_3_08_creating_pah_spectra.html"
+          title="Creating PAH Spectra"
+          accesskey="p"
+          >Previous</a
+        >
 
-        <a class="btn-next" href="sec_3_10_graphical_user_interface.html" title="Graphical User Interface" accesskey="n">Next </a>
-
+        <a
+          class="btn-next"
+          href="sec_3_10_graphical_user_interface.html"
+          title="Graphical User Interface"
+          accesskey="n"
+          >Next
+        </a>
       </div>
 
       <div class="content">
-
         <hr />
 
         <h1>Spectroscopic database fitting</h1>
 
-        The first step in fitting astronomical observations is loading astronomical observations.
+        The first step in fitting astronomical observations is loading
+        astronomical observations.
 
         <h4>Dealing with astronomical observations</h4>
         <p>
-          Astronomical observations can be handled by the 'AmesPAHdbIDLSuite_Observation'-object, which is able to read text, <i>ISO</i>-SWS, and <i>Spitzer</i>-IRS-files. A convenience routine is available to manage units; AmesPAHdbIDLSuite_CREATE_OBSERVATION_UNITS_S.
+          Astronomical observations can be handled by the
+          'AmesPAHdbIDLSuite_Observation'-object, which is able to read text,
+          <i>ISO</i>-SWS, and <i>Spitzer</i>-IRS-files. A convenience routine is
+          available to manage units;
+          AmesPAHdbIDLSuite_CREATE_OBSERVATION_UNITS_S.
         </p>
         <pre><code class="language-idl">observation = OBJ_NEW('AmesPAHdbIDLSuite_Observation', $
                      'myObservationFile', $
               Units=AmesPAHdbIDLSuite_CREATE_OBSERVATION_UNITS_S())</code></pre>
         <p>
-          In addition, an 'AmesPAHdbIDLSuite_Observation'-object can be created using keyword-initializers.
+          In addition, an 'AmesPAHdbIDLSuite_Observation'-object can be created
+          using keyword-initializers.
         </p>
         <pre><code class="language-idl">observation = OBJ_NEW('AmesPAHdbIDLSuite_Observation', X=frequency, $
                                                        Y=intensity, $
                                                        ErrY=ystdev, $
               Units=AmesPAHdbIDLSuite_CREATE_OBSERVATION_UNITS_S())</code></pre>
         <p>
-          The 'AmesPAHdbIDLSuite_Observation'-object exposes the observation and provides the 'Plot', and 'Write'-methods for output. The 'Plot'-method will display the observation and accepts the 'Oplot', and 'Color'-keywords to control overplotting and color, respectively. Through IDL's keyword inheritance mechanism additional keywords accepted by IDL's 'PLOT'-procedure can be passed.
-	</p>
-	<pre><code class="language-idl">observation-&gt;Plot,XRANGE=[2.5,15],/XSTYLE</code></pre>
-	<p>
-	  The 'Write'-method will write the observation to a single text (.txt) file. Optionally, a prefix can be given that will be prepended to the filename.
-	</p>
-	<pre><code class="language-idl">observation-&gt;Write,'myPrefix'</code></pre>
-	<p>
-	  <b>NB</b> Text-files can have up to five columns, organized as follows. Column 1: abscissa, Column 2: ordinate, Column 3: continuum, Column 4: uncertainty in ordinate, and Column 5: uncertainty in abscissa.
-	</p>
-	<p>
-	  The 'AmesPAHdbIDLSuite_Observation'-object's 'Rebin', 'AbscissaUnitsTo', and 'SetGridRange'-methods can rebin the observation onto a specified grid or, with the 'Uniform'-Keyword set, onto a uniform created grid with specified sampling; convert the units associated with the abscissa; and change the grid range, respectively.
+          The 'AmesPAHdbIDLSuite_Observation'-object exposes the observation and
+          provides the 'Plot', and 'Write'-methods for output. The 'Plot'-method
+          will display the observation and accepts the 'Oplot', and
+          'Color'-keywords to control overplotting and color, respectively.
+          Through IDL's keyword inheritance mechanism additional keywords
+          accepted by IDL's 'PLOT'-procedure can be passed.
         </p>
-	<pre><code class="language-idl">observation-&gt;Rebin,myGrid
+        <pre><code class="language-idl">observation-&gt;Plot,XRANGE=[2.5,15],/XSTYLE</code></pre>
+        <p>
+          The 'Write'-method will write the observation to a single text (.txt)
+          file. Optionally, a prefix can be given that will be prepended to the
+          filename.
+        </p>
+        <pre><code class="language-idl">observation-&gt;Write,'myPrefix'</code></pre>
+        <p>
+          <b>NB</b> Text-files can have up to five columns, organized as
+          follows. Column 1: abscissa, Column 2: ordinate, Column 3: continuum,
+          Column 4: uncertainty in ordinate, and Column 5: uncertainty in
+          abscissa.
+        </p>
+        <p>
+          The 'AmesPAHdbIDLSuite_Observation'-object's 'Rebin',
+          'AbscissaUnitsTo', and 'SetGridRange'-methods can rebin the
+          observation onto a specified grid or, with the 'Uniform'-Keyword set,
+          onto a uniform created grid with specified sampling; convert the units
+          associated with the abscissa; and change the grid range, respectively.
+        </p>
+        <pre><code class="language-idl">observation-&gt;Rebin,myGrid
 
 observation-&gt;Rebin,5D,/Uniform
 
 observation-&gt;AbsciccaUnitsTo
 
 observation-&gt;SetGridRange,500,2000</code></pre>
+        <a name="techniques"></a>
+        <h4>Database fitting</h4>
         <p>
-          <a name="techniques"></a>
-          <h4>Database fitting</h4>
-          <p>
-	    Spectroscopic database fitting is handled by the 'AmesPAHdbIDLSuite_Spectrum'-object and it either accepts an 'AmesPAHdbIDLSuite_Observation'-object, or a simple array of ordinates with an optional array of ordinate uncertainties. Whether ordinate uncertainties are provided or not, the 'AmesPAHdbIDLSuite_Spectrum'-object's 'Fit'-method will perform a non-negative least-chi-square or non-negative least-square fit and return an 'AmesPAHdbIDLSuite_Fitted_Spectrum'-object.
-          </p>
-	  <pre><code class="language-idl">fit = spectrum-&gt;Fit(intensity, uncertainty)</code></pre>
-	  <p>
-	    The 'AmesPAHdbIDLSuite_Fitted_Spectrum'-object exposes the fit and provides the 'Plot', and 'Write'-methods for output. The 'Plot'-method accepts the 'Residual', 'Size', 'Charge', and 'Composition'-keywords, which selectively display the residual of the fit, or either the size, charge and compositional breakdown. Without these keywords the fit itself is displayed.
-	  </p>
-	  <pre><code class="language-idl">fit-&gt;Plot,/Charge</code></pre>
-	  <p>
-	    Optionally, the 'Wavelength', 'Stick', 'Oplot', 'Legend', and 'Color'-keywords can be given to the 'Plot'-method to control the abscissa, stick representation, overplotting, legend and color, respectively. Through IDL's keyword inheritance mechanism additional keywords accepted by IDL's 'PLOT'-procedure can be passed.
-	  </p>
-	  <pre><code class="language-idl">fit-&gt;Plot,/Size,/Wavelength,XTITLE=[2.5,15],/XSTYLE</code></pre>
-	  <p>
-	    The 'AmesPAHdbIDLSuite_Fitted_Spectrum'-object's 'Write'-method will write the fit to a single text (.txt) file. Optionally, a prefix can be given that will be prepended to the filename.
-	  </p>
-	  <pre><code class="language-idl">fit-&gt;Write,'myPrefix'</code></pre>
-	  <p>
-	    The 'AmesPAHdbIDLSuite_Fitted_Spectrum'-object's 'GetClasses', and 'GetBreakdown'-methods return the fit broken down by charge, size, and composition, where the first provides the spectrum for each component and the latter its relative contribution.
-	  </p>
-	  <pre><code class="language-idl">classes = fit-&gt;getClasses()
+          Spectroscopic database fitting is handled by the
+          'AmesPAHdbIDLSuite_Spectrum'-object and it either accepts an
+          'AmesPAHdbIDLSuite_Observation'-object, or a simple array of ordinates
+          with an optional array of ordinate uncertainties. Whether ordinate
+          uncertainties are provided or not, the
+          'AmesPAHdbIDLSuite_Spectrum'-object's 'Fit'-method will perform a
+          non-negative least-chi-square or non-negative least-square fit and
+          return an 'AmesPAHdbIDLSuite_Fitted_Spectrum'-object.
+        </p>
+        <pre><code class="language-idl">fit = spectrum-&gt;Fit(intensity, uncertainty)</code></pre>
+        <p>
+          The 'AmesPAHdbIDLSuite_Fitted_Spectrum'-object exposes the fit and
+          provides the 'Plot', and 'Write'-methods for output. The 'Plot'-method
+          accepts the 'Residual', 'Size', 'Charge', 'Composition' and
+          'DistributionSize-'keywords, which selectively display the residual of
+          the fit, or either the size, charge, compositional breakdown, the size
+          distribution. Without these keywords the fit itself is displayed.
+        </p>
+        <pre><code class="language-idl">fit-&gt;Plot,/Charge</code></pre>
+        <p>
+          Optionally, the 'Wavelength', 'Stick', 'Oplot', 'Legend', and
+          'Color'-keywords can be given to the 'Plot'-method to control the
+          abscissa, stick representation, overplotting, legend and color,
+          respectively. Through IDL's keyword inheritance mechanism additional
+          keywords accepted by IDL's 'PLOT'-procedure can be passed.
+        </p>
+        <pre><code class="language-idl">fit-&gt;Plot,/Size,/Wavelength,XTITLE=[2.5,15],/XSTYLE</code></pre>
+        <p>
+          The 'AmesPAHdbIDLSuite_Fitted_Spectrum'-object's 'Write'-method will
+          write the fit to a single text (.txt) file. Optionally, a prefix can
+          be given that will be prepended to the filename.
+        </p>
+        <pre><code class="language-idl">fit-&gt;Write,'myPrefix'</code></pre>
+        <p>
+          The 'AmesPAHdbIDLSuite_Fitted_Spectrum'-object's 'GetClasses', and
+          'GetBreakdown'-methods return the fit broken down by charge, size, and
+          composition, where the first provides the spectrum for each component
+          and the latter its relative contribution.
+        </p>
+        <pre><code class="language-idl">classes = fit-&gt;getClasses()
 
 breakdown = fit-&gt;getBreakdown()</code></pre>
-	  <p>
-	    Optionally the 'Small' keyword can be set, which controls the small cutoff size in number of carbon atoms.
-	  </p>
-	  <pre><code class="language-idl">classes = fit-&gt;getClasses(Small=20L)</code></pre>
-	  <p>
-	    The 'GetBreakdown'-method also accepts the 'Flux'-keyword, which controls whether the relative breakdown should be reported based on fitted weight or integrated flux.
-	  </p>
-	  <pre><code class="language-idl">breakdown = fit-&gt;getBreakdown(/Flux)</code></pre>
-	  <p>
-
+        <p>
+          Optionally the 'Small' keyword can be set, which controls the small
+          cutoff size in number of carbon atoms.
+        </p>
+        <pre><code class="language-idl">classes = fit-&gt;getClasses(Small=20L)</code></pre>
+        <p>
+          The 'GetBreakdown'-method also accepts the 'Flux'-keyword, which
+          controls whether the relative breakdown should be reported based on
+          fitted weight or integrated flux.
+        </p>
+        <pre><code class="language-idl">breakdown = fit-&gt;getBreakdown(/Flux)</code></pre>
+        <p>
+          The quality of a fit can be assessed using the
+          'AmesPAHdbIDLSuite_Fitted_Spectrum'-object's 'GetError'-method, which
+          returns a struct with the integral of the absolute residual over the
+          integral of the observations for the entire spectrum and piecewise for
+          the different PAH bands.
+        </p>
+        <pre><code class="language-idl">error =fit-&gt;getError()</code></pre>
+        <a name="montecarlo"></a>
+        <h4>Monte Carlo</h4>
+        <p>
+          Neither non-negative least-chi-square and non-negative least-square
+          fits provide uncertainties on their own. However, in combination with
+          a Monte Carlo approach that varies the observed spectrum within its
+          uncertainties they can.
+        </p>
+        <p>
+          Monte Carlo fitting is handled by the
+          'AmesPAHdbIDLSuite_Spectrum'-object and it either accepts an
+          'AmesPAHdbIDLSuite_Observation'-object, or a simple array of ordinates
+          with a required array of ordinate uncertainties, and the number of
+          samples. The 'AmesPAHdbIDLSuite_Spectrum'-object's 'MCFit'-method will
+          perform a non-negative least-chi-square fit and return an
+          'AmesPAHdbIDLSuite_MCFitted_Spectrum'-object.
+        </p>
+        <pre><code class="language-idl">mcfit = spectrum-&gt;MCFit(observation, 5000L)</code></pre>
+        <p>
+          The 'AmesPAHdbIDLSuite_MCFitted_Spectrum'-object offers mostly the
+          same set of methods as the regular
+          'AmesPAHdbIDLSuite_Fitted_Spectrum'-object does, but transparently
+          handles the necessary Monte Carlo statistics. For example, the
+          'AmesPAHdbIDLSuite_MCFitted_Spectrum'-object's 'GetClasses' returns
+          spectra of the fit broken down by charge, size, and composition. The
+          statistics are as returned by IDL's 'MOMENT'-function, i.e., a four
+          elements containing the mean, variance, skewness, and kurtosis.
+        </p>
+        <pre><code class="language-idl">mcclasses = mcfit-&gt;getClasses()</code></pre>
       </div>
 
       <div class="footer">
+        <a
+          class="btn-prev"
+          href="sec_3_08_creating_pah_spectra.html"
+          title=" Creating PAH Spectra"
+          accesskey="p"
+        >
+          Previous</a
+        >
 
-        <a class="btn-prev" href="sec_3_08_creating_pah_spectra.html"" title="Creating PAH Spectra" accesskey="p"> Previous</a>
-
-        <a class="btn-next" href="sec_3_10_graphical_user_interface.html" title="Graphical User Interface" accesskey="n">Next </a>
+        <a
+          class="btn-next"
+          href="sec_3_10_graphical_user_interface.html"
+          title="Graphical User Interface"
+          accesskey="n"
+          >Next
+        </a>
 
         <hr />
 
         <table class="smaller" summary="footer">
-
           <tr>
-
-            <td>
-
-              &copy; Copyright 2020, Dr. Christiaan Boersma
-
-            </td>
-
+            <td>&copy; Copyright 2020, Dr. Christiaan Boersma</td>
           </tr>
 
           <tr>
-
             <td>
-
-              Built with <a target="_top" href="https://github.com/mgalloy/idldoc">IDLdoc</a> using <a target="_top" href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> elements provided by <a target="_top" href="https://readthedocs.org">Read the Docs</a>.
-
+              Built with
+              <a target="_top" href="https://github.com/mgalloy/idldoc"
+                >IDLdoc</a
+              >
+              using
+              <a target="_top" href="https://github.com/rtfd/sphinx_rtd_theme"
+                >theme</a
+              >
+              elements provided by
+              <a target="_top" href="https://readthedocs.org">Read the Docs</a>.
             </td>
-
           </tr>
-
         </table>
-
       </div>
-
     </div>
-
   </body>
-
 </html>
