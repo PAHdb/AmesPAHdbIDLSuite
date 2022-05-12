@@ -39,6 +39,9 @@
 ; :History:
 ;   Changes::
 ;
+;     12-05-2022
+;     Speed up GETTAGBYUID by using HISTOGRAM. Christiaan
+;     Boersma
 ;     10-05-2020
 ;     Fix typo in ExtendDatabase. Christiaan Boersma
 ;     11-15-2019
@@ -665,32 +668,61 @@ FUNCTION AmesPAHdbIDLSuite::GetTagByUID,Tag,UIDs,Count
 
   ON_ERROR,2
 
-  Count = 0
+  Count = 0L
 
   itag = WHERE(STRLOWCASE(TAG_NAMES((*self.pahdb).data)) EQ Tag, ntag)
 
   IF ntag NE 1 THEN RETURN,-1
 
-  nuids = N_ELEMENTS(UIDs)
-
   IF SIZE(UIDs, /DIMENSIONS) EQ 0 AND UIDs EQ -1 THEN BEGIN
 
      Count = N_ELEMENTS((*self.pahdb).data.(itag))
 
-     UIDs = (*self.pahdb).data.(itag)[UNIQ((*self.pahdb).data.(itag).uid, SORT((*self.pahdb).data.(itag).uid))].uid
+     UIDs = (*self.pahdb).data.(itag)[UNIQ((*self.pahdb).data.(itag).uid)].uid
 
      RETURN,(*self.pahdb).data.(itag)
   ENDIF
 
-  nitag = N_ELEMENTS((*self.pahdb).data.(itag))
+  UIDs = UIDs[SORT(UIDs)]
 
-  idx = ULINDGEN(nitag, nuids)
+  nuids = N_ELEMENTS(UIDs)
 
-  select = WHERE((*self.pahdb).data.(itag)[idx MOD nitag].uid EQ UIDs[idx / nitag], Count) MOD nitag
+  nbuf = 4096L
+
+  select = LONARR(nbuf, /NOZERO)
+
+  h = HISTOGRAM((*self.pahdb).data.(itag).uid, MIN=0, REVERSE_INDICES=ri)
+
+  FOR i = 0L, nuids - 1L DO BEGIN
+
+    n = h[UIDs[i]]
+
+    IF n GT 0 THEN BEGIN
+
+      s = ri[ri[UIDs[i]]:ri[UIDS[i]+1]-1]
+
+      IF Count + n GT nbuf THEN BEGIN
+
+        nbuf *= 2L
+
+        new = LONARR(nbuf, /NOZERO)
+
+        new[0:Count-1L] = select[0:Count-1L]
+
+        select = new
+      ENDIF
+
+      select[Count:Count+n-1L] = s
+
+      Count += n
+    ENDIF
+  ENDFOR
 
   IF Count EQ 0 THEN RETURN,-1
 
-  UIDs = (*self.pahdb).data.(itag)[select[UNIQ((*self.pahdb).data.(itag)[select].uid, SORT((*self.pahdb).data.(itag)[select].uid))]].uid
+  select = select[0:Count-1L] 
+
+  UIDs = (*self.pahdb).data.(itag)[select[UNIQ((*self.pahdb).data.(itag)[select].uid)]].uid
 
   RETURN,(*self.pahdb).data.(itag)[select]
 END
@@ -1223,7 +1255,7 @@ FUNCTION AmesPAHdbIDLSuite::Search,Str,Count,Query=Query
 
   IF Count EQ 0 THEN RETURN,-1
 
-  u = (*self.joined)[select[UNIQ((*self.joined)[select].uid, SORT((*self.joined)[select].uid))]].uid
+  u = (*self.joined)[select[UNIQ((*self.joined)[select].uid)]].uid
 
   Count = N_ELEMENTS(u)
 

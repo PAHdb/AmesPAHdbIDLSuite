@@ -31,6 +31,9 @@
 ; :History:
 ;   Changes::
 ;
+;     05-12-2022
+;     Sort content by UID. Increased some buffer sizes. Christiaan
+;     Boersma.
 ;     11-15-2019
 ;     Added status property, which is set to 1B when FATALERROR needed
 ;     to be called and can be queried with the new
@@ -248,17 +251,53 @@ PRO AmesPAHdbIDLSuite_XMLParser::EndDocument
 
   ON_ERROR,2
 
-  IF self.sizes.nspecies GT 0 THEN *self.database.data.species = (*self.database.data.species)[0:self.sizes.nspecies++]
+  IF self.sizes.nspecies GT 0 THEN BEGIN
 
-  IF self.sizes.ncomments GT 0 THEN *self.database.data.comments = (*self.database.data.comments)[0:self.sizes.ncomments++]
+    *self.database.data.species = (*self.database.data.species)[0:self.sizes.nspecies++]
 
-  IF self.sizes.nreferences GT 0 THEN *self.database.data.references = (*self.database.data.references)[0:self.sizes.nreferences++]
+    *self.database.data.species = (*self.database.data.species)[SORT((*self.database.data.species).uid)]
 
-  IF self.sizes.ntransitions GT 0 THEN *self.database.data.transitions = (*self.database.data.transitions)[0:self.sizes.ntransitions++]
+  ENDIF
 
-  IF self.sizes.ngeometries GT 0 THEN *self.database.data.geometries = (*self.database.data.geometries)[0:self.sizes.ngeometries++]
+  IF self.sizes.ncomments GT 0 THEN BEGIN
 
-  IF self.sizes.nlaboratory GT 0 THEN *self.database.data.laboratory = (*self.database.data.laboratory)[1:self.sizes.nlaboratory++]
+    *self.database.data.comments = (*self.database.data.comments)[0:self.sizes.ncomments++]
+
+    *self.database.data.comments = (*self.database.data.comments)[SORT((*self.database.data.comments).uid)]
+
+  ENDIF
+
+  IF self.sizes.nreferences GT 0 THEN BEGIN
+
+    *self.database.data.references = (*self.database.data.references)[0:self.sizes.nreferences++]
+
+    *self.database.data.references = (*self.database.data.references)[SORT((*self.database.data.references).uid)]
+
+  ENDIF
+
+  IF self.sizes.ntransitions GT 0 THEN BEGIN
+
+    *self.database.data.transitions = (*self.database.data.transitions)[0:self.sizes.ntransitions++]
+
+    *self.database.data.transitions = (*self.database.data.transitions)[SORT((*self.database.data.transitions).uid)]
+
+  ENDIF
+
+  IF self.sizes.ngeometries GT 0 THEN BEGIN
+
+    *self.database.data.geometries = (*self.database.data.geometries)[0:self.sizes.ngeometries++]
+
+    *self.database.data.geometries = (*self.database.data.geometries)[SORT((*self.database.data.geometries).uid)]
+
+  ENDIF
+
+  IF self.sizes.nlaboratory GT 0 THEN BEGIN
+
+    *self.database.data.laboratory = (*self.database.data.laboratory)[0:self.sizes.nlaboratory++]
+
+    *self.database.data.laboratory = (*self.database.data.laboratory)[SORT((*self.database.data.laboratory).uid)]
+
+  ENDIF
 
   PRINT
   PRINT,"========================================================="
@@ -775,12 +814,12 @@ FUNCTION AmesPAHdbIDLSuite_XMLParser::Init,SCHEMA_CHECKING=Schema_Checking
   ON_ERROR,2
 
   self.buffers = {AmesPAHdb_Size_S, $
-                  nspecies:16L, $
-                  ncomments:16L, $
-                  nreferences:16L, $
-                  ntransitions:16L, $
-                  ngeometries:16L, $
-                  nlaboratory:16L}
+                  nspecies:256L, $
+                  ncomments:256L, $
+                  nreferences:256L, $
+                  ntransitions:256L, $
+                  ngeometries:256L, $
+                  nlaboratory:256L}
 
   self.database.data.species = PTR_NEW(REPLICATE({AmesPAHdb_Property_S, $
                                                   uid:0L, $

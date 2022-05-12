@@ -1,4 +1,17 @@
 CHANGELOG
++- 05-12-2022
+   Sort content by UID in AmesPAHdbIDLSuite_XMLParser::EndDocument and
+   increased some buffer sizes in
+   AmesPAHdbIDLSuite_XMLParser__define.pro. Speed up in
+   AmesPAHdbIDLSuite::GetTagByUID by using Histogram in
+   AmesPAHdbIDLSuite__define.pro. Use Histogram in
+   AmesPAHdbIDLSuite_Data::Normalize in
+   AmesPAHdbIDLSuite_Data__define.pro
+   Fix timer computation in
+   AmesPAHdbIDLSuite_Transitions__IDLBridge_Callback in
+   AmesPAHdbIDLSuite_Transitions__define.pro. Add
+   AmesPAHdbIDLSuite_Data::HashCode in
+   AmesPAHdbIDLSuite_Data__define.pro
 +- 05-03-2022
    Remove extraneous plot in
    AmesPAHdbIDLSuite_MCFitted_Spectrum::GetSizeDistribution, refactor

@@ -41,6 +41,9 @@
 ; :History:
 ;   Changes::
 ;
+;     05-12-2022
+;     Use HISTOGRAM in NORMALIZE. Add HASHCODE method. Christiaan
+;     Boersma.
 ;     05-20-2015
 ;     Added COMPLEMENT and ensured uids is an array in INTERSECT.
 ;     Christiaan Boersma
@@ -114,9 +117,11 @@ PRO AmesPAHdbIDLSuite_Data::Normalize,FromAll=FromAll,Max=Max
 
      Max = DBLARR(self.nuids, /NOZERO)
 
+     h = HISTOGRAM((*self.data).uid, MIN=0, REVERSE_INDICES=ri)
+
      FOR i = 0, self.nuids - 1 DO BEGIN
 
-        select = WHERE((*self.data).uid EQ (*self.uids)[i], nselect)
+        select = ri[ri[(*self.uids)[i]]:ri[(*self.uids)[i]+1]-1]
 
         Max[i] = MAX((*self.data)[select].intensity)
 
@@ -165,7 +170,7 @@ PRO AmesPAHdbIDLSuite_Data::Intersect,UIDs,Count
 
   *self.data = (*self.data)[select]
 
-  *self.uids = [(*self.data)[UNIQ((*self.data).uid, SORT((*self.data).uid))].uid]
+  *self.uids = [(*self.data)[UNIQ((*self.data).uid)].uid]
 
   self.nuids = N_ELEMENTS(*self.uids)
 
@@ -212,7 +217,8 @@ PRO AmesPAHdbIDLSuite_Data::Difference,UIDs,Count
      RETURN
   ENDIF
 
-  r = WHERE((HISTOGRAM(*self.uids, MIN=mina, MAX=maxa) NE 0) AND (HISTOGRAM(UIDs, MIN=mina, MAX=maxa) EQ 0), Count)
+  r = WHERE((HISTOGRAM(*self.uids, MIN=mina, MAX=maxa) NE 0) AND $
+            (HISTOGRAM(UIDs, MIN=mina, MAX=maxa) EQ 0), Count)
 
   IF Count EQ 0 THEN BEGIN
      PRINT
@@ -431,6 +437,77 @@ PRO AmesPAHdbIDLSuite_Data::Set,Struct,Type=Type,Version=Version,Data=Data,PAHdb
   ENDIF
 
   self.state = 1
+END
+
+;+
+; Compute hash code for object or struct.
+;
+; :Returns:
+;   long
+;
+; :Params:
+;   In: in, required, type=object/struct
+;     Object/struct to compute hash code for.
+;
+; :Categories:
+;   HELPER
+;
+; :Private:
+;-
+FUNCTION AmesPAHdbIDLSuite_Data::HashCode,In
+
+  COMPILE_OPT IDL2, STATIC
+
+  ON_ERROR,2
+
+  ntags = N_TAGS(In)
+
+  Code = []
+
+  FOR i = 0L, ntags - 1L DO BEGIN
+
+    SWITCH SIZE(In.(i), /TYPE) OF
+      0: BREAK
+      1:
+      3:
+      4:
+      5:
+      6:
+      7: BEGIN
+        Code = [Code, In.(i).HASHCODE()]
+        BREAK
+      END
+      8: BEGIN
+        Code = [Code, self.HashCode(In.(i))]
+        BREAK
+      END
+      9: BEGIN
+        Code = [Code, In.(i).HASHCODE()]
+        BREAK
+      END
+      10: BEGIN
+        IF PTR_VALID(In.(i)) THEN BEGIN
+          t = SIZE(*In.(i), /TYPE)
+          IF t EQ 8 OR t EQ 10 OR t EQ 11 THEN Code = [Code, self.HashCode(*In.(i))] $
+          ELSE Code = [Code, (*In.(i)).HASHCODE()]
+        ENDIF
+        BREAK
+      END
+      11: BEGIN
+        IF OBJ_VALID(In.(i)) THEN Code = [Code, self.HashCode(In.(i))]
+        BREAK
+      END
+      12:
+      13:
+      14:
+      15: BEGIN
+        Code = [Code, In.(i).HASHCODE()]
+        BREAK
+      END
+    ENDSWITCH
+  ENDFOR
+
+  RETURN, Code.HASHCODE()
 END
 
 ;+

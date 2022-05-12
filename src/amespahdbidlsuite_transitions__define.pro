@@ -27,6 +27,8 @@
 ; :History:
 ;   Changes::
 ;
+;     05-12-2022
+;     Fix timer computation in IDLBRIDGE_CALLBACK. Christiaan Boersma.
 ;     08-17-2021
 ;     Re-enable (`old-style`) anharmonic profiles. Christiaan Boersma.
 ;     07-06-2021
@@ -1174,7 +1176,7 @@ PRO AmesPAHdbIDLSuite_Transitions__IDLBridge_Callback,Status,Error,ObjRef,UserDa
 
      digits_s = STRTRIM(STRING(FIX(ALOG10(nuids)) + 1), 2)
 
-     timer = FLOAT(nuids - i - 1L) * FLOAT(SYSTIME(/SECONDS) - timer_start) / FLOAT(i + 1L)
+     timer = FLOAT(nuids - i) * FLOAT(SYSTIME(/SECONDS) - timer_start) / FLOAT(i + 1L)
 
      IF timer LT 1.0 THEN remaining = STRING(FORMAT='(I03,"ms")', timer * 1E3) $
      ELSE IF timer LT 60.0 THEN remaining = STRING(FORMAT='(I02,"s")', timer) $
