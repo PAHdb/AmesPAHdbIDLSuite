@@ -41,6 +41,9 @@
 ; :History:
 ;   Changes::
 ;
+;     05-16-2022
+;     Speed up INTERSECT and DIFFERENCE using HISTOGRAM.
+;     Christiaan Boersma.
 ;     05-12-2022
 ;     Use HISTOGRAM in NORMALIZE. Add HASHCODE method. Christiaan
 ;     Boersma.
@@ -150,15 +153,32 @@ PRO AmesPAHdbIDLSuite_Data::Intersect,UIDs,Count
 
   ON_ERROR,2
 
-  nuids = N_ELEMENTS(UIDs)
+  Count = 0L
 
-  ndata = N_ELEMENTS(*self.data)
+  mina = MIN(*self.uids, MAX=maxa) 
 
-  idx = ULINDGEN(ndata, nuids)
+  minb = MIN(UIDs, MAX=maxb)
 
-  select = WHERE((*self.data)[idx MOD ndata].uid EQ UIDs[idx / ndata], nselect) MOD ndata
+  minab = mina > minb
 
-  IF nselect EQ 0 THEN BEGIN
+  maxab = maxa < maxb
+
+  IF ((maxa LT minab) AND (minb GT maxab)) OR $
+     ((maxb LT minab) AND (mina GT maxab)) THEN BEGIN
+
+    PRINT
+    PRINT,"========================================================="
+    PRINT,"                  NO INTERSECTION FOUND                  "
+    PRINT,"========================================================="
+    PRINT
+    self.state = 0
+    RETURN
+  ENDIF
+
+  r = Where((HISTOGRAM(*self.uids, MIN=minab, MAX=maxab) NE 0) AND  $
+            (HISTOGRAM(UIDs, MIN=minab, MAX=maxab) NE 0), n)
+
+  IF n EQ 0 THEN BEGIN
      PRINT
      PRINT,"========================================================="
      PRINT,"                 NO INTERSECTION FOUND                   "
@@ -168,19 +188,48 @@ PRO AmesPAHdbIDLSuite_Data::Intersect,UIDs,Count
      RETURN
   ENDIF
 
-  *self.data = (*self.data)[select]
-
-  *self.uids = [(*self.data)[UNIQ((*self.data).uid)].uid]
-
-  self.nuids = N_ELEMENTS(*self.uids)
-
-  Count = self.nuids
-
   PRINT
   PRINT,"========================================================="
-  PRINT,"           INTERSECTION FOUND: "+STRING(FORMAT='(I-0)', Count)
+  PRINT,"           INTERSECTION FOUND: "+STRING(FORMAT='(I-0)', n)
   PRINT,"========================================================="
   PRINT
+
+  *self.uids = r + minab
+
+  self.nuids = n
+
+  nbuf = 4096L
+
+  select = LONARR(nbuf, /NOZERO)
+
+  h = HISTOGRAM((*self.data).uid, MIN=0, REVERSE_INDICES=ri)
+
+  FOR i = 0L, self.nuids - 1L DO BEGIN
+
+    n = h[(*self.uids)[i]]
+
+    IF n GT 0 THEN BEGIN
+
+      s = ri[ri[(*self.uids)[i]]:ri[(*self.uids)[i]+1]-1]
+
+      IF Count + n GT nbuf THEN BEGIN
+
+        nbuf *= 2L
+
+        new = LONARR(nbuf, /NOZERO)
+
+        new[0:Count-1L] = select[0:Count-1L]
+
+        select = new
+      ENDIF
+
+      select[Count:Count+n-1L] = s
+
+      Count += n
+    ENDIF
+  ENDFOR
+
+  *self.data = (*self.data)[select[0:Count-1L]]
 END
 
 ;+
@@ -203,14 +252,17 @@ PRO AmesPAHdbIDLSuite_Data::Difference,UIDs,Count
 
   ON_ERROR,2
 
+  Count = 0L
+
   mina = MIN(*self.uids, MAX=maxa)
 
   minb = MIN(UIDs, MAX=maxb)
 
-  IF (minb GT maxa) OR (maxb LT mina) THEN BEGIN
+  IF (minb GT maxa) OR $
+     (maxb LT mina) THEN BEGIN
      PRINT
      PRINT,"========================================================="
-     PRINT,"                 NO INTERSECTION FOUND                   "
+     PRINT,"                  NO DIFFERENCE FOUND                    "
      PRINT,"========================================================="
      PRINT
      self.state = 0
@@ -218,9 +270,9 @@ PRO AmesPAHdbIDLSuite_Data::Difference,UIDs,Count
   ENDIF
 
   r = WHERE((HISTOGRAM(*self.uids, MIN=mina, MAX=maxa) NE 0) AND $
-            (HISTOGRAM(UIDs, MIN=mina, MAX=maxa) EQ 0), Count)
+            (HISTOGRAM(UIDs, MIN=mina, MAX=maxa) EQ 0), n)
 
-  IF Count EQ 0 THEN BEGIN
+  IF n EQ 0 THEN BEGIN
      PRINT
      PRINT,"========================================================="
      PRINT,"                  NO DIFFERENCE FOUND                    "
@@ -232,25 +284,46 @@ PRO AmesPAHdbIDLSuite_Data::Difference,UIDs,Count
 
   PRINT
   PRINT,"========================================================="
-  PRINT,"          DIFFERENCE FOUND: "+STRING(FORMAT='(I-0)', Count)
+  PRINT,"          DIFFERENCE FOUND: "+STRING(FORMAT='(I-0)', n)
   PRINT,"========================================================="
   PRINT
 
-  found = r + mina
+  *self.uids = r + mina
 
-  nfound = N_ELEMENTS(found)
+  self.nuids = n
 
-  ndata = N_ELEMENTS(*self.data)
+  nbuf = 4096L
 
-  idx = ULINDGEN(ndata, nfound)
+  select = LONARR(nbuf, /NOZERO)
 
-  select = WHERE((*self.data)[idx MOD ndata].uid EQ found[idx / ndata], nselect) MOD ndata
+  h = HISTOGRAM((*self.data).uid, MIN=0, REVERSE_INDICES=ri)
 
-  *self.data = (*self.data)[select]
+  FOR i = 0L, self.nuids - 1L DO BEGIN
 
-  *self.uids = [(*self.data)[UNIQ((*self.data).uid, SORT((*self.data).uid))].uid]
+    n = h[(*self.uids)[i]]
 
-  self.nuids = N_ELEMENTS(*self.uids)
+    IF n GT 0 THEN BEGIN
+
+      s = ri[ri[(*self.uids)[i]]:ri[(*self.uids)[i]+1]-1]
+
+      IF Count + n GT nbuf THEN BEGIN
+
+        nbuf *= 2L
+
+        new = LONARR(nbuf, /NOZERO)
+
+        new[0:Count-1L] = select[0:Count-1L]
+
+        select = new
+      ENDIF
+
+      select[Count:Count+n-1L] = s
+
+      Count += n
+    ENDIF
+  ENDFOR
+
+  *self.data = (*self.data)[select[0:Count-1L]]
 END
 
 ;+

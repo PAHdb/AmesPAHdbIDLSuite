@@ -1,4 +1,8 @@
 CHANGELOG
++- 05-16-2022
+   Speed up AmesPAHdbIDLSuite_Data::Intersect and
+   AmesPAHdbIDLSuite_Data::Difference in AmesPAHdbIDLSuite_Data__define.pro
+   using Histogram.
 +- 05-15-2022
    Transparently cache/restore results in
    AmesPAHdbIDLSuite_Transitions::Cascade in
