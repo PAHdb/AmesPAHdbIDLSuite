@@ -26,6 +26,8 @@
 ; :History:
 ;   Changes::
 ;
+;     05-16-2022
+;     Define indices array and expand formatting. Christiaan Boersma.
 ;     08-19-2019
 ;     Documentation added. Christiaan Boersma.
 ;-
@@ -74,6 +76,7 @@ FUNCTION DO_NNLS
   ; create random selection of unique identifiers and avoid doubles
   n = nspectra
 
+  indices = LONARR(nspectra)
   WHILE n GT 0 DO BEGIN
 
      indices[nspectra - n] = LONG(RANDOMU(seed, n) * nuids)
@@ -166,7 +169,7 @@ FUNCTION DO_NNLS
 
      ENDIF ELSE BEGIN
 
-        selected_uid = STRING(FORMAT='(I3)', selected_uids[select])
+        selected_uid = STRING(FORMAT='(I4)', selected_uids[select])
 
         select = WHERE(selected_weights.uid EQ all_uids[i])
 
@@ -184,7 +187,7 @@ FUNCTION DO_NNLS
 
      ENDIF ELSE BEGIN
 
-        found_uid = STRING(FORMAT='(I3)', found_uids[select])
+        found_uid = STRING(FORMAT='(I4)', found_uids[select])
 
         select = WHERE(found_weights.uid EQ all_uids[i])
 
