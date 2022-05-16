@@ -1,4 +1,8 @@
 CHANGELOG
++- 05-15-2022
+   Transparently cache/restore results in
+   AmesPAHdbIDLSuite_Transitions::Cascade in
+   AmesPAHdbIDLSuite_Transitions__define.pro.
 +- 05-12-2022
    Sort content by UID in AmesPAHdbIDLSuite_XMLParser::EndDocument and
    increased some buffer sizes in
