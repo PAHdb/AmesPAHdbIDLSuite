@@ -27,6 +27,10 @@
 ; :History:
 ;   Changes::
 ;
+;     05-15-2022
+;     Transparently cache/restore results in CASCADE. Christiaan Boersma.
+;     05-12-2022
+;     Fix timer computation in IDLBRIDGE_CALLBACK. Christiaan Boersma.
 ;     08-17-2021
 ;     Re-enable (`old-style`) anharmonic profiles. Christiaan Boersma.
 ;     07-06-2021
@@ -1174,7 +1178,7 @@ PRO AmesPAHdbIDLSuite_Transitions__IDLBridge_Callback,Status,Error,ObjRef,UserDa
 
      digits_s = STRTRIM(STRING(FIX(ALOG10(nuids)) + 1), 2)
 
-     timer = FLOAT(nuids - i - 1L) * FLOAT(SYSTIME(/SECONDS) - timer_start) / FLOAT(i + 1L)
+     timer = FLOAT(nuids - i) * FLOAT(SYSTIME(/SECONDS) - timer_start) / FLOAT(i + 1L)
 
      IF timer LT 1.0 THEN remaining = STRING(FORMAT='(I03,"ms")', timer * 1E3) $
      ELSE IF timer LT 60.0 THEN remaining = STRING(FORMAT='(I02,"s")', timer) $
@@ -1421,15 +1425,43 @@ END
 ;      Whether to convolve with the given radiation field
 ;    StellarModel: in, optional, type=int
 ;      Whether to use a stellar model
+;    Cache: in, optional, type=int
+;      Whether to use cached results
 ;
 ; :Categories:
 ;   EMISSION MODEL
 ;-
-PRO AmesPAHdbIDLSuite_Transitions::Cascade,E,Approximate=Approximate,IDLBridge=IDLBridge,Star=Star,ISRF=ISRF,Convolved=Convolved,StellarModel=StellarModel
+PRO AmesPAHdbIDLSuite_Transitions::Cascade,E,Approximate=Approximate,IDLBridge=IDLBridge,Star=Star,ISRF=ISRF,Convolved=Convolved,StellarModel=StellarModel,Cache=Cache
 
   COMPILE_OPT IDL2
 
   ON_ERROR,2
+
+  IF SIZE(Cache, /TYPE) EQ 0 THEN Cache = 1B
+
+  IF Cache THEN BEGIN
+ 
+    hash = self.HashCode({E:E, approximate:KEYWORD_SET(Approximate), $
+                          star:KEYWORD_SET(Star), $
+                          isrf:KEYWORD_SET(ISRF), $
+                          convolved:KEYWORD_SET(Convolved), $
+                          stellar_model:KEYWORD_SET(StellarModel) ? StellarModel : 0B, $
+                          data:self->Get()})
+
+    file_cache = STRING(FORMAT='(A0,"/",z0,".sav")', '/tmp', hash)
+
+    IF FILE_TEST(file_cache, /READ) THEN BEGIN
+
+      PRINT
+      PRINT,"========================================================="
+      PRINT,"        RESTORING CACHED CASCADE RESULTS ("+STRING(FORMAT='(Z8)', hash)+")"
+      PRINT,"========================================================="
+      PRINT
+      RESTORE,file_cache
+      self->Set,t_s,PAHdb=self.database
+      RETURN
+    ENDIF
+  ENDIF
 
   IF self.type NE 'theoretical' AND NOT KEYWORD_SET(Approximate) THEN BEGIN
      PRINT
@@ -1587,7 +1619,7 @@ PRO AmesPAHdbIDLSuite_Transitions::Cascade,E,Approximate=Approximate,IDLBridge=I
 
      self->Cascade_IDLBridge,E,Approximate=Approximate,Star=Star,ISRF=ISRF,Convolved=Convolved,StellarModel=StellarModel
 
-     RETURN
+     GOTO,FINISH
   ENDIF
 
   IF KEYWORD_SET(Approximate) THEN BEGIN
@@ -1725,6 +1757,17 @@ PRO AmesPAHdbIDLSuite_Transitions::Cascade,E,Approximate=Approximate,IDLBridge=I
   PRINT
 
   !EXCEPT = _e
+
+FINISH:
+  IF Cache THEN BEGIN
+    PRINT
+    PRINT,"========================================================="
+    PRINT,"          CACHING CASCADE RESULTS ("+STRING(FORMAT='(Z8)', hash)+")"
+    PRINT,"========================================================="
+    PRINT
+    t_s = self->Get()
+    SAVE,FILENAME=file_cache,t_s
+  ENDIF
 END
 
 ;+
