@@ -25,6 +25,8 @@
 ; :History:
 ;   Changes::
 ;
+;     05-18-2022
+;     Use HISTOGRAM in PLOT and WRITE for speed-ups. Christiaan Boersma.
 ;     04-27-2015
 ;     Fixed INIT to call AmesPAHdbSuite_Plot initializer. Christiaan Boersma
 ;     01-28-2015
@@ -80,9 +82,11 @@ PRO AmesPAHdbIDLSuite_Laboratory_Spectrum::Plot,Wavelength=Wavelength,Stick=Stic
 
   IF NOT KEYWORD_SET(Color) THEN Color=2
 
+  h = HISTOGRAM((*self.data).uid, MIN=0, REVERSE_INDICES=ri)
+
   FOR i = 0, self.nuids - 1 DO BEGIN
 
-     select = WHERE((*self.data).uid EQ (*self.uids)[i], nselect)
+     select = ri[ri[(*self.uids)[i]]:ri[(*self.uids)[i]+1]-1]
 
      self->AmesPAHdbIDLSuite_Plot::Oplot,x[select],(*self.data)[select].intensity,Stick=Stick,Fill=Fill,COLOR=Color+i,_EXTRA=EXTRA
   ENDFOR
@@ -166,9 +170,14 @@ PRO AmesPAHdbIDLSuite_Laboratory_Spectrum::Write,Filename
   PRINTF,funit,FORMAT='("\",A0)',hdr[0:WHERE(STRPOS(hdr, 'END') EQ 0)]
   PRINTF,funit,STRJOIN(cols, STRING( 10B ))
 
+  h = HISTOGRAM((*self.data).uid, MIN=0, REVERSE_INDICES=ri)
+
   FOR i = 0L, self.nuids - 1L DO BEGIN
-     select = WHERE((*self.data).uid EQ (*self.uids)[i], nsel)
-     FOR j = 0L, nsel - 1L DO PRINTF,FORMAT='(X,F25.6,X,F25.6,X,I)',funit,(*self.data)[select[j]].frequency,(*self.data)[select[j]].intensity,(*self.uids)[i]
+
+     select = ri[ri[(*self.uids)[i]]:ri[(*self.uids)[i]+1]-1]
+
+     FOR j = 0L, h[(*self.uids)[i]] - 1L DO $
+      PRINTF,FORMAT='(X,F25.6,X,F25.6,X,I)',funit,(*self.data)[select[j]].frequency,(*self.data)[select[j]].intensity,(*self.uids)[i]
   ENDFOR
   CLOSE,funit
   FREE_LUN,funit

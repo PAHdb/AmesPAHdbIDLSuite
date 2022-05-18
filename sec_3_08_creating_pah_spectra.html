@@ -80,7 +80,11 @@ transitions-&gt;Cascade, $
         <p>
           <b>NB</b> This is computationally expensive.
         </p>
-	<p>
+        <p>
+          Given the computational expense of the 'Cascade' model, the 'Cascade'-method transparently caches its results for faster subsequent access. However, this behavior can be disabled by setting the 'Cache'-keyword to '0'.
+        </p>
+        <pre><code class="language-idl">transitions-&gt;Cascade,6D*1.603D-12,Cache=0 ; 6 eV</code></pre>
+        <p>
 	  The 'AmesPAHdbIDLSuite_Transitions'-object's 'Shift'-method can be used to redshift the fundamental transitions to simulate anharmonic effects.
 	</p>
 	<pre><code class="language-idl">transitions-&gt;Shift,-15D</code></pre>
