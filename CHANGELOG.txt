@@ -1,4 +1,20 @@
 CHANGELOG
++- 05-18-2022
+   Use Histogram for speed-up in AmesPAHdbIDLSuite_Spectrum::Plot in
+   AmesPAHdbIDLSuite_Spectrum__define.pro. Use Histogram in
+   AmesPAHdbIDLSuite_Laboratory::Plot and 
+   AmesPAHdbIDLSuite_Laboratory::Write for speed-ups in
+   AmesPAHdbIDLSuite_Laboratory.pro. Use Histogram for speed-ups in
+   AmesPAHdbIDLSuite_Transitions::Plot,
+   AmesPAHdbIDLSuite_Transitions::Print,
+   AmesPAHdbIDLSuite_Transitions::Write,
+   AmesPAHdbIDLSuite_Transitions__Cascade_IDLBridge, and
+   AmesPAHdbIDLSuite_Transitions::CalculatedTemperature in
+   AmesPAHdbIDLSuite_Transitions__define.pro. Refactor
+   AmesPAHdbIDLSuite_Transitions__Cascade_IDLBridge and
+   AmesPAHdbIDLSuite_Transitions__IDLBridge_Execute for using Histogram
+   results and pass DOUBLE with full-resolution to other processes in
+   AmesPAHdbIDLSuite_Transitions__define.pro.
 +- 05-16-2022
    Speed up AmesPAHdbIDLSuite_Data::Intersect and
    AmesPAHdbIDLSuite_Data::Difference in AmesPAHdbIDLSuite_Data__define.pro

@@ -25,6 +25,8 @@
 ; :History:
 ;   Changes::
 ;
+;     05-18-2022
+;     Use HISTOGRAM speed-up in PLOT. Christiaan Boersma.
 ;     04-28-2022
 ;     Clean up OBSERVATION in MCFIT when internally generated.
 ;     Christiaan Boersma.
@@ -159,9 +161,11 @@ PRO AmesPAHdbIDLSuite_Spectrum::Plot,Wavelength=Wavelength,Stick=Stick,Fill=Fill
 
   IF NOT KEYWORD_SET(Color) THEN Color = 2
 
-  FOR i = 0L, self.nuids - 1 DO BEGIN
+  h = HISTOGRAM((*self.data).uid, MIN=0, REVERSE_INDICES=ri)
 
-     select = WHERE((*self.data).uid EQ (*self.uids)[i])
+  FOR i = 0, self.nuids - 1 DO BEGIN
+
+     select = ri[ri[(*self.uids)[i]]:ri[(*self.uids)[i]+1]-1]
 
      self->AmesPAHdbIDLSuite_Plot::Oplot,x,(*self.data)[select].intensity,Stick=Stick,Fill=Fill,COLOR=Color+i
   ENDFOR
