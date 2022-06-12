@@ -1,4 +1,7 @@
 CHANGELOG
++- 06-11-2022
+   Fix AmesPAHdbIDLSuite_Geometry::Inertia computations in
+   AmesPAHdbIDLSuite_Geometry__define.pro.
 +- 05-18-2022
    Use Histogram for speed-up in AmesPAHdbIDLSuite_Spectrum::Plot in
    AmesPAHdbIDLSuite_Spectrum__define.pro. Use Histogram in
