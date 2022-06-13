@@ -1,4 +1,7 @@
 CHANGELOG
++- 06-13-2022
+   Use lazy instantiation for getters in
+   AmesPAHdbIDLSuite_MCFitted_Spectrum__define.pro.
 +- 06-11-2022
    Fix AmesPAHdbIDLSuite_Geometry::Inertia computations in
    AmesPAHdbIDLSuite_Geometry__define.pro.
