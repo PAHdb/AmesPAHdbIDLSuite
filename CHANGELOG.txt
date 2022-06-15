@@ -1,4 +1,7 @@
 CHANGELOG
++- 06-15-2022:
+   Properly include grid end point in AmesPAHdbIDLSuite_Observation::Rebin
+   in AmesPAHdbIDLSuite_Observation__define.pro.
 +- 06-14-2022
    Refactor lazy instantiation and keep track of function signatures in
    AmesPAHdbIDLSuite_MCFitted_Spectrum__define.pro. Use lazy instantiation

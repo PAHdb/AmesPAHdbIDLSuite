@@ -25,6 +25,8 @@
 ; :History:
 ;   Changes::
 ;
+;     06-15-2022:
+;     Properly include grid end point in REBIN. Christiaan Boersma.
 ;     04-27-2022
 ;     Added NOTICE-keyword and check for no abscissa units ABSCISSAUNITSTO.
 ;     Christiaan Boersma.
@@ -344,9 +346,14 @@ PRO AmesPAHdbIDLSuite_Observation::Rebin,x,Uniform=Uniform,Resolution=Resolution
 
      x = min + x * DINDGEN(nx)
 
-     x = [x, max]
+     IF x[-1] NE max THEN BEGIN
 
-     nx += 1
+        x = [x, max]
+
+        nx += 1
+
+     ENDIF
+
   ENDIF ELSE IF KEYWORD_SET(Resolution) THEN BEGIN
 
      r = DOUBLE(x)
@@ -365,9 +372,7 @@ PRO AmesPAHdbIDLSuite_Observation::Rebin,x,Uniform=Uniform,Resolution=Resolution
 
      WHILE x[nx-1] LT max DO x = [x, x[nx-1] + (x[nx++ - 1] / r)]
 
-     x = [x, max]
-
-     nx += 1
+     x[-1] = max
 
   ENDIF ELSE BEGIN
 
