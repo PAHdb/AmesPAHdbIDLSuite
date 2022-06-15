@@ -25,6 +25,8 @@
 ; :History:
 ;   Changes::
 ;
+;     06-11-2022
+;     Fix INERTIA computations. Christiaan Boersma.
 ;     10-03-2021
 ;     Added DESCRIPTION to avoid crash on calling HELP. Christiaan
 ;     Boersma.
@@ -500,7 +502,7 @@ FUNCTION AmesPAHdbIDLSuite_Geometry::Mass
 END
 
 ;+
-; Calculates the moment of intertia for each PAH.
+; Calculates the moment of inertia for each PAH.
 ;
 ; :Returns:
 ;   struct array
@@ -522,22 +524,10 @@ FUNCTION AmesPAHdbIDLSuite_Geometry::Inertia
 
   FOR idx = 0, self.nuids - 1 DO BEGIN
 
-     select = WHERE(*self.uids EQ (*self.uids)[idx], nselect)
+     select = WHERE((*self.data).uid EQ (*self.uids)[idx], nselect)
 
      IF nselect EQ 0 THEN RETURN,-1
 
-     ; Move molecule to center-of-mass
-     x_com = TOTAL(atomic_masses[(*self.data)[select].type] * (*self.data)[select].x)
-
-     y_com = TOTAL(atomic_masses[(*self.data)[select].type] * (*self.data)[select].y)
-
-     z_com = TOTAL(atomic_masses[(*self.data)[select].type] * (*self.data)[select].z)
-
-     m_total = TOTAL(atomic_masses[(*self.data)[select].type])
-
-     x_com /= m_total & y_com /= m_total & z_com /= m_total
-
-    ; Create the elements of the moment of inertia tensor
      I11 = TOTAL(atomic_masses[(*self.data)[select].type] * ((*self.data)[select].y^2 + ((*self.data)[select].z^2)))
 
      I22 = TOTAL(atomic_masses[(*self.data)[select].type] * ((*self.data)[select].x^2 + ((*self.data)[select].z^2)))

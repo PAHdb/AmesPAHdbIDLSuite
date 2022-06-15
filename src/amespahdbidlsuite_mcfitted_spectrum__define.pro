@@ -25,6 +25,11 @@
 ; :History:
 ;   Changes::
 ;
+;     06-14-2022
+;     Refactor lazy instantiation and keep track of function signatures
+;     Christiaan Boersma.
+;     06-13-2022
+;     Use lazy instantiation for getters. Christiaan Boersma.
 ;     05-03-2022
 ;     Remove extraneous plot in GETSIZEDISTRIBUTION. Refactor GETCHISQUARED,
 ;     GETNORM, and GETRESIDUAL, making sure use of proper uncertainties.
@@ -393,9 +398,9 @@ FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::Get
 
   IF NOT PTR_VALID(self.obj) THEN RETURN, 0
 
-  struct.type = OBJ_CLASS(self)+'_S'
-
-  RETURN,CREATE_STRUCT(struct, 'obj', *self.obj, 'distribution', self.distribution)
+  RETURN,CREATE_STRUCT('type', OBJ_CLASS(self)+'_S', $
+                       'obj', *self.obj, $
+                       'distribution', self.distribution)
 END
 
 ;+
@@ -432,7 +437,12 @@ PRO AmesPAHdbIDLSuite_MCFitted_Spectrum::Set,Struct,Type=Type,Obj=Obj,Distributi
 
            IF NOT KEYWORD_SET(Obj) THEN BEGIN
 
-              IF PTR_VALID(self.obj) THEN PTR_FREE,self.obj
+              IF PTR_VALID(self.obj) THEN BEGIN
+              
+                PTR_FREE,self.obj
+
+                self.InvalidateLazy
+              ENDIF
 
               self.obj = PTR_NEW(Struct.obj)
            ENDIF
@@ -444,7 +454,12 @@ PRO AmesPAHdbIDLSuite_MCFitted_Spectrum::Set,Struct,Type=Type,Obj=Obj,Distributi
 
   IF KEYWORD_SET(Obj) THEN BEGIN
 
-      IF PTR_VALID(self.obj) THEN PTR_FREE,self.obj
+    IF PTR_VALID(self.obj) THEN BEGIN
+
+        PTR_FREE,self.obj
+
+        self.InvalidateLazy
+      ENDIF
 
       self.obj = PTR_NEW(Obj)
    ENDIF
@@ -467,12 +482,17 @@ FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetResidual
 
   ON_ERROR,2
 
-  nobj = N_ELEMENTS(*self.obj)
+  IF NOT PTR_VALID(self._lazy.residual) THEN BEGIN
 
-  res = DBLARR(nobj, N_ELEMENTS((*self.obj)[0]->GetGrid()))
-  FOR i = 0L, nobj - 1L DO res[i, *] = (*self.obj)[i]->GetResidual()
-  
-  RETURN,MOMENT(res, DIMENSION=1)
+    nobj = N_ELEMENTS(*self.obj)
+
+    res = DBLARR(nobj, N_ELEMENTS((*self.obj)[0]->GetGrid()))
+    FOR i = 0L, nobj - 1L DO res[i, *] = (*self.obj)[i]->GetResidual()
+
+    self._lazy.residual = PTR_NEW(MOMENT(res, DIMENSION=1))
+  ENDIF
+
+  RETURN, *self._lazy.residual
 END
 
 ;+
@@ -490,12 +510,17 @@ FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetFit
 
   ON_ERROR,2
 
-  nobj = N_ELEMENTS(*self.obj)
+  IF NOT PTR_VALID(self._lazy.fit) THEN BEGIN
 
-  spc = DBLARR(nobj, N_ELEMENTS((*self.obj)[0]->GetGrid()))
-  FOR i = 0L, nobj - 1L DO spc[i, *] = (*self.obj)[i]->GetFit()
+    nobj = N_ELEMENTS(*self.obj)
 
-  RETURN,MOMENT(spc, DIMENSION=1)
+    spc = DBLARR(nobj, N_ELEMENTS((*self.obj)[0]->GetGrid()))
+    FOR i = 0L, nobj - 1L DO spc[i, *] = (*self.obj)[i]->GetFit()
+
+    self._lazy.fit = PTR_NEW(MOMENT(spc, DIMENSION=1))
+  ENDIF
+
+  RETURN,*self._lazy.fit
 END
 
 ;+
@@ -542,50 +567,57 @@ FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetSizeDistribution,NBins=nbins,Mi
 
   ON_ERROR,2
 
-  nobj = N_ELEMENTS(*self.obj)
+  IF NOT PTR_VALID(self._lazy.sizedistribution) THEN BEGIN
 
-  his = PTRARR(nobj, /ALLOCATE_HEAP)
+    nobj = N_ELEMENTS(*self.obj)
 
-  left = 1D100 ; a Google!
+    his = PTRARR(nobj, /ALLOCATE_HEAP)
 
-  right = 0
+    left = 1D100 ; a Google!
 
-  n = 0L
+    right = 0
 
-  FOR i = 0L, nobj - 1L DO BEGIN
+    n = 0L
 
-    (*his[i]) = (*self.obj)[i]->GetSizeDistribution(NBins=nbins, Min=min, Max=max)
+    FOR i = 0L, nobj - 1L DO BEGIN
 
-    hleft = MIN((*his[i]).size, MAX=hright)
+      (*his[i]) = (*self.obj)[i]->GetSizeDistribution(NBins=nbins, Min=min, Max=max)
 
-    IF hleft LT left THEN min = hleft
-    IF hright GT right THEN max = hright
+     hleft = MIN((*his[i]).size, MAX=hright)
 
-    n += N_ELEMENTS((*his[i]).size)
-  ENDFOR
+      IF hleft LT left THEN min = hleft
+      IF hright GT right THEN max = hright
 
-  nbins = FLOOR((n - 1L) / FLOAT(nobj))
+      n += N_ELEMENTS((*his[i]).size)
+    ENDFOR
 
-  size = min + (max - min) * DINDGEN(nbins + 1) / DOUBLE(nbins)
+    nbins = FLOOR((n - 1L) / FLOAT(nobj))
 
-  dist = DBLARR(nbins, nobj)
+    size = min + (max - min) * DINDGEN(nbins + 1) / DOUBLE(nbins)
 
-  FOR i = 0L, nobj - 1L DO BEGIN
+    dist = DBLARR(nbins, nobj)
 
-    idx = VALUE_LOCATE(size, (*his[i]).size)
+    FOR i = 0L, nobj - 1L DO BEGIN
 
-    left = WHERE(idx LT 0, c)
-    IF c GT 0 THEN idx[left] = 0
-    right = WHERE(idx GE nbins, c)
-    IF c GT 0 THEN idx[right] = nbins - 1
+      idx = VALUE_LOCATE(size, (*his[i]).size)
 
-    n = N_ELEMENTS((*his[i]).distribution)
-    FOR j = 0L, n - 1L DO dist[idx[j], i] = (*his[i]).distribution[j]
-  ENDFOR
+      left = WHERE(idx LT 0, c)
+      IF c GT 0 THEN idx[left] = 0
+      right = WHERE(idx GE nbins, c)
+      IF c GT 0 THEN idx[right] = nbins - 1
 
-  FOR i = 0L, nobj - 1L DO PTR_FREE,his[i]
+      n = N_ELEMENTS((*his[i]).distribution)
+      FOR j = 0L, n - 1L DO dist[idx[j], i] = (*his[i]).distribution[j]
+    ENDFOR
 
-  RETURN,{size:size, distribution:MOMENT(dist, DIMENSION=2)}
+    FOR i = 0L, nobj - 1L DO PTR_FREE,his[i]
+
+    self._lazy.sizedistribution = PTR_NEW({AmesPAHdbIDLSuite_MCFitted_SizeDistribution, $
+                                           size:size, $
+                                           distribution:MOMENT(dist, DIMENSION=2)})
+  ENDIF
+
+  RETURN,*self._lazy.sizedistribution
 END
 
 ;+
@@ -612,45 +644,64 @@ FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetBreakdown,Small=Small,Flux=Flux
 
   ON_ERROR,2
 
-  nobj = N_ELEMENTS(*self.obj)
+  IF PTR_VALID(self._lazy.breakdown) THEN BEGIN
 
-  bd = REPLICATE({AmesPAHdb_Breakdown, $
-                   anion:0D, $
-                   neutral:0D, $
-                   cation:0D, $
-                   small:0D, $
-                   large:0D, $
-                   pure:0D, $
-                   nitrogen:0D, $
-                   solo:0L, $
-                   duo:0L, $
-                   trio:0L, $
-                   quartet:0L, $
-                   quintet:0L}, nobj)
+    signature = ([KEYWORD_SET(Small) ? Small : 0L, $
+                  KEYWORD_SET(Flux), $
+                  KEYWORD_SET(Absolute)]).HASHCODE()
 
-  FOR i = 0L, nobj - 1L DO $
-    bd[i] = (*self.obj)[i]->GetBreakdown(Small=Small,Flux=Flux,Absolute=Absolute)
+    IF signature NE self._lazy.breakdown_sig THEN BEGIN
 
-  mcbd = {AmesPAHdb_MCBreakdown, $
-          anion:DBLARR(4), $
-          neutral:DBLARR(4), $
-          cation:DBLARR(4), $
-          small:DBLARR(4), $
-          large:DBLARR(4), $
-          pure:DBLARR(4), $
-          nitrogen:DBLARR(4), $
-          solo:LONARR(4), $
-          duo:LONARR(4), $
-          trio:LONARR(4), $
-          quartet:LONARR(4), $
-          quintet:LONARR(4)}
+      PTR_FREE,self._lazy.breakdown
 
-  ntags = N_TAGS(bd)
+      self._lazy.breakdown_sig = signature
+    ENDIF
+  ENDIF
 
-  FOR i = 0L, ntags - 1L DO $
-    mcbd.(i) = MOMENT(bd.(i))
+  IF NOT PTR_VALID(self._lazy.breakdown) THEN BEGIN
 
-  RETURN,mcbd
+    nobj = N_ELEMENTS(*self.obj)
+
+    bd = REPLICATE({AmesPAHdb_Breakdown, $
+                     anion:0D, $
+                     neutral:0D, $
+                     cation:0D, $
+                     small:0D, $
+                     large:0D, $
+                     pure:0D, $
+                     nitrogen:0D, $
+                     solo:0L, $
+                     duo:0L, $
+                     trio:0L, $
+                     quartet:0L, $
+                     quintet:0L}, nobj)
+
+    FOR i = 0L, nobj - 1L DO $
+      bd[i] = (*self.obj)[i]->GetBreakdown(Small=Small,Flux=Flux,Absolute=Absolute)
+
+    mcbd = {AmesPAHdb_MCBreakdown, $
+            anion:DBLARR(4), $
+            neutral:DBLARR(4), $
+            cation:DBLARR(4), $
+            small:DBLARR(4), $
+            large:DBLARR(4), $
+            pure:DBLARR(4), $
+            nitrogen:DBLARR(4), $
+            solo:LONARR(4), $
+            duo:LONARR(4), $
+            trio:LONARR(4), $
+            quartet:LONARR(4), $
+            quintet:LONARR(4)}
+
+    ntags = N_TAGS(bd)
+
+    FOR i = 0L, ntags - 1L DO $
+      mcbd.(i) = MOMENT(bd.(i))
+
+    self._lazy.breakdown = PTR_NEW(mcbd)
+  ENDIF
+
+  RETURN,*self._lazy.breakdown
 END
 
 ;+
@@ -672,37 +723,54 @@ FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetClasses,Small=Small
 
   ON_ERROR,2
 
-  nobj = N_ELEMENTS(*self.obj)
+  IF PTR_VALID(self._lazy.classes) THEN BEGIN
 
-  ngrid = N_ELEMENTS((*self.obj)[0]->GetGrid())
+    signature = ([KEYWORD_SET(Small) ? Small : 0L]).HASHCODE()
 
-  cls = REPLICATE({AmesPAHdb_Classes, $
-                   anion:0D, $
-                   neutral:0D, $
-                   cation:0D, $
-                   small:0D, $
-                   large:0D, $
-                   pure:0D, $
-                   nitrogen:0D}, ngrid, nobj)
+    IF signature NE self._lazy.classes_sig THEN BEGIN
 
-  FOR i = 0L, nobj - 1L DO $
-    cls[*, i] = (*self.obj)[i]->GetClasses(Small=Small)
+      PTR_FREE,self._lazy.classes
 
-  mccls = REPLICATE({AmesPAHdb_Classes, $
+      self._lazy.classes_sig = signature
+    ENDIF
+  ENDIF
+
+  IF NOT PTR_VALID(self._lazy.classes) THEN BEGIN
+
+    nobj = N_ELEMENTS(*self.obj)
+
+    ngrid = N_ELEMENTS((*self.obj)[0]->GetGrid())
+
+    cls = REPLICATE({AmesPAHdb_Classes, $
                      anion:0D, $
                      neutral:0D, $
                      cation:0D, $
                      small:0D, $
                      large:0D, $
                      pure:0D, $
-                     nitrogen:0D}, ngrid, 4)
+                     nitrogen:0D}, ngrid, nobj)
 
-  ntags = N_TAGS(cls)
+    FOR i = 0L, nobj - 1L DO $
+      cls[*, i] = (*self.obj)[i]->GetClasses(Small=Small)
 
-  FOR i = 0L, ntags - 1L DO $
-    mccls.(i) = MOMENT(cls.(i), DIMENSION=2)
+    mccls = REPLICATE({AmesPAHdb_Classes, $
+                       anion:0D, $
+                       neutral:0D, $
+                       cation:0D, $
+                       small:0D, $
+                       large:0D, $
+                       pure:0D, $
+                       nitrogen:0D}, ngrid, 4)
 
-  RETURN,mccls
+    ntags = N_TAGS(cls)
+
+    FOR i = 0L, ntags - 1L DO $
+      mccls.(i) = MOMENT(cls.(i), DIMENSION=2)
+
+    self._lazy.classes = PTR_NEW(mccls)
+  ENDIF
+
+  RETURN,*self._lazy.classes
 END
 
 ;+
@@ -740,12 +808,17 @@ FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetNorm
 
   ON_ERROR,2
 
-  nobj = N_ELEMENTS(*self.obj)
+  IF NOT PTR_VALID(self._lazy.norm) THEN BEGIN
 
-  nrm = DBLARR(nobj)
-  FOR i = 0L,  nobj - 1L DO nrm[i] = (*self.obj)[i]->getNorm()
+    nobj = N_ELEMENTS(*self.obj)
+
+    nrm = DBLARR(nobj)
+    FOR i = 0L,  nobj - 1L DO nrm[i] = (*self.obj)[i]->getNorm()
   
-  RETURN,MOMENT(nrm)
+    self._lazy.norm = PTR_NEW(MOMENT(nrm))
+  ENDIF
+
+  RETURN,*self._lazy.norm
 END
 
 ;+
@@ -763,12 +836,17 @@ FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetChiSquared
 
   ON_ERROR,2
 
-  nobj = N_ELEMENTS(*self.obj)
+  IF NOT PTR_VALID(self._lazy.chisquared) THEN BEGIN
 
-  chi = DBLARR(nobj)
-  FOR i = 0L,  nobj - 1L DO chi[i] = (*self.obj)[i]->GetChiSquared()
-    
-  RETURN,MOMENT(chi)
+    nobj = N_ELEMENTS(*self.obj)
+
+    chi = DBLARR(nobj)
+    FOR i = 0L,  nobj - 1L DO chi[i] = (*self.obj)[i]->GetChiSquared()
+
+    self._lazy.chisquared = PTR_NEW(MOMENT(chi))
+  ENDIF
+
+  RETURN,*self._lazy.chisquared
 END
 
 ;+
@@ -786,24 +864,29 @@ FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetError
 
   ON_ERROR,2
 
-  nobj = N_ELEMENTS(*self.obj)
+  IF NOT PTR_VALID(self._lazy.error) THEN BEGIN
 
-  tags = ['err',  'e127',  'e112',  'e77', 'e62', 'e33']
+    nobj = N_ELEMENTS(*self.obj)
+
+    tags = ['err',  'e127',  'e112',  'e77', 'e62', 'e33']
   
-  mcerr = REPLICATE(CREATE_STRUCT(NAME='AmesPAHdb_Piecewise_Error', $
-                                  tags, -1.0D, -1.0D, -1.0D, -1.0D, -1.0D, -1.0D), $
-                                  nobj)
+    mcerr = REPLICATE(CREATE_STRUCT(NAME='AmesPAHdb_Piecewise_Error', $
+                                    tags, -1.0D, -1.0D, -1.0D, -1.0D, -1.0D, -1.0D), $
+                                    nobj)
 
-  FOR i = 0L, nobj - 1L DO mcerr[i] = (*self.obj)[i]->GetError()
+    FOR i = 0L, nobj - 1L DO mcerr[i] = (*self.obj)[i]->GetError()
 
-  arr = MAKE_ARRAY(4, VALUE=-1.0D)
-  err = CREATE_STRUCT(NAME='AmesPAHdb_Piecewise_MCError', $
-                      tags, arr, arr, arr, arr, arr, arr)
+    arr = MAKE_ARRAY(4, VALUE=-1.0D)
+    err = CREATE_STRUCT(NAME='AmesPAHdb_Piecewise_MCError', $
+                        tags, arr, arr, arr, arr, arr, arr)
 
-  ntags = N_ELEMENTS(tags)
-  FOR i = 0, ntags - 1L DO err.(i) = MOMENT(mcerr.(i), /DOUBLE)
+    ntags = N_ELEMENTS(tags)
+    FOR i = 0, ntags - 1L DO err.(i) = MOMENT(mcerr.(i), /DOUBLE)
 
-  RETURN,err
+    self._lazy.error = PTR_NEW(err)
+  ENDIF
+
+  RETURN,*self._lazy.error
 END
 
 ;+
@@ -825,6 +908,24 @@ FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetMethod
 END
 
 ;+
+; Retrieves the number of samples.
+;
+; :Returns:
+;   int
+;
+; :Categories:
+;   SET/GET
+;-
+FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetSamples
+
+  COMPILE_OPT IDL2
+
+  ON_ERROR,2
+
+  RETURN,PTR_VALID(self.obj) ? N_ELEMENTS(*self.obj) : 0L
+END
+
+;+
 ; Retrieves the distribution used for permutating errors.
 ;
 ; :Returns:
@@ -840,6 +941,26 @@ FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetDistribution
   ON_ERROR,2
 
   RETURN,self.distribution
+END
+
+;+
+; Invalidate the AmesPAHdbIDLSuite_Fitted_Lazy structure.
+;
+; :Categories:
+;   CLASS
+;
+; :Private:
+;-
+PRO AmesPAHdbIDLSuite_MCFitted_Spectrum::InvalidateLazy
+
+  COMPILE_OPT IDL2
+
+  ON_ERROR,2
+
+  FOR i = 0L, N_TAGS(self._lazy) - 1L DO BEGIN
+
+    IF PTR_VALID(self._lazy.(i)) THEN PTR_FREE,self._lazy.(i)
+   ENDFOR
 END
 
 ;+
@@ -923,7 +1044,19 @@ PRO AmesPAHdbIDLSuite_MCFitted_Spectrum__DEFINE
           INHERITS AmesPAHdbIDLSuite_Plot, $
           state:0L, $
           obj:PTR_NEW(), $
-          distribution:''}
+          distribution:'', $
+          _lazy:{AmesPAHdbIDLSuite_Fitted_Lazy, $
+                 residual:PTR_NEW(), $
+                 fit:PTR_NEW(), $
+                 sizedistribution:PTR_NEW(), $
+                 breakdown:PTR_NEW(), $
+                 breakdown_sig:0L, $
+                 classes:PTR_NEW(), $
+                 classes_sig:0L, $
+                 norm:PTR_NEW(), $
+                 chisquared:PTR_NEW(), $
+                 error:PTR_NEW() $
+                 }}
 END
 
 ; END OF AmesPAHdbIDLSuite_MCFitted_Spectrum__define.pro

@@ -68,6 +68,7 @@ digraph callgraph {
   amespahdbidlsuite_species::laboratory[fontcolor=black,shape=plaintext]
   amespahdbidlsuite::gethash[fontcolor=black,shape=plaintext]
   amespahdbidlsuite::getspeciesbyuid[fontcolor=black,shape=plaintext]
+  amespahdbidlsuite_mcfitted_spectrum::getsamples[fontcolor=black,shape=plaintext]
   amespahdbidlsuite_observation::write[fontcolor=black,shape=plaintext]
   amespahdbidlsuite_geometry::diagonalize[fontcolor=black,shape=plaintext]
   amespahdbidlsuite_fitted_spectrum::getclasses[fontcolor=black,shape=plaintext]
