@@ -25,6 +25,9 @@
 ; :History:
 ;   Changes::
 ;
+;     06-14-2022
+;     Refactor lazy instantiation and keep track of function signatures
+;     Christiaan Boersma.
 ;     06-13-2022
 ;     Use lazy instantiation for getters. Christiaan Boersma.
 ;     05-03-2022
@@ -438,10 +441,7 @@ PRO AmesPAHdbIDLSuite_MCFitted_Spectrum::Set,Struct,Type=Type,Obj=Obj,Distributi
               
                 PTR_FREE,self.obj
 
-                FOR i = 0L, N_TAGS(self._lazy) - 1L DO BEGIN
-
-                  IF PTR_VALID(self._lazy.(i)) THEN PTR_FREE,self._lazy.(i)
-                ENDFOR
+                self.InvalidateLazy
               ENDIF
 
               self.obj = PTR_NEW(Struct.obj)
@@ -458,10 +458,7 @@ PRO AmesPAHdbIDLSuite_MCFitted_Spectrum::Set,Struct,Type=Type,Obj=Obj,Distributi
 
         PTR_FREE,self.obj
 
-        FOR i = 0L, N_TAGS(self._lazy) - 1L DO BEGIN
-
-          IF PTR_VALID(self._lazy.(i)) THEN PTR_FREE,self._lazy.(i)
-        ENDFOR
+        self.InvalidateLazy
       ENDIF
 
       self.obj = PTR_NEW(Obj)
@@ -647,6 +644,20 @@ FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetBreakdown,Small=Small,Flux=Flux
 
   ON_ERROR,2
 
+  IF PTR_VALID(self._lazy.breakdown) THEN BEGIN
+
+    signature = ([KEYWORD_SET(Small) ? Small : 0L, $
+                  KEYWORD_SET(Flux), $
+                  KEYWORD_SET(Absolute)]).HASHCODE()
+
+    IF signature NE self._lazy.breakdown_sig THEN BEGIN
+
+      PTR_FREE,self._lazy.breakdown
+
+      self._lazy.breakdown_sig = signature
+    ENDIF
+  ENDIF
+
   IF NOT PTR_VALID(self._lazy.breakdown) THEN BEGIN
 
     nobj = N_ELEMENTS(*self.obj)
@@ -662,8 +673,8 @@ FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetBreakdown,Small=Small,Flux=Flux
                      solo:0L, $
                      duo:0L, $
                      trio:0L, $
-                    quartet:0L, $
-                    quintet:0L}, nobj)
+                     quartet:0L, $
+                     quintet:0L}, nobj)
 
     FOR i = 0L, nobj - 1L DO $
       bd[i] = (*self.obj)[i]->GetBreakdown(Small=Small,Flux=Flux,Absolute=Absolute)
@@ -711,6 +722,18 @@ FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetClasses,Small=Small
   COMPILE_OPT IDL2
 
   ON_ERROR,2
+
+  IF PTR_VALID(self._lazy.classes) THEN BEGIN
+
+    signature = ([KEYWORD_SET(Small) ? Small : 0L]).HASHCODE()
+
+    IF signature NE self._lazy.classes_sig THEN BEGIN
+
+      PTR_FREE,self._lazy.classes
+
+      self._lazy.classes_sig = signature
+    ENDIF
+  ENDIF
 
   IF NOT PTR_VALID(self._lazy.classes) THEN BEGIN
 
@@ -921,6 +944,26 @@ FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetDistribution
 END
 
 ;+
+; Invalidate the AmesPAHdbIDLSuite_Fitted_Lazy structure.
+;
+; :Categories:
+;   CLASS
+;
+; :Private:
+;-
+PRO AmesPAHdbIDLSuite_MCFitted_Spectrum::InvalidateLazy
+
+  COMPILE_OPT IDL2
+
+  ON_ERROR,2
+
+  FOR i = 0L, N_TAGS(self._lazy) - 1L DO BEGIN
+
+    IF PTR_VALID(self._lazy.(i)) THEN PTR_FREE,self._lazy.(i)
+   ENDFOR
+END
+
+;+
 ; Clean-up an AmesPAHdbIDLSuite_MCFitted_Spectrum-instance
 ;
 ; :Categories:
@@ -1002,12 +1045,14 @@ PRO AmesPAHdbIDLSuite_MCFitted_Spectrum__DEFINE
           state:0L, $
           obj:PTR_NEW(), $
           distribution:'', $
-          _lazy:{AmesPAHdbIDLSuite_MCFitted_Lazy, $
+          _lazy:{AmesPAHdbIDLSuite_Fitted_Lazy, $
                  residual:PTR_NEW(), $
                  fit:PTR_NEW(), $
                  sizedistribution:PTR_NEW(), $
                  breakdown:PTR_NEW(), $
+                 breakdown_sig:0L, $
                  classes:PTR_NEW(), $
+                 classes_sig:0L, $
                  norm:PTR_NEW(), $
                  chisquared:PTR_NEW(), $
                  error:PTR_NEW() $
