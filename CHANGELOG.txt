@@ -1,5 +1,8 @@
 CHANGELOG
-+- 06-15-2022:
++- 06-22-2022
+   Some simplifications in AmesPAHdbIDLSuite_Geometry::Structure in
+   AmesPAHdbIDLSuite_Geometry__define.pro.
++- 06-15-2022
    Properly include grid end point in AmesPAHdbIDLSuite_Observation::Rebin
    in AmesPAHdbIDLSuite_Observation__define.pro.
 +- 06-14-2022
