@@ -1,4 +1,7 @@
 CHANGELOG
++= 07-08-2022
+   Pass EXTERNAL_NNLS to AmesPAHdbIDLSuite_Spectrum::Fit in
+   AmesPAHdbIDLSuite_Spectrum::MCFit in AmesPAHdbIDLSuite_Spectrum__define.pro.
 +- 06-22-2022
    Some simplifications in AmesPAHdbIDLSuite_Geometry::Structure in
    AmesPAHdbIDLSuite_Geometry__define.pro.

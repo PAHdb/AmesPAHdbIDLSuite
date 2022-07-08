@@ -25,6 +25,8 @@
 ; :History:
 ;   Changes::
 ;
+;     07-08-2022
+;     Pass EXTERNAL_NNLS to FIT in MCFIT. Christiaan Boersma.
 ;     05-18-2022
 ;     Use HISTOGRAM speed-up in PLOT. Christiaan Boersma.
 ;     04-28-2022
@@ -663,7 +665,7 @@ FUNCTION AmesPAHdbIDLSuite_Spectrum::MCFit,observation,error,samples,EXTERNAL_NN
     obs->Set,Y=y + ystdev * (NOT KEYWORD_SET(Uniform) ? RANDOMU(seed, ny, /DOUBLE, /NORMAL) $
                                                       : (2D * RANDOMU(seed, ny, /DOUBLE, /UNIFORM) - 1D))
 
-    obj[i] = self->Fit(obs, Notice=0)
+    obj[i] = self->Fit(obs, EXTERNAL_NNLS=external_nnls, Notice=0)
   ENDFOR
   PRINT
   PRINT,"========================================================="
