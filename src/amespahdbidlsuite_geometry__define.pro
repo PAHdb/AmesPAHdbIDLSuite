@@ -25,6 +25,8 @@
 ; :History:
 ;   Changes::
 ;
+;     09-20-2022
+;     Use CPK codes for coloring atoms. Christiaan Boersma.
 ;     06-22-2022
 ;     Some simplifications STRUCTURE. Christiaan Boersma.
 ;     06-11-2022
@@ -151,7 +153,7 @@ FUNCTION AmesPAHdbIDLSuite_Geometry::Plot,UID,NoErase=NoErase,Resolution=Resolut
 
   atom_numbers = [ 1,   6,   7,   8,   12,   14,   26 ]
 
-  atom_colors =  [14,   0,   2,   3,    6 ,   5,    8 ]
+  atom_colors =  [14,   0,   4,   2,    3 ,  11,    8 ]
 
   atom_symsize = [ 1,   2,   3,   3,  3.5,    4,    4 ] * Scale
 
@@ -324,7 +326,7 @@ FUNCTION AmesPAHdbIDLSuite_Geometry::Structure,UID,Background=Background,Save=Sa
 
   atom_numbers = [ 1,   6,   7,   8,   12,   14,   26 ]
 
-  atom_colors =  [[200,200,200], [27,27,27], [255,0,0], [0,0,255], [0,255,255], [255,0,0], [0,255,0]]
+  atom_colors =  [[200,200,200], [27,27,27], [48,80,248], [255,13,13], [138,255,0], [240,200,160], [224,102,51]]
 
   atom_symsize = [0.2, 0.4, 0.6, 0.6, 0.7, 0.8, 0.8]
 
