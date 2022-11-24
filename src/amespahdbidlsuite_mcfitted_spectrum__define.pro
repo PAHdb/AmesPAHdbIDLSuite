@@ -25,6 +25,9 @@
 ; :History:
 ;   Changes::
 ;
+;     11-23-2022
+;     Add _overloads and add+propagate missing PAHdb-keyword in INIT and
+;     SET. Christiaan Boersma.
 ;     06-14-2022
 ;     Refactor lazy instantiation and keep track of function signatures
 ;     Christiaan Boersma.
@@ -421,7 +424,7 @@ END
 ; :Categories:
 ;   SET/GET
 ;-
-PRO AmesPAHdbIDLSuite_MCFitted_Spectrum::Set,Struct,Type=Type,Obj=Obj,Distribution=Distribution
+PRO AmesPAHdbIDLSuite_MCFitted_Spectrum::Set,Struct,Type=Type,Obj=Obj,Distribution=Distribution,PAHdb=PAHdb
 
   COMPILE_OPT IDL2
 
@@ -465,6 +468,19 @@ PRO AmesPAHdbIDLSuite_MCFitted_Spectrum::Set,Struct,Type=Type,Obj=Obj,Distributi
    ENDIF
 
    IF KEYWORD_SET(Distribution) THEN self.distribution = Distribution
+
+   IF KEYWORD_SET(PAHdb) THEN BEGIN
+
+     IF PTR_VALID(self.obj) THEN BEGIN
+
+       nobj = N_ELEMENTS(*self.obj)
+
+       FOR i = 0L, nobj - 1L DO (*self.obj)[i]->Set,PAHdb=PAHdb
+
+     ENDIF
+
+   ENDIF
+
 END
 
 ;+
@@ -964,6 +980,160 @@ PRO AmesPAHdbIDLSuite_MCFitted_Spectrum::InvalidateLazy
 END
 
 ;+
+; Overload the array subscript access operator.
+;
+; :Returns:
+;   Object element
+;
+; :Params:
+;   isRange: in, required, type=int
+;     Whether index is an array
+;   index: in, required, type="long or long array (1D)"
+;     Index
+;
+; :Categories:
+;   OVERLOAD
+;
+; :Private:
+;-
+FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::_overloadBracketsRightSide,isRange,index
+
+  COMPILE_OPT IDL2
+
+  ON_ERROR,2
+
+  IF PTR_VALID(self.obj) THEN BEGIN
+
+     RETURN,(*self.obj)[index]
+  ENDIF
+
+  RETURN,-1
+END
+
+;+
+; Overload FOREACH operator.
+;
+; :Returns:
+;   1 on success or 0 on failure
+;
+; :Params:
+;   value: out, required, type=object
+;     Object element
+;   index: out, required, type=long
+;     Index associated with Object element
+;
+; :Categories:
+;   OVERLOAD
+;
+; :Private:
+;-
+FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::_overloadForeach,value,index
+
+  COMPILE_OPT IDL2
+
+  ON_ERROR,2
+
+  status = index LT N_ELEMENTS(*self.obj)
+
+  IF status THEN value = self->_overloadBracketsRightSide(isRange, index)
+
+  RETURN,status
+END
+
+;+
+; Overload the Size information.
+;
+; :Returns:
+;   long or long array
+;
+; :Categories:
+;   OVERLOAD
+;
+; :Private:
+;-
+FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::_overloadSize
+
+  COMPILE_OPT IDL2
+
+  ON_ERROR,2
+
+  RETURN,SIZE(*self.obj, /DIMENSIONS)
+END
+
+;+
+; Overload the PRINT information.
+;
+; :Returns:
+;   string or string array
+;
+; :Categories:
+;   OVERLOAD
+;
+; :Private:
+;-
+FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::_overloadPrint
+
+  COMPILE_OPT IDL2
+
+  ON_ERROR,2
+
+  self->Description,Str
+
+  RETURN, STRJOIN(STRSPLIT(Str, "!C", /EXTRACT, /REGEX), STRING(10B))
+END
+
+;+
+; Overload the Implied PRINT information.
+;
+; :Returns:
+;   string or string array
+;
+; :Params:
+;   arg: in, required, type=string
+;     Variable name
+;
+; :Categories:
+;   OVERLOAD
+;
+; :Private:
+;-
+FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::_overloadImpliedPrint,arg
+
+  COMPILE_OPT IDL2
+
+  ON_ERROR,2
+
+  RETURN, self->AmesPAHdbIDLSuite_MCFitted_Spectrum::_overloadPrint()
+END
+
+;+
+; Overload the HELP information.
+;
+; :Returns:
+;   string or string array
+;
+; :Params:
+;   arg: in, required, type=string
+;     Variable name
+;
+; :Categories:
+;   OVERLOAD
+;
+; :Private:
+;-
+FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::_overloadHelp,arg
+
+  COMPILE_OPT IDL2
+
+  ON_ERROR,2
+
+  Str = '<' + arg + '>' + STRING(10B) + $
+        self->AmesPAHdbIDLSuite_MCFitted_Spectrum::_overloadPrint()
+
+  RETURN,Str
+END
+
+;+
 ; Clean-up an AmesPAHdbIDLSuite_MCFitted_Spectrum-instance
 ;
 ; :Categories:
@@ -999,11 +1169,13 @@ END
 ;     Array holding AmesPAHdbIDLSuiteFittedSpectrum instances
 ;   distribution: in, optional, type=string
 ;     Distribution used for permutating errors
+;   PAHdb: in, optional, type=pointer
+;     Pointer to parsed database file
 ;
 ; :Categories:
 ;   CLASS
 ;-
-FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::Init,Struct,Type=Type,Obj=Obj,Distribution=Distribution
+FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::Init,Struct,Type=Type,Obj=Obj,Distribution=Distribution,PAHdb=PAHdb
 
   COMPILE_OPT IDL2
 
@@ -1011,8 +1183,8 @@ FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::Init,Struct,Type=Type,Obj=Obj,Dist
 
   self.state = self->AmesPAHdbIDLSuite_Plot::Init()
 
-  IF N_PARAMS() GT 0 THEN self->Set,Struct,Type=Type,Obj=Obj,Distribution=Distribution $
-  ELSE self->Set,Type=Type,Obj=Obj,Distribution=Distribution
+  IF N_PARAMS() GT 0 THEN self->Set,Struct,Type=Type,Obj=Obj,Distribution=Distribution,PAHdb=PAHdb $
+  ELSE self->Set,Type=Type,Obj=Obj,Distribution=Distribution,PAHdb=PAHdb
 
   RETURN,self.state
 END

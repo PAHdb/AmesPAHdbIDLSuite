@@ -1,4 +1,11 @@
 CHANGELOG
++- 11-23-2022
+   Add missing OPLOT-keyword to AmesPAHdbIDLSuite_Fitted_Spectrum::Plot
+   signature in AmesPAHdbIDLSuite_Fitted_Spectrum__define.pro. Add _overloads
+   and add+propagate missing PAHdb-keyword in
+   AmesPAHdbIDLSuite_MCFitted_Spectrum::Init and
+   AmesPAHdbIDLSuite_MCFitted_Spectrum::Set in
+   AmesPAHdbIDLSuite_MCFitted_Spectrum__define.pro.
 +- 09-20-2022
    Use CPK codes for coloring atoms in AmesPAHdbIDLSuite_Geometry_define.pro.
 +- 07-08-2022
