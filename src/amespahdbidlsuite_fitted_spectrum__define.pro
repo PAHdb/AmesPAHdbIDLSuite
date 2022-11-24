@@ -25,6 +25,9 @@
 ; :History:
 ;   Changes::
 ;
+;     11-23-2022
+;     Add missing OPLOT keyword to PLOT signature. Christiaan
+;     Boersma.
 ;     06-14-2022
 ;     Use lazy instantiation for getters and keep track of function
 ;     signatures. Christiaan Boersma.
@@ -153,7 +156,7 @@ END
 ; :Categories:
 ;   PLOTTING
 ;-
-PRO AmesPAHdbIDLSuite_Fitted_Spectrum::Plot,DistributionSize=DistributionSize,Residual=Residual,Size=Size,Charge=Charge,Composition=Composition,Structures=Structures,Wavelength=Wavelength,Stick=Stick,Fill=Fill,Legend=Legend,Color=Color,_EXTRA=EXTRA
+PRO AmesPAHdbIDLSuite_Fitted_Spectrum::Plot,DistributionSize=DistributionSize,Residual=Residual,Size=Size,Charge=Charge,Composition=Composition,Structures=Structures,Wavelength=Wavelength,Stick=Stick,Fill=Fill,Legend=Legend,Color=Color,Oplot=Oplot,_EXTRA=EXTRA
 
   COMPILE_OPT IDL2
 

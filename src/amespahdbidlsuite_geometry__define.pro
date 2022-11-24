@@ -25,6 +25,10 @@
 ; :History:
 ;   Changes::
 ;
+;     09-20-2022
+;     Use CPK codes for coloring atoms. Christiaan Boersma.
+;     06-22-2022
+;     Some simplifications STRUCTURE. Christiaan Boersma.
 ;     06-11-2022
 ;     Fix INERTIA computations. Christiaan Boersma.
 ;     10-03-2021
@@ -149,7 +153,7 @@ FUNCTION AmesPAHdbIDLSuite_Geometry::Plot,UID,NoErase=NoErase,Resolution=Resolut
 
   atom_numbers = [ 1,   6,   7,   8,   12,   14,   26 ]
 
-  atom_colors =  [14,   0,   2,   3,    6 ,   5,    8 ]
+  atom_colors =  [14,   0,   4,   2,    3 ,  11,    8 ]
 
   atom_symsize = [ 1,   2,   3,   3,  3.5,    4,    4 ] * Scale
 
@@ -164,7 +168,11 @@ FUNCTION AmesPAHdbIDLSuite_Geometry::Plot,UID,NoErase=NoErase,Resolution=Resolut
 
   select = WHERE((*self.data).uid EQ UID[0], nselect)
 
-  plotx = (*self.data)[select].x & ploty = (*self.data)[select].y & plotz = (*self.data)[select].z
+  plotx = (*self.data)[select].x
+
+  ploty = (*self.data)[select].y
+
+  plotz = (*self.data)[select].z
 
   IF KEYWORD_SET(Angle) THEN BEGIN
 
@@ -176,7 +184,11 @@ FUNCTION AmesPAHdbIDLSuite_Geometry::Plot,UID,NoErase=NoErase,Resolution=Resolut
 
         coords =  [plotx[i], ploty[i], plotz[i], 1.0] # rotmat
 
-        plotx[i] = coords[0] & ploty[i] = coords[1] & plotz[i] = coords[2]
+        plotx[i] = coords[0]
+
+        ploty[i] = coords[1]
+
+        plotz[i] = coords[2]
      ENDFOR
   ENDIF
 
@@ -186,7 +198,9 @@ FUNCTION AmesPAHdbIDLSuite_Geometry::Plot,UID,NoErase=NoErase,Resolution=Resolut
 
   PLOT,plotx,ploty,XRANGE=range,YRANGE=range,XSTYLE=7,YSTYLE=7,XMARGIN=[0,0],ymargin=[0,0],/NODATA,NOERASE=Noerase,POSITION=Position
 
-  numn = INTARR(nselect) & nlist = MAKE_ARRAY(nselect, 6, VALUE=-1)
+  numn = INTARR(nselect)
+
+  nlist = MAKE_ARRAY(nselect, 6, VALUE=-1)
 
   FOR i = 0, nselect - 1 DO BEGIN
 
@@ -194,7 +208,9 @@ FUNCTION AmesPAHdbIDLSuite_Geometry::Plot,UID,NoErase=NoErase,Resolution=Resolut
 
      sel = WHERE(dd GT 0D AND dd LT 1.6D, nsel)
 
-     numn[i] = nsel & nlist[i, 0:nsel-1] = sel
+     numn[i] = nsel
+
+     nlist[i, 0:nsel-1] = sel
   ENDFOR
 
   FOR i = 0, nselect - 1 DO BEGIN
@@ -208,7 +224,6 @@ FUNCTION AmesPAHdbIDLSuite_Geometry::Plot,UID,NoErase=NoErase,Resolution=Resolut
            nlist[nlist[i, j], WHERE(nlist[nlist[i, j], *] EQ i)] = -1
 
            nlist[nlist[i, j], *] = nlist[nlist[i, j], REVERSE(SORT(nlist[nlist[i, j], *]))]
-
         ENDIF
      ENDFOR
   ENDFOR
@@ -311,7 +326,7 @@ FUNCTION AmesPAHdbIDLSuite_Geometry::Structure,UID,Background=Background,Save=Sa
 
   atom_numbers = [ 1,   6,   7,   8,   12,   14,   26 ]
 
-  atom_colors =  [[200,200,200], [27,27,27], [255,0,0], [0,0,255], [0,255,255], [255,0,0], [0,255,0]]
+  atom_colors =  [[200,200,200], [27,27,27], [48,80,248], [255,13,13], [138,255,0], [240,200,160], [224,102,51]]
 
   atom_symsize = [0.2, 0.4, 0.6, 0.6, 0.7, 0.8, 0.8]
 
@@ -331,7 +346,9 @@ FUNCTION AmesPAHdbIDLSuite_Geometry::Structure,UID,Background=Background,Save=Sa
 
 ;;;
 
-  numn = INTARR(nselect) & nlist = MAKE_ARRAY(nselect, 6, VALUE=-1)
+  numn = INTARR(nselect)
+
+  nlist = MAKE_ARRAY(nselect, 6, VALUE=-1)
 
   FOR i = 0, nselect - 1 DO BEGIN
 
@@ -343,11 +360,11 @@ FUNCTION AmesPAHdbIDLSuite_Geometry::Structure,UID,Background=Background,Save=Sa
 
      IF nsel EQ 0 THEN CONTINUE
 
-		 IF nsel GT 6 THEN BEGIN
-			idx = SORT(dd[sel])
-			sel = sel[idx[0:5]]
-			nsel = 6
-		 ENDIF
+       IF nsel GT 6 THEN BEGIN
+         idx = SORT(dd[sel])
+         sel = sel[idx[0:5]]
+         nsel = 6
+       ENDIF
 
      nlist[i, 0:nsel-1] = sel
   ENDFOR
@@ -363,18 +380,20 @@ FUNCTION AmesPAHdbIDLSuite_Geometry::Structure,UID,Background=Background,Save=Sa
            nlist[nlist[i, j], *] = nlist[nlist[i, j], REVERSE(SORT(nlist[nlist[i, j], *]))]
         ENDIF
 
+        if numn[nlist[i, j]] LT 0 THEN CONTINUE
+
         vec = [plotx[i] - plotx[nlist[i, j]], ploty[i] - ploty[nlist[i, j]], plotz[i] - plotz[nlist[i, j]]]
 
         norm = NORM(vec)
 
-        rotAxis = norm * [vec[1], -vec[0], 0D]
+        rotAxis = [vec[1], -vec[0], 0D]
 
         rotAngle = 180D * ACOS(-vec[2] / norm) / !DPI
 
-        IF rotAngle GT 179 AND ABS(rotAxis[0]) LT 1D-4 AND ABS(rotAxis[1]) LT 1D-4 AND ABS(rotAxis[2]) LT 1D-4 THEN norm = -norm
-
         IF (*self.data)[select[i]].type EQ 1 OR (*self.data)[select[nlist[i, j]]].type EQ 1 THEN bcolor = atom_colors[*, 0] $
         ELSE bcolor = [0, 0, 0]
+
+        IF rotAngle GT 179.99 THEN norm = -norm
 
         grBondModel = OBJ_NEW('IDLgrModel')
 
@@ -450,7 +469,13 @@ FUNCTION AmesPAHdbIDLSuite_Geometry::Structure,UID,Background=Background,Save=Sa
 
      IF KEYWORD_SET(Transparent) THEN BEGIN
 
-        r = image[0, *, *] & g = image[1, *, *] & b = image[2, *, *] & a = BYTARR([1, Resolution]) + 255B
+        r = image[0, *, *]
+
+        g = image[1, *, *]
+
+        b = image[2, *, *]
+
+        a = BYTARR([1, Resolution]) + 255B
 
         trans = WHERE(r EQ Background[0] AND g EQ Background[1] AND b EQ Background[2], ntrans)
 
@@ -573,7 +598,9 @@ FUNCTION AmesPAHdbIDLSuite_Geometry::Rings
 
      z = (*self.data)[select].z
 
-     numn = INTARR(size) & nlist = INTARR(size, 6)
+     numn = INTARR(size)
+
+     nlist = INTARR(size, 6)
 
      FOR i = 0, size - 1 DO BEGIN
 
@@ -581,7 +608,9 @@ FUNCTION AmesPAHdbIDLSuite_Geometry::Rings
 
         sel = WHERE(dd GT 0D AND dd LT 1.7D, nsel)
 
-        numn[i] = nsel & nlist[i, 0:nsel-1] = sel
+        numn[i] = nsel
+
+        nlist[i, 0:nsel-1] = sel
      ENDFOR
 
      iring = INTARR(9)
