@@ -39,18 +39,21 @@
 ; :History:
 ;   Changes::
 ;
+;     11-04-2023
+;     Initialize array with appropriate size in GETTAGBYUID. Christiaan
+;     Boersma.
 ;     12-05-2022
 ;     Speed up GETTAGBYUID by using HISTOGRAM. Christiaan
-;     Boersma
+;     Boersma.
 ;     10-05-2020
-;     Fix typo in ExtendDatabase. Christiaan Boersma
+;     Fix typo in ExtendDatabase. Christiaan Boersma.
 ;     11-15-2019
 ;     Check the state of parsing an XML-file in PARSEFILE, which
 ;     avoids caching invalid data. Christiaan Boersma.
 ;     02-12-2019
 ;     Fixed hitting the maximum value that can be held in a LONG in
 ;     GETTAGBYUID by changing data type to ULONG. Ensuring returned
-;     UIDs reflect those found in GETTAGBYUID. Christiaan Boersma
+;     UIDs reflect those found in GETTAGBYUID. Christiaan Boersma.
 ;     07-17-2018
 ;     Added EXTENDDATABASE
 ;     10-10-2017
@@ -687,10 +690,6 @@ FUNCTION AmesPAHdbIDLSuite::GetTagByUID,Tag,UIDs,Count
 
   nuids = N_ELEMENTS(UIDs)
 
-  nbuf = 4096L
-
-  select = LONARR(nbuf, /NOZERO)
-
   h = HISTOGRAM((*self.pahdb).data.(itag).uid, MIN=0, REVERSE_INDICES=ri)
 
   FOR i = 0L, nuids - 1L DO BEGIN
@@ -699,11 +698,18 @@ FUNCTION AmesPAHdbIDLSuite::GetTagByUID,Tag,UIDs,Count
 
     IF n GT 0 THEN BEGIN
 
+      IF Count EQ 0 THEN BEGIN
+
+        nbuf = 2L * n
+
+        select = LONARR(nbuf, /NOZERO)
+      ENDIF
+
       s = ri[ri[UIDs[i]]:ri[UIDS[i]+1]-1]
 
       IF Count + n GT nbuf THEN BEGIN
 
-        nbuf *= 2L
+        WHILE Count + n GE nbuf DO nbuf *= 2L
 
         new = LONARR(nbuf, /NOZERO)
 

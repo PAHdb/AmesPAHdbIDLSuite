@@ -1,4 +1,7 @@
 CHANGELOG
++- 11-04-2023
+   Initialize array with appropriate size in AmesPAHdbIDLSuite::GetTagByUID in
+   AmesPAHdbIDLSuite__define.pro.
 +- 11-23-2022
    Add missing OPLOT-keyword to AmesPAHdbIDLSuite_Fitted_Spectrum::Plot
    signature in AmesPAHdbIDLSuite_Fitted_Spectrum__define.pro. Add _overloads
