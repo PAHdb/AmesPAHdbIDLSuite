@@ -1,5 +1,11 @@
 CHANGELOG
-+- 11-04-2023
+04-15-2023
+   Remove redundant code and don't destroy observation in mc_fit_a_spectrum.pro.
+   Add observation property to AmesPAHdbIDLSuite_MCFitted_Spectrum in
+   AmesPAHdbIDLSuite_MCFitted_Spectrum__define.pro. Re-indent some output in
+   AmesPAHdbIDLSuite_Transitions__define.pro. Store unperturbed observation in
+   AmesPAHdbIDLSuite_Spectrum::MCFit in AmesPAHdbIDLSuite_Spectrum__define.pro.
++- 04-11-2023
    Initialize array with appropriate size in AmesPAHdbIDLSuite::GetTagByUID in
    AmesPAHdbIDLSuite__define.pro.
 +- 11-23-2022
