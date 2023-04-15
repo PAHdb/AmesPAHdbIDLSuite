@@ -24,6 +24,8 @@
 ; :History:
 ;   Changes::
 ;
+;     04-15-2023
+;     Remove redundant code and don't destroy observation. Christiaan Boersma.
 ;     05-03-2022
 ;     Add plotting size distribution. Christiaan Boersma.
 ;     04-28-2022
@@ -90,12 +92,6 @@ PRO MC_FIT_A_SPECTRUM
   ; fit the spectrum using Monte Carlo approach
   mcfit = spectrum->MCFit(observation, 1024)
 
-  ; get observations struct
-  observation_s = observation.Get()
-
-  ; clean up observation
-  OBJ_DESTROY,[observation]
-
   ; clean up
   OBJ_DESTROY,[spectrum]
 
@@ -137,6 +133,6 @@ PRO MC_FIT_A_SPECTRUM
 
   mcfit->Plot,/DistributionSize,NBins=10L,Min=20,Max=200
 
-  OBJ_DESTROY,[mcfit, pahdb]
+  OBJ_DESTROY,[mcfit, pahdb, observation]
 
 END

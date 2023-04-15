@@ -27,6 +27,8 @@
 ; :History:
 ;   Changes::
 ;
+;     04-15-2023
+;     Re-indent some output. Christiaan Boersma
 ;     05-22-2022
 ;     Use HISTOGRAM for speed-ups in PLOT, PRINT, WRITE,
 ;     CASCADE_IDLBRIDGE, and CALCULATEDTEMPERATURE. Refactor
@@ -1170,7 +1172,7 @@ PRO AmesPAHdbIDLSuite_Transitions__IDLBridge_Callback,Status,Error,ObjRef,UserDa
      ELSE IF timer LT 86400.0 THEN remaining = STRING(FORMAT='(I02,"h",I02,"m",I02,"s")', timer / 3600.0, (timer MOD 3600) / 60.0, (timer MOD 3600) MOD 60) $
      ELSE remaining = STRING(FORMAT='(I3,"d",I02,"h",I02,"m")', timer / 86400.0, (timer MOD 86400) / 3600.0, (timer MOD 86400) MOD 3600)
 
-     PRINT,FORMAT='("' + STRING(13B) +'SPECIES                          :",X,I0' + digits_s + ',"/",I0' + digits_s + ',X,"~",A-10,X,"remaining",$)',i,nuids,remaining
+     PRINT,FORMAT='("' + STRING(13B) +'SPECIES                       :",X,I0' + digits_s + ',"/",I0' + digits_s + ',X,"~",A-10,X,"remaining",$)',i,nuids,remaining
 
      IF i LT nuids THEN Objref->Execute,STRING(FORMAT='("AmesPAHdbIDLSuite_Transitions__IDLBridge_Execute,",I,",",I)', uids[i], i++),/NOWAIT
   ENDIF ELSE IF Status EQ 3 THEN BEGIN
@@ -1375,7 +1377,7 @@ PRO AmesPAHdbIDLSuite_Transitions::Cascade_IDLBridge,E,Approximate=Approximate,S
 
   digits = STRTRIM(STRING(FIX(ALOG10(self.nuids)) + 1), 2)
 
-  PRINT,FORMAT='("SPECIES                          :",X,' + digits + '("-"),"/",' + digits + '("-"),$)'
+  PRINT,FORMAT='("SPECIES                       :",X,' + digits + '("-"),"/",' + digits + '("-"),$)'
 
   status = INTARR(n_bridges)
 

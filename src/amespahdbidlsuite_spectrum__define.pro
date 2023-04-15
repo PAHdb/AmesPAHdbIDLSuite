@@ -25,6 +25,8 @@
 ; :History:
 ;   Changes::
 ;
+;     04-15-2023
+;     Store unperturbed observation in MCFIT. Christiaan Boersma.
 ;     07-08-2022
 ;     Pass EXTERNAL_NNLS to FIT in MCFIT. Christiaan Boersma.
 ;     05-18-2022
@@ -672,10 +674,12 @@ FUNCTION AmesPAHdbIDLSuite_Spectrum::MCFit,observation,error,samples,EXTERNAL_NN
 
   IF type.type_name NE 'OBJREF' THEN OBJ_DESTROY,obs
 
+  obs->Set,Y=y
   RETURN,OBJ_NEW('AmesPAHdbIDLSuite_MCFitted_Spectrum', $
                   Type=self.type, $
                   Obj=obj, $
-                  Distribution=KEYWORD_SET(Uniform) ? 'uniform' : 'normal')
+                  Distribution=KEYWORD_SET(Uniform) ? 'uniform' : 'normal', $
+                  Observation=obs)
 END
 
 ;+

@@ -25,6 +25,8 @@
 ; :History:
 ;   Changes::
 ;
+;     04-15-2023
+;     Add observation property. Christiaan Boersma.
 ;     11-23-2022
 ;     Add _overloads and add+propagate missing PAHdb-keyword in INIT and
 ;     SET. Christiaan Boersma.
@@ -144,7 +146,9 @@ PRO AmesPAHdbIDLSuite_MCFitted_Spectrum::Plot,DistributionSize=DistributionSize,
 
   xrange = [MAX(x, MIN=xmin), xmin]
 
-  obs_xstdev = obj_s.observation.data.xstdev
+  obs_s = self.observation->Get()
+
+  obs_xstdev = obs_s.data.xstdev
 
   IF KEYWORD_SET(Wavelength) THEN BEGIN
 
@@ -157,7 +161,7 @@ PRO AmesPAHdbIDLSuite_MCFitted_Spectrum::Plot,DistributionSize=DistributionSize,
      xunits = 'wavelength [!Mm!Xm]'
   ENDIF
 
-  yunits = obj_s.observation.units.ordinate.str
+  yunits = obs_s.units.ordinate.str
 
   IF yunits NE '' THEN yunits += '!C'
 
@@ -169,19 +173,19 @@ PRO AmesPAHdbIDLSuite_MCFitted_Spectrum::Plot,DistributionSize=DistributionSize,
 
   IF NOT KEYWORD_SET(Oplot) THEN BEGIN
 
-     IF KEYWORD_SET(Size) OR KEYWORD_SET(Charge) OR KEYWORD_SET(COMPOSITION) THEN self->AmesPAHdbIDLSuite_Plot::Plot,[0,1],[0,1],COLOR=Color,XRANGE=[MIN(x - obs_xstdev), MAX(x + obs_xstdev)],YRANGE=[MIN([obj_s.observation.data.y - obj_s.observation.data.ystdev, obj_s.observation.data.continuum + fit[*, 0] - fit[*, 1]]), MAX([obj_s.observation.data.y + obj_s.observation.data.ystdev, obj_s.observation.data.continuum + fit[*, 0] + fit[*, 1]])],XTITLE=xunits,YTITLE=yunits,POSITION=[0.2,0.2,0.95,0.9],/NoData,_EXTRA=EXTRA $
-     ELSE self->AmesPAHdbIDLSuite_Plot::Plot,[0,1],[0,1],COLOR=Color,XRANGE=[MIN(x - obs_xstdev), MAX(x + obs_xstdev)],YRANGE=[MIN([obj_s.observation.data.y - obj_s.observation.data.ystdev, obj_s.observation.data.continuum + fit[*, 0]] - fit[*, 1]), MAX([obj_s.observation.data.y + obj_s.observation.data.ystdev, obj_s.observation.data.continuum + fit[*, 0] +fit[*, 1] ])],XTICKFORMAT='(A1)',YTITLE=yunits,POSITION=[0.2,0.45,0.95,0.9],/NoData,_EXTRA=EXTRA
+     IF KEYWORD_SET(Size) OR KEYWORD_SET(Charge) OR KEYWORD_SET(COMPOSITION) THEN self->AmesPAHdbIDLSuite_Plot::Plot,[0,1],[0,1],COLOR=Color,XRANGE=[MIN(x - obs_xstdev), MAX(x + obs_xstdev)],YRANGE=[MIN([obs_s.data.y - obs_s.data.ystdev, obs_s.data.continuum + fit[*, 0] - fit[*, 1]]), MAX([obs_s.data.y + obs_s.data.ystdev, obs_s.data.continuum + fit[*, 0] + fit[*, 1]])],XTITLE=xunits,YTITLE=yunits,POSITION=[0.2,0.2,0.95,0.9],/NoData,_EXTRA=EXTRA $
+     ELSE self->AmesPAHdbIDLSuite_Plot::Plot,[0,1],[0,1],COLOR=Color,XRANGE=[MIN(x - obs_xstdev), MAX(x + obs_xstdev)],YRANGE=[MIN([obs_s.data.y - obs_s.data.ystdev, obs_s.data.continuum + fit[*, 0]] - fit[*, 1]), MAX([obs_s.data.y + obs_s.data.ystdev, obs_s.data.continuum + fit[*, 0] +fit[*, 1] ])],XTICKFORMAT='(A1)',YTITLE=yunits,POSITION=[0.2,0.45,0.95,0.9],/NoData,_EXTRA=EXTRA
   ENDIF
 
-  self->AmesPAHdbIDLSuite_Plot::OplotError,x,obj_s.observation.data.y,obj_s.observation.data.ystdev,obs_xstdev,COLOR=14
+  self->AmesPAHdbIDLSuite_Plot::OplotError,x,obs_s.data.y,obs_s.data.ystdev,obs_xstdev,COLOR=14
 
-  self->AmesPAHdbIDLSuite_Plot::Oplot,x,obj_s.observation.data.y,LINESTYLE=5,COLOR=14
+  self->AmesPAHdbIDLSuite_Plot::Oplot,x,obs_s.data.y,LINESTYLE=5,COLOR=14
 
-  self->AmesPAHdbIDLSuite_Plot::Oplot,x,obj_s.observation.data.continuum,LINESTYLE=2
+  self->AmesPAHdbIDLSuite_Plot::Oplot,x,obs_s.data.continuum,LINESTYLE=2
 
-  self->AmesPAHdbIDLSuite_Plot::OplotError,x,obj_s.observation.data.continuum+fit[*, 0],fit[*, 1]
+  self->AmesPAHdbIDLSuite_Plot::OplotError,x,obs_s.data.continuum+fit[*, 0],fit[*, 1]
 
-  self->AmesPAHdbIDLSuite_Plot::Oplot,x,obj_s.observation.data.continuum+fit[*, 0]
+  self->AmesPAHdbIDLSuite_Plot::Oplot,x,obs_s.data.continuum+fit[*, 0]
 
   IF SIZE(Legend, /TYPE) EQ 0 THEN Legend = 1
 
@@ -203,47 +207,47 @@ PRO AmesPAHdbIDLSuite_MCFitted_Spectrum::Plot,DistributionSize=DistributionSize,
 
      IF KEYWORD_SET(Size) THEN BEGIN
 
-        self->AmesPAHdbIDLSuite_Plot::OplotError,x,obj_s.observation.data.continuum+classes[*, 0].small,classes[*, 1].small,Color=Color
+        self->AmesPAHdbIDLSuite_Plot::OplotError,x,obs_s.data.continuum+classes[*, 0].small,classes[*, 1].small,Color=Color
 
-        self->AmesPAHdbIDLSuite_Plot::Oplot,x,obj_s.observation.data.continuum+classes[*, 0].small,Stick=Stick,Fill=Fill,COLOR=Color
+        self->AmesPAHdbIDLSuite_Plot::Oplot,x,obs_s.data.continuum+classes[*, 0].small,Stick=Stick,Fill=Fill,COLOR=Color
 
         XYOUTS,0.25,0.75,'small',COLOR=Color,/Normal
 
-        self->AmesPAHdbIDLSuite_Plot::OplotError,x,obj_s.observation.data.continuum+classes[*, 0].large,classes[*, 1].large,Color=Color+1
+        self->AmesPAHdbIDLSuite_Plot::OplotError,x,obs_s.data.continuum+classes[*, 0].large,classes[*, 1].large,Color=Color+1
 
-        self->AmesPAHdbIDLSuite_Plot::Oplot,x,obj_s.observation.data.continuum+classes[*, 0].large,Stick=Stick,Fill=Fill,COLOR=Color+1
+        self->AmesPAHdbIDLSuite_Plot::Oplot,x,obs_s.data.continuum+classes[*, 0].large,Stick=Stick,Fill=Fill,COLOR=Color+1
 
         XYOUTS,0.25,0.70,'large',COLOR=Color+1,/NORMAL
      ENDIF ELSE IF KEYWORD_SET(Charge) THEN BEGIN
 
-        self->AmesPAHdbIDLSuite_Plot::OplotError,x,obj_s.observation.data.continuum+classes[*, 0].anion,classes[*, 1].anion,COLOR=Color
+        self->AmesPAHdbIDLSuite_Plot::OplotError,x,obs_s.data.continuum+classes[*, 0].anion,classes[*, 1].anion,COLOR=Color
 
-        self->AmesPAHdbIDLSuite_Plot::oPlot,x,obj_s.observation.data.continuum+classes[*, 0].anion,Stick=Stick,Fill=Fill,COLOR=Color
+        self->AmesPAHdbIDLSuite_Plot::oPlot,x,obs_s.data.continuum+classes[*, 0].anion,Stick=Stick,Fill=Fill,COLOR=Color
 
         XYOUTS,0.25,0.75,'anion',COLOR=Color,/Normal
 
-        self->AmesPAHdbIDLSuite_Plot::OplotError,x,obj_s.observation.data.continuum+classes[*, 0].neutral,classes[*, 1].neutral,COLOR=Color+1
+        self->AmesPAHdbIDLSuite_Plot::OplotError,x,obs_s.data.continuum+classes[*, 0].neutral,classes[*, 1].neutral,COLOR=Color+1
 
-        self->AmesPAHdbIDLSuite_Plot::Oplot,x,obj_s.observation.data.continuum+classes[*, 0].neutral,Stick=Stick,Fill=Fill,COLOR=Color+1
+        self->AmesPAHdbIDLSuite_Plot::Oplot,x,obs_s.data.continuum+classes[*, 0].neutral,Stick=Stick,Fill=Fill,COLOR=Color+1
 
         XYOUTS,0.25,0.70,'neutral',COLOR=Color+1,/Normal
 
-        self->AmesPAHdbIDLSuite_Plot::OplotError,x,obj_s.observation.data.continuum+classes[*, 0].cation,classes[*, 1].cation,Stick=Stick,Fill=Fill,COLOR=Color+2
+        self->AmesPAHdbIDLSuite_Plot::OplotError,x,obs_s.data.continuum+classes[*, 0].cation,classes[*, 1].cation,Stick=Stick,Fill=Fill,COLOR=Color+2
 
-        self->AmesPAHdbIDLSuite_Plot::Oplot,x,obj_s.observation.data.continuum+classes[*, 0].cation,COLOR=Color+2
+        self->AmesPAHdbIDLSuite_Plot::Oplot,x,obs_s.data.continuum+classes[*, 0].cation,COLOR=Color+2
 
         XYOUTS,0.25,0.65,'cation',COLOR=Color+2,/Normal
      ENDIF ELSE BEGIN
 
-        self->AmesPAHdbIDLSuite_Plot::OplotError,x,obj_s.observation.data.continuum+classes[*, 0].pure,classes[*, 1].pure,Stick=Stick,Fill=Fill,COLOR=Color
+        self->AmesPAHdbIDLSuite_Plot::OplotError,x,obs_s.data.continuum+classes[*, 0].pure,classes[*, 1].pure,Stick=Stick,Fill=Fill,COLOR=Color
 
-        self->AmesPAHdbIDLSuite_Plot::Oplot,x,obj_s.observation.data.continuum+classes[*, 0].pure,COLOR=Color
+        self->AmesPAHdbIDLSuite_Plot::Oplot,x,obs_s.data.continuum+classes[*, 0].pure,COLOR=Color
 
         XYOUTS,0.25,0.75,'pure',COLOR=Color,/Normal
 
-        self->AmesPAHdbIDLSuite_Plot::OplotError,x,obj_s.observation.data.continuum+classes[*, 0].nitrogen,classes[*, 1].nitrogen,Stick=Stick,Fill=Fill,COLOR=Color+1
+        self->AmesPAHdbIDLSuite_Plot::OplotError,x,obs_s.data.continuum+classes[*, 0].nitrogen,classes[*, 1].nitrogen,Stick=Stick,Fill=Fill,COLOR=Color+1
 
-        self->AmesPAHdbIDLSuite_Plot::Oplot,x,obj_s.observation.data.continuum+classes[*, 0].nitrogen,COLOR=Color+1
+        self->AmesPAHdbIDLSuite_Plot::Oplot,x,obs_s.data.continuum+classes[*, 0].nitrogen,COLOR=Color+1
 
         XYOUTS,0.25,0.70,'nitrogen',COLOR=Color+1,/Normal
      ENDELSE
@@ -251,7 +255,7 @@ PRO AmesPAHdbIDLSuite_MCFitted_Spectrum::Plot,DistributionSize=DistributionSize,
 
      res = self->getResidual()
 
-     y = -100D *  res[*, 0] / obj_s.observation.data.y
+     y = -100D *  res[*, 0] / obs_s.data.y
 
      ystdev = 100 * SQRT(res[*, 1])
 
@@ -403,7 +407,8 @@ FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::Get
 
   RETURN,CREATE_STRUCT('type', OBJ_CLASS(self)+'_S', $
                        'obj', *self.obj, $
-                       'distribution', self.distribution)
+                       'distribution', self.distribution, $
+                       'observation', self.observation)
 END
 
 ;+
@@ -424,7 +429,7 @@ END
 ; :Categories:
 ;   SET/GET
 ;-
-PRO AmesPAHdbIDLSuite_MCFitted_Spectrum::Set,Struct,Type=Type,Obj=Obj,Distribution=Distribution,PAHdb=PAHdb
+PRO AmesPAHdbIDLSuite_MCFitted_Spectrum::Set,Struct,Type=Type,Obj=Obj,Distribution=Distribution,Observation=Observation,PAHdb=PAHdb
 
   COMPILE_OPT IDL2
 
@@ -451,6 +456,12 @@ PRO AmesPAHdbIDLSuite_MCFitted_Spectrum::Set,Struct,Type=Type,Obj=Obj,Distributi
            ENDIF
 
           IF NOT KEYWORD_SET(Distribution) THEN self.distribution = Struct.distribution
+
+          IF NOT KEYWORD_SET(Observation) THEN BEGIN
+
+            IF OBJ_VALID(Struct.observation) THEN self.observation = Struct.observation
+          ENDIF
+          
         ENDIF
      ENDIF
   ENDIF
@@ -468,6 +479,11 @@ PRO AmesPAHdbIDLSuite_MCFitted_Spectrum::Set,Struct,Type=Type,Obj=Obj,Distributi
    ENDIF
 
    IF KEYWORD_SET(Distribution) THEN self.distribution = Distribution
+
+   IF KEYWORD_SET(Observation) THEN BEGIN
+
+     IF OBJ_VALID(Observation) THEN self.observation = Observation
+   ENDIF
 
    IF KEYWORD_SET(PAHdb) THEN BEGIN
 
@@ -537,26 +553,6 @@ FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetFit
   ENDIF
 
   RETURN,*self._lazy.fit
-END
-
-;+
-; Retrieves the ordinate values of the observation.
-;
-; :Returns:
-;   float array
-;
-; :Categories:
-;   SET/GET
-;-
-FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetObservation
-
-  COMPILE_OPT IDL2
-
-  ON_ERROR,2
-
-  IF PTR_VALID(self.obj) THEN RETURN,(*self.obj)[0]->GetObservation()
-
-  RETURN,0
 END
 
 ;+
@@ -790,7 +786,7 @@ FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetClasses,Small=Small
 END
 
 ;+
-; Retrieves the abscissa valuesa.
+; Retrieves the abscissa values.
 ;
 ; :Returns:
 ;   double array (1D)
@@ -939,6 +935,26 @@ FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetSamples
   ON_ERROR,2
 
   RETURN,PTR_VALID(self.obj) ? N_ELEMENTS(*self.obj) : 0L
+END
+
+;+
+; Retrieves the observation.
+;
+; :Returns:
+;   float array
+;
+; :Categories:
+;   SET/GET
+;-
+FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetObservation
+
+  COMPILE_OPT IDL2
+
+  ON_ERROR,2
+
+  IF OBJ_VALID(self.observation) THEN RETURN,self.observation
+
+  RETURN,0
 END
 
 ;+
@@ -1169,13 +1185,15 @@ END
 ;     Array holding AmesPAHdbIDLSuiteFittedSpectrum instances
 ;   distribution: in, optional, type=string
 ;     Distribution used for permutating errors
+;   observation: in, optional, type=string
+;     Observation
 ;   PAHdb: in, optional, type=pointer
 ;     Pointer to parsed database file
 ;
 ; :Categories:
 ;   CLASS
 ;-
-FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::Init,Struct,Type=Type,Obj=Obj,Distribution=Distribution,PAHdb=PAHdb
+FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::Init,Struct,Type=Type,Obj=Obj,Distribution=Distribution,Observation=Observation,PAHdb=PAHdb
 
   COMPILE_OPT IDL2
 
@@ -1183,8 +1201,8 @@ FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::Init,Struct,Type=Type,Obj=Obj,Dist
 
   self.state = self->AmesPAHdbIDLSuite_Plot::Init()
 
-  IF N_PARAMS() GT 0 THEN self->Set,Struct,Type=Type,Obj=Obj,Distribution=Distribution,PAHdb=PAHdb $
-  ELSE self->Set,Type=Type,Obj=Obj,Distribution=Distribution,PAHdb=PAHdb
+  IF N_PARAMS() GT 0 THEN self->Set,Struct,Type=Type,Obj=Obj,Distribution=Distribution,Observation=Observation,PAHdb=PAHdb $
+  ELSE self->Set,Type=Type,Obj=Obj,Distribution=Distribution,Observation=Observation,PAHdb=PAHdb
 
   RETURN,self.state
 END
@@ -1217,6 +1235,7 @@ PRO AmesPAHdbIDLSuite_MCFitted_Spectrum__DEFINE
           state:0L, $
           obj:PTR_NEW(), $
           distribution:'', $
+          observation:OBJ_NEW(), $
           _lazy:{AmesPAHdbIDLSuite_Fitted_Lazy, $
                  residual:PTR_NEW(), $
                  fit:PTR_NEW(), $
