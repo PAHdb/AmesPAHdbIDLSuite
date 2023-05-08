@@ -306,7 +306,7 @@ PRO AmesPAHdbIDLSuite_XMLParser::EndDocument
 
   PRINT
   PRINT,"========================================================="
-  PRINT,FORMAT='(A-30, ": ", A0)',"FILENAME",""+self.filename
+  PRINT,FORMAT='(A-30, ": ", A0)',"FILENAME",""+self.database.filename
   PRINT,FORMAT='(A-30, ": ", A0)',"DATABASE",""+self.database.type+" ("+(self.database.full ? "complete" : "partial")+")"
   timer = SYSTIME(/SECONDS) - self.timer
   IF timer LT 1 THEN PRINT,FORMAT='(A-30, ": ", A0)',"PARSE TIME",STRING(FORMAT='(I-3)',timer*1D3)+" MILLISECONDS" $

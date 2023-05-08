@@ -1416,7 +1416,7 @@ END
 ;
 ;  :Params:
 ;    E: in, required, type=double
-;      Excitation energy in erg
+;      Excitation energy in erg or stellar temperature in K
 ;
 ;  :Keywords:
 ;    Approximate: in, optional, type=int
