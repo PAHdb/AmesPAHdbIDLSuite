@@ -4,7 +4,7 @@
 ;
 ; This is an example of clustering (kmeans) PAH absorption spectra,
 ; built around the functionality provided by the AmesPAHdbIDLSuite and
-; should help confirm that the it has been properly installed. The
+; should help confirm that it has been properly installed. The
 ; source code is annotated to guide users and developers in the inner
 ; workings of the suite.
 ;
