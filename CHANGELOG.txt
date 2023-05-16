@@ -1,4 +1,12 @@
 CHANGELOG
++- 05-09-2023
+   Access proper struct for database filename in
+   AmesPAHdbIDLSuite_XMLParser::ENDDOCUMENT in
+   AmesPAHdbIDLSuite_XMLParser__define.pro.  Fix progress bar, use HISTOGRAM 
+   instead of WHERE, prompt for next plot, divide carbon and hydrogen sizes by
+   nuids, and directly write to sample in example random_mixtures.pro.
+   Remove invalid search key 'atoms' from AmesPAHdbIDLSuite::TOKENIZEWORDS in
+   AmesPAHdbIDLSuite__define.pro.
 04-15-2023
    Remove redundant code and don't destroy observation in mc_fit_a_spectrum.pro.
    Add observation property to AmesPAHdbIDLSuite_MCFitted_Spectrum in

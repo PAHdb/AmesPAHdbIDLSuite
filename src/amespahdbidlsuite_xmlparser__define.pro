@@ -31,6 +31,9 @@
 ; :History:
 ;   Changes::
 ;
+;     05-09-2023
+;     Access proper struct for database filename in ENDDOCUMENT. Christiaan
+;     Boersma.
 ;     05-12-2022
 ;     Sort content by UID. Increased some buffer sizes. Christiaan
 ;     Boersma.

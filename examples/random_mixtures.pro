@@ -2,13 +2,14 @@
 
 ;+
 ;
-; This is an example of preducing a number of random-mixture PAH
+; This is an example of producing a number of random-mixture PAH
 ; emission spectrum, built around the functionality provided by the
 ; AmesPAHdbIDLSuite and should help confirm that the it has been
 ; properly installed.
 ;
 ; Updated versions of the NASA Ames PAH IR Spectroscopic Database and
-; more information can be found at: `www.astrochemistry.org/pahdb <https://www.astrochemistry.org/pahdb>`.
+; more information can be found at: 
+; `www.astrochemistry.org/pahdb <https://www.astrochemistry.org/pahdb>`.
 ;
 ; :Examples:
 ;   Call the procedure directly::
@@ -24,6 +25,10 @@
 ; :History:
 ;   Changes::
 ;
+;     05-09-2023
+;     Fix progress bar, use HISTOGRAM instead of WHERE, prompt for next plot,
+;     divide carbon and hydrogen sizes by nuids, and directly write to sample.
+;     Christiaan Boersma.
 ;     07-06-2021
 ;     Cleaned up progress bar. Christiaan Boersma.
 ;     08-19-2019
@@ -85,19 +90,19 @@ PRO RANDOM_MIXTURES
 
   charge = DBLARR(5, n)
 
+  h = HISTOGRAM(spectra.data.uid, MIN=0, REVERSE_INDICES=ri)
+
   FOR i = 0L, n - 1L DO BEGIN
 
      PRINT,FORMAT='("' + STRING(13B) + '",I4,$)',i+1L
 
-     abundance = RANDOMU(seed, nuids, /UNIFORM)
-
-     sample = DBLARR(npoints)
+     abundance =  RANDOMU(seed, nuids, /UNIFORM)
 
      FOR j = 0, nuids - 1 DO BEGIN
 
-        select = WHERE(spectra.data.uid EQ uids[j])
+        select = ri[ri[uids[j]]:ri[uids[j]+1]-1]
 
-        sample += abundance[j] * spectra.data[select].intensity
+        samples[i,*] += abundance[j] * spectra.data[select].intensity
 
         select = WHERE(properties.data.uid EQ uids[j])
 
@@ -108,8 +113,6 @@ PRO RANDOM_MIXTURES
         charge[properties.data[select].charge + 1, i] += abundance[j]
 
      ENDFOR
-
-     samples[i, *] = sample
 
   ENDFOR
 
@@ -135,7 +138,7 @@ PRO RANDOM_MIXTURES
 
   ENDFOR
 
-  PRINT,FORMAT='(4("' +  + '"),"done!")'
+  PRINT,FORMAT='("' + STRING(13B) + 'done!")'
 
   FOR i = 0, n - 1 DO samples[i, *] /= TOTAL(samples[i, *])
 
@@ -156,14 +159,14 @@ PRO RANDOM_MIXTURES
 
   dummy = MAX(hc, imaxC)
 
-  avgC = MOMENT(sizeC)
+  avgC = MOMENT(sizeC / nuids)
 
 
   hH = HISTOGRAM(sizeH / nuids, LOCATIONS=locationsH, BINSIZE=0.1)
 
   dummy = MAX(hH, imaxH)
 
-  avgH = MOMENT(sizeH)
+  avgH = MOMENT(sizeH / nuids)
 
 
   hCharge = HISTOGRAM(TOTAL(charge[2:*,*], 1) / TOTAL(charge, 1), LOCATIONS=locationsCharge, BINSIZE=0.005)
@@ -196,6 +199,9 @@ PRO RANDOM_MIXTURES
 
   OPLOT,wavelength,moments[*, 0],THICK=6,COLOR=2
 
+  key = ''
+  IF !D.NAME EQ 'X' THEN READ,key,PROMPT="Press <enter> to continue..."
+
   PLOT,locations,100*h/TOTAL(h),XTITLE='r [Pearson correlation coefficient]',YTITLE='probability [%]',PSYM=10
 
   OPLOT,locations[imax]*[1,1],!Y.CRANGE,LINESTYLE=5,COLOR=4
@@ -209,7 +215,6 @@ PRO RANDOM_MIXTURES
   OPLOT,avg[0]+0.5*SQRT(avg[1])*[1,1],!Y.CRANGE,LINESTYLE=5,COLOR=5
 
   ;OPLOT,avg[0]+0.5*SQRT(avg[1])*[-1,1],5.5*[1,1],LINESTYLE=5,COLOR=5
-
 
 
   XYOUTS,0.2,0.70,STRING(FORMAT='("peak:",X,F-6.4)', locations[imax]),/NORMAL,CHARSIZE=1.75,COLOR=4
@@ -237,6 +242,8 @@ PRO RANDOM_MIXTURES
   XYOUTS,avg[0],5.6,STRING(FORMAT='(F6.4)',SQRT(avg[1])),ALIGNMENT=0.5,COLOR=5,CHARSIZE=1
 
 
+  IF !D.NAME EQ 'X' THEN READ,key,PROMPT="Press <enter> to continue..."
+
   PLOT,locationsC,100*hC/TOTAL(hC),XTITLE='<n!Lcarbon!N> [#]',YTITLE='probability [%]',PSYM=10
 
   OPLOT,locationsDbC,100*hDbC/TOTAL(hDbC),PSYM=10,LINESTYLE=5
@@ -252,6 +259,8 @@ PRO RANDOM_MIXTURES
   OPLOT,avgC[0]+SQRT(avgC[1])*[-1,1],5.5*[1,1],LINESTYLE=5,COLOR=5
 
 
+  IF !D.NAME EQ 'X' THEN READ,key,PROMPT="Press <enter> to continue..."
+
   PLOT,locationsH,100*hH/TOTAL(hH),XTITLE='<n!Lhydrogen!N> [#]',YTITLE='probability [%]',PSYM=10
 
   OPLOT,locationsDbH,100*hDbC/TOTAL(hDbC),PSYM=10,LINESTYLE=5
@@ -266,6 +275,8 @@ PRO RANDOM_MIXTURES
 
   OPLOT,avgH[0]+SQRT(avgH[1])*[-1,1],10*[1,1],LINESTYLE=5,COLOR=5
 
+
+  IF !D.NAME EQ 'X' THEN READ,key,PROMPT="Press <enter> to continue..."
 
   PLOT,locationsCharge,100*hCharge/TOTAL(hCharge),XTITLE='f!Lionized!N [ratio]',YTITLE='probability [%]',PSYM=10
 
