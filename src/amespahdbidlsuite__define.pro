@@ -39,6 +39,8 @@
 ; :History:
 ;   Changes::
 ;
+;     05-15-2023
+;     Remove invalid search key 'atoms' in TOKENIZEWORDS. Christiaan Boersma.
 ;     04-11-2023
 ;     Initialize array with appropriate size in GETTAGBYUID. Christiaan
 ;     Boersma.
@@ -92,7 +94,7 @@
 ;     distribution. Christiaan Boersma.
 ;     04-21-2015
 ;     Moved stop condition to beginning of SEARCH-method. Removed
-;     duplicate charge tokens from TOKENIZEWORDS. Christiaan Boersma
+;     duplicate charge tokens from TOKENIZEWORDS. Christiaan Boersma.
 ;     04-07-2015
 ;     Ensured UIDs in GetXXXXByUID are arrays, even when when called
 ;     with scalar. Christiaan Boersma.
@@ -806,8 +808,6 @@ FUNCTION AmesPAHdbIDLSuite::TokenizeWords,Word
                  translation:'(*self.joined).uid'}, $
                 {word:'identifier', $
                  translation:'(*self.joined).uid'}, $
-                {word:'atoms', $
-                 translation:'(*self.joined).natoms'}, $
                 {word:'carbon', $
                  translation:'(*self.joined).nc'}, $
                 {word:'hydrogen', $
