@@ -27,6 +27,9 @@
 ; :History:
 ;   Changes::
 ;
+;     06-01-2023
+;     Small optimization in ABSORPTIONCROSSSECTION__AMESPAHDBIDLSUITE.
+;     Christiaan Boersma.
 ;     04-15-2023
 ;     Re-indent some output. Christiaan Boersma
 ;     05-22-2022
@@ -358,11 +361,11 @@ FUNCTION AbsorptionCrosssection__AmesPAHdbIDLSuite,f
 
   wave_r2 = TRANSPOSE(REBIN([wave], nf, 2))
 
-  wave_r6 = TRANSPOSE(REBIN([wave], nf, 6))
-
   crosssection = ((1D / !DPI) * ATAN((1D3 * (y - 1D)^3) / y) + 0.5D) * (3458D-20 * 10D^(-3.431D * wave) + (2D / !DPI) * TOTAL(W[0:1,*] * C[0:1,*] * A[0:1,*] / (((wave_r2 / C[0:1,*]) - (C[0:1,*] / wave_r2))^2 + W[0:1,*]^2), 1))
 
   IF charge EQ 0 THEN RETURN,crosssection
+
+  wave_r6 = TRANSPOSE(REBIN([wave], nf, 6))
 
   RETURN, crosssection + EXP(-1D-1 / wave^2) * 1.5D-19 * 10D^(-wave) + SQRT(2D / !DPI) * TOTAL(A[2:*,*] * EXP(-2D * (wave_r6 - C[2:*,*])^2 / W[2:*,*]^2) / W[2:*,*], 1)
 END

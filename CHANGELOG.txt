@@ -1,4 +1,7 @@
 CHANGELOG
++- 06-01-2023
+  Small optimization in AbsorptionCrosssection__AmesPAHdbIDLSuite in
+  AmesPAHdbIDLSuite_Transitions__define.pro.
 +- 05-09-2023
    Access proper struct for database filename in
    AmesPAHdbIDLSuite_XMLParser::ENDDOCUMENT in
@@ -7,7 +10,7 @@ CHANGELOG
    nuids, and directly write to sample in example random_mixtures.pro.
    Remove invalid search key 'atoms' from AmesPAHdbIDLSuite::TOKENIZEWORDS in
    AmesPAHdbIDLSuite__define.pro.
-04-15-2023
++- 04-15-2023
    Remove redundant code and don't destroy observation in mc_fit_a_spectrum.pro.
    Add observation property to AmesPAHdbIDLSuite_MCFitted_Spectrum in
    AmesPAHdbIDLSuite_MCFitted_Spectrum__define.pro. Re-indent some output in
