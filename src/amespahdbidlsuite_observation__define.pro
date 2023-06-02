@@ -31,7 +31,7 @@
 ;     Added NOTICE-keyword and check for no abscissa units ABSCISSAUNITSTO.
 ;     Christiaan Boersma.
 ;     04-30-2021
-;     Fix parsing of ASCII-files and accommondate IPAC tables.
+;     Fix parsing of ASCII-files and Acommondate IPAC tables.
 ;     Sort data when chaning units. Christiaan Boersma.
 ;     07-07-2016
 ;     Removed extraneous spaces after last column when writing to file

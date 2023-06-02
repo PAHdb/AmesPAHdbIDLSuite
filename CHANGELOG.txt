@@ -1,7 +1,19 @@
 CHANGELOG
++- 06-02-2023
+   Acommondate UIDs >9999 in AmesPAHdbIDLSuite_Geometry::Plot in
+   AmesPAHdbIDLSuite_Geometry__define.pro, in example random_mixtures.pro, in
+   AmesPAHdbIDLSuite_GUI_Application_Main::LoadIcons in 
+   AmesPAHdbIDLSuite_GUI_Application_Main__define.pro, in 
+   AmesPAHdbIDLSuite_Transitions::Cascade and
+   AmesPAHdbIDLSuite_Transitions::CalculatedTemperature in,
+   AmesPAHdbIDLSuite_Transitions__define.pro, and 
+   AmesPAHdbIDLSuite_Fitted_Spectrum::Plot in
+   AmesPAHdbIDLSuite_Fitted_Spectrum__define.pro. Use Courier font in
+   AmesPAHdbIDLSuite_Fitted_Spectrum::Plot when presenting contributing UIDs in
+   AmesPAHdbIDLSuite_Fitted_Spectrum__define.pro.
 +- 06-01-2023
-  Small optimization in AbsorptionCrosssection__AmesPAHdbIDLSuite in
-  AmesPAHdbIDLSuite_Transitions__define.pro.
+   Small optimization in AbsorptionCrosssection__AmesPAHdbIDLSuite in
+   AmesPAHdbIDLSuite_Transitions__define.pro.
 +- 05-09-2023
    Access proper struct for database filename in
    AmesPAHdbIDLSuite_XMLParser::ENDDOCUMENT in

@@ -16,6 +16,8 @@
 ; :History:
 ;   Changes::
 ;
+;     06-02-2023
+;     Acommondate UIDs >9999 in LOADICONS. Christiaan Boersma.
 ;     07-06-2021
 ;     Cleaned up some progress bar. Christiaan Boersma.
 ;     12-31-2015
@@ -117,7 +119,7 @@ PRO AmesPAHdbIDLSuite_GUI_Application_Main::LoadIcons
 
      PRINT,"========================================================="
 
-     PRINT,FORMAT='("        GENERATING ICONS...........",I04,"/",I04,$)', 1, species_s.nuids
+     PRINT,FORMAT='("        GENERATING ICONS...........",I05,"/",I05,$)', 1, species_s.nuids
 
      DEVICE,SET_RESOLUTION=[100, 32],SET_PIXEL_DEPTH=24,DECOMPOSED=0
 
@@ -142,7 +144,7 @@ PRO AmesPAHdbIDLSuite_GUI_Application_Main::LoadIcons
 
         icons[i, *, *, *] = TVRD(TRUE=3)
 
-        PRINT,FORMAT='("'+STRING(13B)+'",I04,"/",I04,$)', i + 1, species_s.nuids
+        PRINT,FORMAT='("'+STRING(13B)+'",I05,"/",I05,$)', i + 1, species_s.nuids
      ENDFOR
 
      PRINT
