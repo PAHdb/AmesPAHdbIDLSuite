@@ -25,6 +25,8 @@
 ; :History:
 ;   Changes::
 ;
+;     05-02-2023
+;     Acommondate UIDs >9999 in PLOT. Christiaan Boersma.
 ;     09-20-2022
 ;     Use CPK codes for coloring atoms. Christiaan Boersma.
 ;     06-22-2022
@@ -259,7 +261,7 @@ FUNCTION AmesPAHdbIDLSuite_Geometry::Plot,UID,NoErase=NoErase,Resolution=Resolut
 
         img_3D[2,*,*] = b[img_byte]
 
-        WRITE_PNG,STRING(FORMAT='(A0,"_UID",I04,".png")', ID),OBJ_CLASS(self),img_3D
+        WRITE_PNG,STRING(FORMAT='(A0,"_UID",I05,".png")', ID),OBJ_CLASS(self),img_3D
      ENDIF
 
      SET_PLOT,_d

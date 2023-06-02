@@ -25,6 +25,9 @@
 ; :History:
 ;   Changes::
 ;
+;     06-02-2023
+;     Acommondate UIDs >9999 in PLOT and use Courier font when presenting
+;     contributing UIDs. Christiaan Boersma.
 ;     11-23-2022
 ;     Add missing OPLOT keyword to PLOT signature. Christiaan
 ;     Boersma.
@@ -373,7 +376,7 @@ PRO AmesPAHdbIDLSuite_Fitted_Spectrum::Plot,DistributionSize=DistributionSize,Re
 
      !P.CHARSIZE = 1.25
 
-     XYOUTS,0.055,0.87,STRING(FORMAT='(A4,4X,A6)', 'UID', 'WEIGHT'),/NORMAL
+     XYOUTS,0.055,0.87,STRING(FORMAT='("!11",A-5,4X,A-8,"!3")', 'UID', 'WEIGHT'),/NORMAL
 
      i = 0
 
@@ -381,12 +384,12 @@ PRO AmesPAHdbIDLSuite_Fitted_Spectrum::Plot,DistributionSize=DistributionSize,Re
 
      WHILE i LT self.nuids AND ypos GT 0.225 DO BEGIN
 
-        XYOUTS,0.055,ypos,STRING(FORMAT='(I04,4X,g-8.3)', (*self.weights)[i].uid, (*self.weights)[i].weight),COLOR=Color+i++,/NORMAL
+        XYOUTS,0.055,ypos,STRING(FORMAT='("!11",I5,4X,g-8.3,"!3")', (*self.weights)[i].uid, (*self.weights)[i].weight),COLOR=Color+i++,/NORMAL
 
         ypos -= 0.025
      ENDWHILE
 
-     IF i NE self.nuids THEN XYOUTS,0.055,ypos,STRING(FORMAT='("+",I0,X,"more...")', self.nuids - i),/NORMAL
+     IF i NE self.nuids THEN XYOUTS,0.055,ypos,STRING(FORMAT='("!11+",I0,X,"more...!3")', self.nuids - i),/NORMAL
   ENDIF
 
   GOTO,FINISH

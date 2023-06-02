@@ -27,6 +27,9 @@
 ; :History:
 ;   Changes::
 ;
+;     06-02-2023
+;     Acommondate UIDs >9999 in CASCADE and CALCULATEDTEMPERATURE. Christiaan
+;     Boersma.
 ;     06-01-2023
 ;     Small optimization in ABSORPTIONCROSSSECTION__AMESPAHDBIDLSUITE.
 ;     Christiaan Boersma.
@@ -1676,8 +1679,8 @@ PRO AmesPAHdbIDLSuite_Transitions::Cascade,E,Approximate=Approximate,IDLBridge=I
 
     timer = SYSTIME(/SECONDS)
 
-    PRINT,FORMAT='("SPECIES                          :",X,I4,"/",I4)',i+1,self.nuids
-    PRINT,FORMAT='("UID                              :",X,I4)',(*self.uids)[i]
+    PRINT,FORMAT='("SPECIES                          :",X,I5,"/",I5)',i+1,self.nuids
+    PRINT,FORMAT='("UID                              :",X,I5)',(*self.uids)[i]
 
     IF KEYWORD_SET(Approximate) OR KEYWORD_SET(Star) OR KEYWORD_SET(ISRF) THEN BEGIN
 
@@ -1928,8 +1931,8 @@ PRO AmesPAHdbIDLSuite_Transitions::CalculatedTemperature,E,Approximate=Approxima
 
     timer = SYSTIME(/SECONDS)
 
-    PRINT,FORMAT='("SPECIES                          :",X,I4,"/",I4)',i+1,self.nuids
-    PRINT,FORMAT='("UID                              :",X,I4)',(*self.uids)[i]
+    PRINT,FORMAT='("SPECIES                          :",X,I5,"/",I5)',i+1,self.nuids
+    PRINT,FORMAT='("UID                              :",X,I5)',(*self.uids)[i]
 
     IF KEYWORD_SET(Approximate) OR KEYWORD_SET(Star) OR KEYWORD_SET(ISRF) THEN BEGIN
 

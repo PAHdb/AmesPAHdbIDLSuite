@@ -25,6 +25,8 @@
 ; :History:
 ;   Changes::
 ;
+;     06-02-2023
+;     Acommondate UIDs >9999. Christiaan Boersma.
 ;     05-09-2023
 ;     Fix progress bar, use HISTOGRAM instead of WHERE, prompt for next plot,
 ;     divide carbon and hydrogen sizes by nuids, and directly write to sample.
@@ -94,7 +96,7 @@ PRO RANDOM_MIXTURES
 
   FOR i = 0L, n - 1L DO BEGIN
 
-     PRINT,FORMAT='("' + STRING(13B) + '",I4,$)',i+1L
+     PRINT,FORMAT='("' + STRING(13B) + '",I5,$)',i+1L
 
      abundance =  RANDOMU(seed, nuids, /UNIFORM)
 
