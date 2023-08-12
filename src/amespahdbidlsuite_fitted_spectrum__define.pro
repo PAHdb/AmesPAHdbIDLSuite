@@ -26,7 +26,7 @@
 ;   Changes::
 ;
 ;     06-02-2023
-;     Acommondate UIDs >9999 in PLOT and use Courier font when presenting
+;     Accommondate UIDs >9999 in PLOT and use Courier font when presenting
 ;     contributing UIDs. Christiaan Boersma.
 ;     11-23-2022
 ;     Add missing OPLOT keyword to PLOT signature. Christiaan

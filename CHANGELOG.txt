@@ -1,6 +1,10 @@
 CHANGELOG
++- 08-12-2023
+   Set correct units in AmesPAHdbIDLSuite_Transitions::Cascade and
+   AmesPAHdbIDLSuite_Transitions::Convolve in
+   AmesPAHdbIDLSuite_Transitions__define.pro 
 +- 06-02-2023
-   Acommondate UIDs >9999 in AmesPAHdbIDLSuite_Geometry::Plot in
+   Accommondate UIDs >9999 in AmesPAHdbIDLSuite_Geometry::Plot in
    AmesPAHdbIDLSuite_Geometry__define.pro, in example random_mixtures.pro, in
    AmesPAHdbIDLSuite_GUI_Application_Main::LoadIcons in 
    AmesPAHdbIDLSuite_GUI_Application_Main__define.pro, in 
