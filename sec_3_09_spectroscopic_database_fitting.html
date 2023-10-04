@@ -147,8 +147,10 @@ observation-&gt;SetGridRange,500,2000</code></pre>
           abscissa, stick representation, overplotting, legend and color,
           respectively. Through IDL's keyword inheritance mechanism additional
           keywords accepted by IDL's 'PLOT'-procedure can be passed.
+          Furthermore, the 'SMALL'-keyword can be used to set the small cutoff
+          size when plotting the size breakdown. 
         </p>
-        <pre><code class="language-idl">fit-&gt;Plot,/Size,/Wavelength,XTITLE=[2.5,15],/XSTYLE</code></pre>
+        <pre><code class="language-idl">fit-&gt;Plot,/Size,Small=20L,/Wavelength,XTITLE=[2.5,15],/XSTYLE</code></pre>
         <p>
           The 'AmesPAHdbIDLSuite_Fitted_Spectrum'-object's 'Write'-method will
           write the fit to a single text (.txt) file. Optionally, a prefix can
@@ -236,7 +238,7 @@ breakdown = fit-&gt;getBreakdown()</code></pre>
 
         <table class="smaller" summary="footer">
           <tr>
-            <td>&copy; Copyright 2020, Dr. Christiaan Boersma</td>
+            <td>&copy; Copyright 2023, Dr. Christiaan Boersma</td>
           </tr>
 
           <tr>

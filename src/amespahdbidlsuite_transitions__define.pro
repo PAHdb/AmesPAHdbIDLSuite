@@ -27,8 +27,12 @@
 ; :History:
 ;   Changes::
 ;
+;     09-20-2023
+;     Adjust formatting to report >1e3 points in CONVOLVE. Christiaan Boersma.
+;     08-12-2023
+;     Set correct units in CASCADE and CONVOLVE. Christiaan Boersma.
 ;     06-02-2023
-;     Acommondate UIDs >9999 in CASCADE and CALCULATEDTEMPERATURE. Christiaan
+;     Accommondate UIDs >9999 in CASCADE and CALCULATEDTEMPERATURE. Christiaan
 ;     Boersma.
 ;     06-01-2023
 ;     Small optimization in ABSORPTIONCROSSSECTION__AMESPAHDBIDLSUITE.
@@ -1604,7 +1608,7 @@ PRO AmesPAHdbIDLSuite_Transitions::Cascade,E,Approximate=Approximate,IDLBridge=I
 
   self.units.ordinate = {AmesPAHdb_Unit_S, $
                          unit:3, $
-                         str:'integrated radiant energy [erg]'}
+                         str:'integrated radiant energy [x10!U5!N erg/mol]'}
 
   description = [STRING(FORMAT='(A-12,":",X,A-0)', "model", "Cascade"), $
                  STRING(FORMAT='(A-12,":",X,A-0)', "approximated", KEYWORD_SET(Approximate) ? "yes" : "no")]
@@ -2426,7 +2430,7 @@ FUNCTION AmesPAHdbIDLSuite_Transitions::Convolve,XRange=XRange,FWHM=FWHM,Npoints
 
   PRINT
   PRINT,"========================================================="
-  PRINT," GRID: (XMIN,XMAX)=("+STRTRIM(STRING(FORMAT='(G-7.4)',xmin),2)+","+STRTRIM(STRING(FORMAT='(G-7.4)',xmax),2)+"); "+STRTRIM(STRING(FORMAT='(I-4)',NPoints),2)+" POINTS"
+  PRINT," GRID: (XMIN,XMAX)=("+STRTRIM(STRING(FORMAT='(G-7.4)',xmin),2)+","+STRTRIM(STRING(FORMAT='(G-7.4)',xmax),2)+"); "+STRTRIM(STRING(FORMAT='(I-5)',NPoints),2)+" POINTS"
   PRINT,"========================================================="
   PRINT
 
@@ -2658,7 +2662,7 @@ FUNCTION AmesPAHdbIDLSuite_Transitions::Convolve,XRange=XRange,FWHM=FWHM,Npoints
 
      "AMESPAHDBIDLSUITE_MODEL_CASCADE_S": units.ordinate = {AmesPAHdb_Unit_S, $
                                                             unit:3, $
-                                                            str:'radiant energy [erg.cm/PAH]'}
+                                                            str:'radiant energy [x10!U5!N erg.cm/mol]'}
   ENDCASE
 
   RETURN,OBJ_NEW('AmesPAHdbIDLSuite_Spectrum', $

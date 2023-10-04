@@ -26,7 +26,7 @@
 ;   Changes::
 ;
 ;     05-02-2023
-;     Acommondate UIDs >9999 in PLOT. Christiaan Boersma.
+;     Accommondate UIDs >9999 in PLOT. Christiaan Boersma.
 ;     09-20-2022
 ;     Use CPK codes for coloring atoms. Christiaan Boersma.
 ;     06-22-2022

@@ -25,6 +25,9 @@
 ; :History:
 ;   Changes::
 ;
+;     10-04-2023
+;     Allow setting the SMALL threshold in PLOT through keyword-inheritance.
+;     Christiaan Boersma
 ;     04-15-2023
 ;     Add observation property. Christiaan Boersma.
 ;     11-23-2022
@@ -200,7 +203,7 @@ PRO AmesPAHdbIDLSuite_MCFitted_Spectrum::Plot,DistributionSize=DistributionSize,
 
   IF KEYWORD_SET(Size) OR KEYWORD_SET(Charge) OR KEYWORD_SET(COMPOSITION) THEN BEGIN
 
-     classes = self->getClasses()
+     classes = self->getClasses(_EXTRA=EXTRA)
 
      ntags = N_TAGS(classes)
      FOR i = 0L, ntags - 1 DO classes[*, 1].(i) = SQRT(classes[*, 1].(i))

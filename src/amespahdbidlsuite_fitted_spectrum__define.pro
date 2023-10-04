@@ -25,8 +25,11 @@
 ; :History:
 ;   Changes::
 ;
+;     10-04-2023
+;     Allow setting the SMALL threshold in PLOT through keyword-inheritance.
+;     Christiaan Boersma.
 ;     06-02-2023
-;     Acommondate UIDs >9999 in PLOT and use Courier font when presenting
+;     Accommondate UIDs >9999 in PLOT and use Courier font when presenting
 ;     contributing UIDs. Christiaan Boersma.
 ;     11-23-2022
 ;     Add missing OPLOT keyword to PLOT signature. Christiaan
@@ -304,7 +307,7 @@ PRO AmesPAHdbIDLSuite_Fitted_Spectrum::Plot,DistributionSize=DistributionSize,Re
 
   IF KEYWORD_SET(Size) OR KEYWORD_SET(Charge) OR KEYWORD_SET(COMPOSITION) THEN BEGIN
 
-     classes = self->getClasses()
+     classes = self->getClasses(_EXTRA=EXTRA)
 
      IF KEYWORD_SET(Size) THEN BEGIN
 
