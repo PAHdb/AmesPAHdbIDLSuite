@@ -1,8 +1,17 @@
 CHANGELOG
++-10-04-2023
+   Allow setting the SMALL threshold in AmesPAHdbIDLSuite_Fitted_Spectrum::Plot
+   through keyword-inheritance in AmesPAHdbIDLSuite_Fitted_Spectrum__define.pro
+   and in AmesPAHdbIDLSuite_MCFitted_Spectrum::Plot in
+   AmesPAHdbIDLSuite_MCFitted_Spectrum__define.pro.
++- 09-20-2023
+   Adjust formatting string to report >1e4 points in
+   AmesPAHdbIDLSuite_Transitions::Convolve in
+   AmesPAHdbIDLSuite_Transitions__define.pro.
 +- 08-12-2023
    Set correct units in AmesPAHdbIDLSuite_Transitions::Cascade and
    AmesPAHdbIDLSuite_Transitions::Convolve in
-   AmesPAHdbIDLSuite_Transitions__define.pro 
+   AmesPAHdbIDLSuite_Transitions__define.pro.
 +- 06-02-2023
    Accommondate UIDs >9999 in AmesPAHdbIDLSuite_Geometry::Plot in
    AmesPAHdbIDLSuite_Geometry__define.pro, in example random_mixtures.pro, in

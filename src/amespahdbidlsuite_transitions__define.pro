@@ -27,6 +27,8 @@
 ; :History:
 ;   Changes::
 ;
+;     09-20-2023
+;     Adjust formatting to report >1e3 points in CONVOLVE. Christiaan Boersma.
 ;     08-12-2023
 ;     Set correct units in CASCADE and CONVOLVE. Christiaan Boersma.
 ;     06-02-2023
@@ -2428,7 +2430,7 @@ FUNCTION AmesPAHdbIDLSuite_Transitions::Convolve,XRange=XRange,FWHM=FWHM,Npoints
 
   PRINT
   PRINT,"========================================================="
-  PRINT," GRID: (XMIN,XMAX)=("+STRTRIM(STRING(FORMAT='(G-7.4)',xmin),2)+","+STRTRIM(STRING(FORMAT='(G-7.4)',xmax),2)+"); "+STRTRIM(STRING(FORMAT='(I-4)',NPoints),2)+" POINTS"
+  PRINT," GRID: (XMIN,XMAX)=("+STRTRIM(STRING(FORMAT='(G-7.4)',xmin),2)+","+STRTRIM(STRING(FORMAT='(G-7.4)',xmax),2)+"); "+STRTRIM(STRING(FORMAT='(I-5)',NPoints),2)+" POINTS"
   PRINT,"========================================================="
   PRINT
 
