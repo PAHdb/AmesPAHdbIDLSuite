@@ -26,7 +26,7 @@
 ;   Changes::
 ;
 ;     06-02-2023
-;     Accommondate UIDs >9999. Christiaan Boersma.
+;     Accommodate UIDs >9999. Christiaan Boersma.
 ;     05-09-2023
 ;     Fix progress bar, use HISTOGRAM instead of WHERE, prompt for next plot,
 ;     divide carbon and hydrogen sizes by nuids, and directly write to sample.

@@ -21,6 +21,7 @@ digraph callgraph {
   amespahdbidlsuite_create_kurucz_stellarmodel_s[fontcolor=black,shape=plaintext]
   amespahdbidlsuite::getlaboratorybyuid[fontcolor=black,shape=plaintext]
   mc_fit_a_spectrum[fontcolor=black,shape=plaintext]
+  amespahdbidlsuite::cache[fontcolor=black,shape=plaintext]
   amespahdbidlsuite::checkversion[fontcolor=black,shape=plaintext]
   amespahdbidlsuite_mcfitted_spectrum::write[fontcolor=black,shape=plaintext]
   amespahdbidlsuite_observation::plot[fontcolor=black,shape=plaintext]
