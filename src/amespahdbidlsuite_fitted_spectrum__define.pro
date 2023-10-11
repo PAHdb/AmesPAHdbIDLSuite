@@ -29,7 +29,7 @@
 ;     Allow setting the SMALL threshold in PLOT through keyword-inheritance.
 ;     Christiaan Boersma.
 ;     06-02-2023
-;     Accommondate UIDs >9999 in PLOT and use Courier font when presenting
+;     Accommodate UIDs >9999 in PLOT and use Courier font when presenting
 ;     contributing UIDs. Christiaan Boersma.
 ;     11-23-2022
 ;     Add missing OPLOT keyword to PLOT signature. Christiaan

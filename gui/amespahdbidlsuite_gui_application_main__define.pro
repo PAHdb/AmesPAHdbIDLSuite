@@ -17,7 +17,7 @@
 ;   Changes::
 ;
 ;     06-02-2023
-;     Accommondate UIDs >9999 in LOADICONS. Christiaan Boersma.
+;     Accommodate UIDs >9999 in LOADICONS. Christiaan Boersma.
 ;     07-06-2021
 ;     Cleaned up some progress bar. Christiaan Boersma.
 ;     12-31-2015

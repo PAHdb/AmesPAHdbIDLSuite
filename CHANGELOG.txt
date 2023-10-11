@@ -1,5 +1,8 @@
 CHANGELOG
-+-10-04-2023
++- 10-10-2023
+   Generalize caching by adding AmesPAHdbIDLSuite::Cache_DIR and
+   AmesPAHdbIDLSuite::Cache methods in AmesPAHdbIDLSuite__define.pro.
++- 10-04-2023
    Allow setting the SMALL threshold in AmesPAHdbIDLSuite_Fitted_Spectrum::Plot
    through keyword-inheritance in AmesPAHdbIDLSuite_Fitted_Spectrum__define.pro
    and in AmesPAHdbIDLSuite_MCFitted_Spectrum::Plot in
@@ -13,7 +16,7 @@ CHANGELOG
    AmesPAHdbIDLSuite_Transitions::Convolve in
    AmesPAHdbIDLSuite_Transitions__define.pro.
 +- 06-02-2023
-   Accommondate UIDs >9999 in AmesPAHdbIDLSuite_Geometry::Plot in
+   Accommodate UIDs >9999 in AmesPAHdbIDLSuite_Geometry::Plot in
    AmesPAHdbIDLSuite_Geometry__define.pro, in example random_mixtures.pro, in
    AmesPAHdbIDLSuite_GUI_Application_Main::LoadIcons in 
    AmesPAHdbIDLSuite_GUI_Application_Main__define.pro, in 

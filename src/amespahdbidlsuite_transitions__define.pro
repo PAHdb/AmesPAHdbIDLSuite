@@ -27,12 +27,14 @@
 ; :History:
 ;   Changes::
 ;
+;     10-10-2023
+;     Use generalized caching in CASCADE. Christiaan Boersma.
 ;     09-20-2023
 ;     Adjust formatting to report >1e3 points in CONVOLVE. Christiaan Boersma.
 ;     08-12-2023
 ;     Set correct units in CASCADE and CONVOLVE. Christiaan Boersma.
 ;     06-02-2023
-;     Accommondate UIDs >9999 in CASCADE and CALCULATEDTEMPERATURE. Christiaan
+;     Accommodate UIDs >9999 in CASCADE and CALCULATEDTEMPERATURE. Christiaan
 ;     Boersma.
 ;     06-01-2023
 ;     Small optimization in ABSORPTIONCROSSSECTION__AMESPAHDBIDLSUITE.
@@ -1464,7 +1466,9 @@ PRO AmesPAHdbIDLSuite_Transitions::Cascade,E,Approximate=Approximate,IDLBridge=I
                           stellar_model:KEYWORD_SET(StellarModel) ? StellarModel : 0B, $
                           data:self->Get()})
 
-    file_cache = STRING(FORMAT='(A0,"/",z0,".sav")', '/tmp', hash)
+    dir_cache = AmesPAHdbIDLSuite->Cache_DIR()
+
+    file_cache = STRING(FORMAT='(A0,z0,".sav")', dir_cache, hash)
 
     IF FILE_TEST(file_cache, /READ) THEN BEGIN
 

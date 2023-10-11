@@ -1,0 +1,141 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <title>AmesPAHdbIDLSuite Manual</title>
+
+
+    <link rel="stylesheet" type="text/css" media="all"
+          href="idldoc-resources/main.css" />
+    <link rel="stylesheet" type="text/css" media="print"
+          href="idldoc-resources/main-print.css" />
+
+    <link rel="stylesheet" type="text/css" media="all"
+          href="idldoc-resources/prismjs.css" />
+
+    <script type="text/javascript" src="idldoc-resources/prismjs.js"></script>
+    <script type="text/javascript" src="idldoc-resources/language-idl.js"></script>
+
+  </head>
+
+  <body>
+
+    <div class="container">
+
+      <div class="header">
+
+        <div class="breadcrumb">
+
+          <a href="overview.html">Docs</a> &raquo; <a href="api.html">API</a> &raquo; Caching
+
+        </div>
+
+        <a class="btn-prev" href="sec_3_10_graphical_user_interface.html" title="Graphical User Interface" accesskey="p"> Previous</a>
+
+        <a class="btn-next" href="release_history.html" title="Release History" accesskey="n">Next </a>
+
+      </div>
+
+      <div class="content">
+
+        <hr />
+
+        <h1>Caching</h1>
+
+        <p>
+            Computational intense tasks like parsing the database XML-file and
+            applying the 'Cascade' PAH emission model support caching. Caching
+            provides a significantly speed-up on subsequent use. By default, the
+            'IDL_TMP'-directory is used to store the cache. However, this means
+            that upon system reboot the cache will be cleared. To avoid this, 
+            set either or both of the system and IDL AMESPAHCACHEDIR environment
+            variables to a directory for storing the cache.
+        </p>
+        IDL:
+        <pre><code class="language-idl">DEFSYSV,'!AMESPAHCACHEDIR',"/path/to/cache"</code></pre>
+        Bash:
+        <pre><code class="language-bash">export AMESPAHCACHEDIR='/path/to/cache'</code></pre>
+        <p>
+            <b>NB</b> On some systems these variables are case-sensitive.
+        </p>
+  
+        <p>
+            The cache can be managed by the static 'Cache'-method of the
+            'AmesPAHdbIDLSuite' class. Simply invoking it lists the hash of each
+            cached item and its size. 
+        </p>
+        <pre><code class="language-idl">AmesPAHdbIDLSuite-&gt;Cache</code></pre>
+
+        <p>
+            The 'Clear'-keyword can be used to clear the cache.
+        </p>
+        <pre><code class="language-idl">AmesPAHdbIDLSuite-&gt;Cache,/Clear</code></pre>
+
+        <p>
+            To clear a specific cached item its hash can be provided.
+        </p>
+        <pre><code class="language-idl">AmesPAHdbIDLSuite-&gt;Cache,'6EA3188984B19E595142DE68BC40EA52',/Clear</code></pre>
+
+        <p>
+            The 'CLEARED'-column indicates whether a cached-item has been cleared.
+        </p>
+        <pre><code class="language-idl">
+=========================================================
+CACHE DIR: /Users/boersma/.pahdb_cache/
+---------------------------------------------------------
+HASH                             SIZE           CLEARED
+---------------------------------------------------------
+180EEF46                            0.61 MiB    0
+3B4BAE59DF0F6F2DD348D626843AE37F   42.27 MiB    0
+55AE8746                            0.61 MiB    0
+6EA3188984B19E595142DE68BC40EA52  130.52 MiB    1
+6EA3188984B19E595142DE68BC40EA52  409.44 MiB    1
+80223684                           97.36 MiB    0
+98025537                            0.61 MiB    0
+DAF16FAD                            0.61 MiB    0
+=========================================================
+        </code></pre>
+
+      </div>
+
+      <div class="footer">
+
+        <a class="btn-prev" href="sec_3_10_graphical_user_interface.html" title="Graphical User Interface" accesskey="p"> Previous</a>
+
+        <a class="btn-next" href="release_history.html" title="Release History" accesskey="n">Next </a>
+
+        <hr />
+
+        <table class="smaller" summary="footer">
+
+          <tr>
+
+            <td>
+
+              &copy; Copyright 2023, Dr. Christiaan Boersma
+
+            </td>
+
+          </tr>
+
+          <tr>
+
+            <td>
+
+              Built with <a target="_top" href="https://github.com/mgalloy/idldoc">IDLdoc</a> using <a target="_top" href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> elements provided by <a target="_top" href="https://readthedocs.org">Read the Docs</a>.
+
+            </td>
+
+          </tr>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </body>
+
+</html>

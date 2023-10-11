@@ -39,6 +39,9 @@
 ; :History:
 ;   Changes::
 ;
+;     10-10-2023
+;     Generalize caching by adding CACHE_DIR and CACHE methods. Christiaan
+;     Boersma.
 ;     05-15-2023
 ;     Remove invalid search key 'atoms' in TOKENIZEWORDS. Christiaan Boersma.
 ;     04-11-2023
@@ -167,7 +170,7 @@ PRO AmesPAHdbIDLSuite::File_MD5,File,Hash,Err
 
   ON_ERROR,2
 
-  md5 = FILE_WHICH(getenv('PATH'), 'md5')
+  md5 = FILE_WHICH(GETENV('PATH'), 'md5')
 
   IF MD5 NE '' THEN BEGIN
 
@@ -176,7 +179,7 @@ PRO AmesPAHdbIDLSuite::File_MD5,File,Hash,Err
      RETURN
   ENDIF
 
-  md5sum = FILE_WHICH(getenv('PATH'), 'md5sum')
+  md5sum = FILE_WHICH(GETENV('PATH'), 'md5sum')
 
   IF md5sum NE '' THEN BEGIN
 
@@ -212,6 +215,93 @@ FUNCTION AmesPAHdbIDLSuite::GetHash
   ON_ERROR,2
 
   RETURN,self.file_md5
+END
+
+;+
+; Return the PAHdb cache dir.
+;
+; :Returns:
+;   string
+;
+; :Categories:
+;   CACHE
+;
+; :Private:
+;-
+FUNCTION AmesPAHdbIDLSuite::Cache_DIR
+
+    COMPILE_OPT IDL2, STATIC
+
+    ON_ERROR,2
+
+    DEFSYSV,'!AMESPAHCACHDIR',EXISTS=defsys
+
+    IF defsys EQ 1 THEN dir_cache = !AMESPAHCACHEDIR $
+    ELSE dir_cache = GETENV("AMESPAHCACHEDIR")
+
+    IF dir_cache EQ "" THEN RETURN,GETENV('IDL_TMPDIR')
+
+    IF NOT FILE_TEST(dir_cache, /DIRECTORY) THEN FILE_MKDIR,dir_cache
+
+    RETURN,dir_cache + PATH_SEP()
+END
+
+;+
+; Manage the PAHdb cache.
+;
+; :Params:
+;   Hash: in, optional, type=string
+;     Hash to clear
+;
+; :Keywords:
+;   Clear: in, optional, type=string
+;     Clear all or selected hash(es)
+;
+; :Categories:
+;   CACHE
+;-
+PRO AmesPAHdbIDLSuite::Cache,Hash,Clear=Clear
+
+  COMPILE_OPT IDL2, STATIC
+
+  ON_ERROR,2
+
+  PRINT
+  PRINT,"========================================================="
+
+  IF GETENV("AMESPAHCACHEDIR") EQ "" THEN BEGIN
+    PRINT,"                   CACHING IS TEMPORARY                  "
+    PRINT,"========================================================="
+    PRINT
+    RETURN
+  ENDIF
+
+  dir_cache = AmesPAHdbIDLSuite->Cache_DIR()
+
+  PRINT,FORMAT='("CACHE DIR:",X,A0)',dir_cache
+  PRINT,"---------------------------------------------------------"
+  PRINT,FORMAT='(A-32,X,A-7,8X,A0)',"HASH","SIZE","CLEARED" 
+  PRINT,"---------------------------------------------------------"
+
+  files = FILE_SEARCH(dir_cache + PATH_SEP() + "*.sav", COUNT=nfiles)
+  FOR i = 0L, nfiles - 1L DO BEGIN    
+    info = FILE_INFO(files[i])
+    basename = STRUPCASE(FILE_BASENAME(files[i],".sav"))
+    cleared = 0
+    IF KEYWORD_SET(Clear) THEN BEGIN
+        IF N_PARAMS() EQ 0 OR (N_PARAMS() EQ 1 AND $
+           (basename EQ Hash OR $
+            basename EQ Hash + "_JOINED")) THEN BEGIN
+            FILE_DELETE,files[i]
+            cleared = 1
+        ENDIF
+    ENDIF
+    PRINT,FORMAT='(A-32,X,F7.2,X,"MiB",4X,I1)', basename, $
+          info.size / 1024.0 / 1024.0,cleared
+  ENDFOR
+
+  PRINT,"========================================================="
+  PRINT
 END
 
 ;+
@@ -1111,7 +1201,8 @@ END
 ;     Number of results
 ;
 ; :Keywords:
-;   Query: in, optional, type=string The generate query-string that can be used with the WHERE-function
+;   Query: in, optional, type=string
+;     The generated query-string that can be used with the WHERE-function
 ;
 ; :Categories:
 ;   SEARCH
@@ -1128,7 +1219,7 @@ FUNCTION AmesPAHdbIDLSuite::Search,Str,Count,Query=Query
 
   IF NOT PTR_VALID(self.joined) THEN BEGIN
 
-     file_cache = GETENV('IDL_TMPDIR')+self.file_md5+'_joined.sav'
+     file_cache = self->Cache_DIR()+self.file_md5+'_joined.sav'
 
      IF FILE_TEST(file_cache, /READ) THEN BEGIN
         PRINT
@@ -1414,7 +1505,7 @@ PRO AmesPAHdbIDLSuite::ReadFile,File,Check=Check,Cache=Cache
 
   self.file_md5 = hash[0]
 
-  file_cache = GETENV('IDL_TMPDIR')+self.file_md5+'.sav'
+  file_cache = self->Cache_DIR()+self.file_md5+'.sav'
 
   IF SIZE(Cache, /TYPE) EQ 0 THEN Cache = 1
 
