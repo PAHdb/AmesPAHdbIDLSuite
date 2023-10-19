@@ -25,6 +25,8 @@
 ; :History:
 ;   Changes::
 ;
+;     10-19-2023
+;     Don't destroy created observation in MCFIT. Christiaan Boersma.
 ;     04-15-2023
 ;     Store unperturbed observation in MCFIT. Christiaan Boersma.
 ;     07-08-2022
@@ -609,7 +611,7 @@ FUNCTION AmesPAHdbIDLSuite_Spectrum::MCFit,observation,error,samples,EXTERNAL_NN
 
   COMPILE_OPT IDL2
 
-  ON_ERROR,2
+;   ON_ERROR,2
 
   type = SIZE(observation, /STRUCTURE)
 
@@ -671,8 +673,6 @@ FUNCTION AmesPAHdbIDLSuite_Spectrum::MCFit,observation,error,samples,EXTERNAL_NN
   ENDFOR
   PRINT
   PRINT,"========================================================="
-
-  IF type.type_name NE 'OBJREF' THEN OBJ_DESTROY,obs
 
   obs->Set,Y=y
   RETURN,OBJ_NEW('AmesPAHdbIDLSuite_MCFitted_Spectrum', $
