@@ -1466,9 +1466,7 @@ PRO AmesPAHdbIDLSuite_Transitions::Cascade,E,Approximate=Approximate,IDLBridge=I
                           stellar_model:KEYWORD_SET(StellarModel) ? StellarModel : 0B, $
                           data:self->Get()})
 
-    dir_cache = AmesPAHdbIDLSuite->Cache_DIR()
-
-    file_cache = STRING(FORMAT='(A0,z0,".sav")', dir_cache, hash)
+    file_cache = STRING(FORMAT='(A0,z0,".sav")', AmesPAHdbIDLSuite->Cache_DIR(), hash)
 
     IF FILE_TEST(file_cache, /READ) THEN BEGIN
 
