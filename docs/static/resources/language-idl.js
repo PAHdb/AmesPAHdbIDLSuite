@@ -7,7 +7,7 @@ Prism.languages.idl = {
 	lookbehind: false
     },
    
-    'keyword': /\b(if|then|begin|else|while|do|for|return|function|new|switch|case|break|continue|end|endif|endelse|endwhile|endswitch|endcase)\b/ig,
+    'keyword': /\b(if|then|begin|else|while|do|for|return|function|pro|common|new|switch|case|break|continue|end|endif|endelse|endwhile|endswitch|endcase)\b/ig,
     
     'option': [
 	{
