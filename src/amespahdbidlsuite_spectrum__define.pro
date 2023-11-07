@@ -25,6 +25,8 @@
 ; :History:
 ;   Changes::
 ;
+;     11-06-2023
+;     Add callback to FIT and NNLS for progress monitoring. Christiaan Boersma. 
 ;     10-19-2023
 ;     Don't destroy created observation in MCFIT. Christiaan Boersma.
 ;     04-15-2023
@@ -292,12 +294,16 @@ END
 ;    max_iter: in, optional, type=long
 ;      Maximum number of iterations
 ;
+; :Keywords:
+;    callback: in, optional, type=string
+;      Procedure called on every iteration
+;
 ; :Categories:
 ;   FITTING
 ;
 ; :Private:
 ;-
-PRO AmesPAHdbIDLSuite_Spectrum::NNLS,A,b,tol,max_iter
+PRO AmesPAHdbIDLSuite_Spectrum::NNLS,A,b,tol,max_iter,callback=callback
 
   COMPILE_OPT IDL2
 
@@ -371,6 +377,7 @@ PRO AmesPAHdbIDLSuite_Spectrum::NNLS,A,b,tol,max_iter
            P = P[WHERE(HISTOGRAM(temp, MIN=0, MAX=np-1) EQ 0)]
         ENDIF
      ENDWHILE
+     IF KEYWORD_SET(callback) THEN CALL_PROCEDURE,callback,A,x
   ENDWHILE
   b=x
   max_iter=k
@@ -389,6 +396,8 @@ END
 ;      Uncertainties associated with observation
 ;
 ;  :Keywords:
+;    CALLBACK_NNLS: in, optional, type=boolean
+;     Callback 
 ;    EXTERNAL_NNLS: in, optional, type=int
 ;     Whether to use an externally defined NNLS-routine
 ;    NOTICE: in, optional, type=int, default=1
@@ -397,7 +406,7 @@ END
 ; :Categories:
 ;   FITTING
 ;-
-FUNCTION AmesPAHdbIDLSuite_Spectrum::Fit,observation,error,EXTERNAL_NNLS=external_nnls,Notice=Notice
+FUNCTION AmesPAHdbIDLSuite_Spectrum::Fit,observation,error,CALLBACK_NNLS=callback_nnls,EXTERNAL_NNLS=external_nnls,Notice=Notice
 
   COMPILE_OPT IDL2
 
@@ -494,7 +503,7 @@ FUNCTION AmesPAHdbIDLSuite_Spectrum::Fit,observation,error,EXTERNAL_NNLS=externa
 
   IF idl_version GE 8.0 AND NOT KEYWORD_SET(EXTERNAL_NNLS) THEN BEGIN
 
-     self->NNLS,m,b
+     self->NNLS,m,b,callback=callback_nnls
 
      weights = b
   ENDIF ELSE IF NOT KEYWORD_SET(EXTERNAL_NNLS) THEN BEGIN
