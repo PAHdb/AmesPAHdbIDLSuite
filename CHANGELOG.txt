@@ -1,4 +1,12 @@
 CHANGELOG
++- 11-09-2023
+   Add missing case for switch in AmesPAHdbIDLSuite::HashCode in
+   AmesPAHdbIDLSuite__define.pro. Speedups for
+   AmesPAHdbIDLSuite_Transitions::Cascade,
+   AmesPAHdbIDLSuite_Transitions__IDLBridge_Execute, and
+   AmesPAHdbIDLSuite_Transitions::Convolve in
+   AmesPAHdbIDLSuite_Transitions__define.pro by avoiding double indexing and
+   computing ranges in loops.
 +- 11-06-2023
    Add callback to AmesPAHdbIDLSuite_Fitted_Spectrum::Fit and
    AmesPAHdbIDLSuite_Fitted_Spectrum::NNLS in

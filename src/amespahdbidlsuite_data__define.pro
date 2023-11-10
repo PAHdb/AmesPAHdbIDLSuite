@@ -41,6 +41,8 @@
 ; :History:
 ;   Changes::
 ;
+;     11-09-2023
+;     Add missing case for switch in HASHCODE method. Christiaan Boersma.
 ;     05-16-2022
 ;     Speed up INTERSECT and DIFFERENCE using HISTOGRAM.
 ;     Christiaan Boersma.
@@ -542,6 +544,7 @@ FUNCTION AmesPAHdbIDLSuite_Data::HashCode,In
     SWITCH SIZE(In.(i), /TYPE) OF
       0: BREAK
       1:
+      2:
       3:
       4:
       5:

@@ -27,6 +27,9 @@
 ; :History:
 ;   Changes::
 ;
+;     11-09-2023
+;     Speedups for CASCADE, IDLBRIDGE_EXECUTE, and CONVOLVE by avoiding double
+;     indexing and computing ranges in loops. Christiaan Boersma.
 ;     10-10-2023
 ;     Use generalized caching in CASCADE. Christiaan Boersma.
 ;     09-20-2023
@@ -1055,7 +1058,7 @@ PRO AmesPAHdbIDLSuite_Transitions__IDLBridge_Execute,uid,offset
 
   COMMON IDLBridge__AmesPAHData, shmmap, n_ri, ri, n_data, n_uids, i, E, doApproximate, doStar, doISRF, doConvolved, doStellarModel
 
-  select = ri[ri[uid]:ri[uid+1]-1L]
+  select = ri[ri[uid]:ri[uid+1L]-1L]
 
   nselect = N_ELEMENTS(select)
 
@@ -1085,8 +1088,6 @@ PRO AmesPAHdbIDLSuite_Transitions__IDLBridge_Execute,uid,offset
 
   IF doApproximate THEN BEGIN
 
-     TotalCrossSection = TOTAL(intensities)
-
      func1 = 'ApproximateAttainedTemperatureFunc__AmesPAHdbIDLSuite'
 
      func2 = 'ApproximateFeatureStrengthFunc__AmesPAHdbIDLSuite'
@@ -1111,9 +1112,13 @@ PRO AmesPAHdbIDLSuite_Transitions__IDLBridge_Execute,uid,offset
      ENDIF
   ENDELSE
 
-  shmmap[n_ri+2L*n_data+offset] = FX_ROOT([2.73D, 2500, 5000], func1, /DOUBLE, TOL=1D-5)
+  Tmax = FX_ROOT([2.73D, 2500, 5000], func1, /DOUBLE, TOL=1D-5)
+ 
+  shmmap[n_ri+2L*n_data+offset] = Tmax
 
   shmmap[n_ri+2L*n_data+n_uids+offset] = Ein
+
+  d = intensities 
 
   IF (doStar OR doISRF) AND doConvolved THEN BEGIN
 
@@ -1123,10 +1128,10 @@ PRO AmesPAHdbIDLSuite_Transitions__IDLBridge_Execute,uid,offset
 
         frequency = frequencies[i]
 
-        shmmap[n_ri+n_data+select[i]] *= QROMB(func3, 2.5D3, 1.1D5, K=7, EPS=1D-6)
+        d[i] *= QROMB(func3, 2.5D3, 1.1D5, K=7, EPS=1D-6)
      ENDFOR
 
-     shmmap[n_ri+n_data+select] /= Nphot
+     d /= Nphot
   ENDIF ELSE BEGIN
 
      FOR i = 0L, nselect - 1L DO BEGIN
@@ -1135,11 +1140,13 @@ PRO AmesPAHdbIDLSuite_Transitions__IDLBridge_Execute,uid,offset
 
         frequency = frequencies[i]
 
-        shmmap[n_ri+n_data+select[i]] *= QROMB(func2, 2.73D, shmmap[n_ri+2L*n_data+offset], K=7, EPS=1D-6)
+        d[i] *= QROMB(func2, 2.73D, Tmax, K=7, EPS=1D-6)
      ENDFOR
   ENDELSE
 
-  IF doApproximate THEN shmmap[n_ri+n_data+select] *= 2.48534271218563D-23 * nc / TotalCrossSection
+  IF doApproximate THEN d *= 2.48534271218563D-23 * nc / TOTAL(intensities)
+
+  shmmap[n_ri+n_data+select] = d
 END
 
 ;+
@@ -1683,14 +1690,16 @@ PRO AmesPAHdbIDLSuite_Transitions::Cascade,E,Approximate=Approximate,IDLBridge=I
 
   FOR i = 0L, self.nuids - 1L DO BEGIN
 
+    uid = (*self.uids)[i]
+
     timer = SYSTIME(/SECONDS)
 
     PRINT,FORMAT='("SPECIES                          :",X,I5,"/",I5)',i+1,self.nuids
-    PRINT,FORMAT='("UID                              :",X,I5)',(*self.uids)[i]
+    PRINT,FORMAT='("UID                              :",X,I5)',uid
 
     IF KEYWORD_SET(Approximate) OR KEYWORD_SET(Star) OR KEYWORD_SET(ISRF) THEN BEGIN
 
-       select = WHERE((*self.database).data.species.uid EQ (*self.uids)[i])
+       select = WHERE((*self.database).data.species.uid EQ uid)
 
        nc = (*self.database).data.species[select].nc
 
@@ -1706,7 +1715,7 @@ PRO AmesPAHdbIDLSuite_Transitions::Cascade,E,Approximate=Approximate,IDLBridge=I
        IF KEYWORD_SET(Convolved) THEN NPhot = NumberOfPhotonsFunc__AmesPAHdbIDLSuite(ISRF=ISRF, StellarModel=StellarModel)
     ENDIF ELSE Ein = E
 
-    (*self.model).energy[i].uid = (*self.uids)[i]
+    (*self.model).energy[i].uid = uid
 
     (*self.model).energy[i].E = Ein
 
@@ -1714,13 +1723,13 @@ PRO AmesPAHdbIDLSuite_Transitions::Cascade,E,Approximate=Approximate,IDLBridge=I
 
     select = ri[ri[(*self.uids)[i]]:ri[(*self.uids)[i]+1]-1]
 
-    IF KEYWORD_SET(Approximate) THEN totalcrosssection = TOTAL((*self.data)[select].intensity)
-
     frequencies = (*self.data)[select].frequency
 
     intensities = (*self.data)[select].intensity
 
-    (*self.model).temperature[i].uid = (*self.uids)[i]
+    d = intensities
+
+    (*self.model).temperature[i].uid = uid
 
     (*self.model).temperature[i].T = FX_ROOT([2.73D, 2500, 5000], func1, /DOUBLE, TOL=1D-5)
 
@@ -1728,29 +1737,32 @@ PRO AmesPAHdbIDLSuite_Transitions::Cascade,E,Approximate=Approximate,IDLBridge=I
 
     IF (KEYWORD_SET(Star) OR KEYWORD_SET(ISRF)) AND KEYWORD_SET(Convolved) THEN BEGIN
 
-       FOR j = 0L, h[(*self.uids)[i]] - 1L DO BEGIN
+       FOR j = 0L, h[uid] - 1L DO BEGIN
 
-          IF (*self.data)[select[j]].intensity EQ 0 THEN CONTINUE
+          IF intensities[j] EQ 0 THEN CONTINUE
 
-          frequency = (*self.data)[select[j]].frequency
+          frequency = frequencies[j] 
 
-          (*self.data)[select[j]].intensity *= QROMB(func3, 2.5D3, 1.1D5, K=7, EPS=1D-6)
+          d[j] *= QROMB(func3, 2.5D3, 1.1D5, K=7, EPS=1D-6)
        ENDFOR
 
-       (*self.data)[select].intensity /= NPhot
-    ENDIF ELSE BEGIN
+        d /= NPhot
+   ENDIF ELSE BEGIN
 
-       FOR j = 0L, h[(*self.uids)[i]] - 1L DO BEGIN
+       FOR j = 0L, h[uid] - 1L DO BEGIN
 
-          IF (*self.data)[select[j]].intensity EQ 0 THEN CONTINUE
+          IF intensities[j] EQ 0 THEN CONTINUE
 
-          frequency = (*self.data)[select[j]].frequency
-          (*self.data)[select[j]].intensity *= QROMB(func2, 2.73D, (*self.model).temperature[i].T, K=7, EPS=1D-6)
+          frequency = frequencies[j]
+
+          d[j] *= QROMB(func2, 2.73D, (*self.model).temperature[i].T, K=7, EPS=1D-6)
        ENDFOR
     ENDELSE
 
-    IF NOT KEYWORD_SET(Approximate) THEN (*self.data)[select].intensity *= (*self.data)[select].frequency^3 $ ; [erg]
-    ELSE (*self.data)[select].intensity *= 2.48534271218563D-23 * nc * (*self.data)[select].frequency^3 / totalcrosssection ; [erg]
+    IF NOT KEYWORD_SET(Approximate) THEN d *= frequencies^3 $ ; [erg]
+    ELSE d *= 2.48534271218563D-23 * nc * frequencies^3 / TOTAL(intensities) ; [erg]
+
+    (*self.data)[select].intensity = d
 
     PRINT,FORMAT='("ENERGY CONSERVATION IN SPECTRUM  :",X,G-7.2)', TOTAL((*self.data)[select].intensity) / (*self.model).energy[i].E
 
@@ -2527,7 +2539,15 @@ FUNCTION AmesPAHdbIDLSuite_Transitions::Convolve,XRange=XRange,FWHM=FWHM,Npoints
 
      FOR i = 0L, self.nuids - 1L DO BEGIN
 
+        data[i*NPoints:(i + 1)*NPoints-1].uid = (*self.uids)[i]
+
         select = ri[ri[(*self.uids)[i]]:ri[(*self.uids)[i]+1]-1]
+
+        frequency = (*self.data)[select].frequency
+
+        intensity = (*self.data)[select].intensity
+
+        d = data[i*NPoints:(i + 1)*NPoints-1].intensity  
 
         IF KEYWORD_SET(Anharmonics) THEN BEGIN
 
@@ -2549,20 +2569,23 @@ FUNCTION AmesPAHdbIDLSuite_Transitions::Convolve,XRange=XRange,FWHM=FWHM,Npoints
 
            nc = DOUBLE((*self.database).data.species[ssel].nc)
 
-           frequencies = (*self.data)[select].frequency
+           frequencies = frequency
         ENDIF
 
-        data[i*NPoints:(i + 1)*NPoints-1].uid = (*self.uids)[i]
+        fsel = WHERE(frequency GE xmin - clip * width AND $
+                     frequency LE xmax + clip * width, nsel)
 
-        fsel = WHERE((*self.data)[select].frequency GE xmin - clip * width AND $
-                     (*self.data)[select].frequency LE xmax + clip * width, ndata)
+        freq = frequency[fsel]
 
-        FOR j = 0L, ndata - 1 DO BEGIN
+        int = intensity[fsel]
 
-           IF (*self.data)[select[fsel[j]]].intensity GT 0 THEN $
-              data[i*NPoints:(i + 1)*NPoints-1].intensity += $
-                (*self.data)[select[fsel[j]]].intensity * self->LineProfile(x, (*self.data)[select[fsel[j]]].frequency, width, Gaussian=Gaussian, Drude=Drude, Conserve=Conserve, Anharmonics=Anharmonics)
+        FOR j = 0L, nsel - 1L DO BEGIN
+
+           IF int[j] GT 0 THEN $
+              d += int[j] * self->LineProfile(x, freq[j], width, Gaussian=Gaussian, Drude=Drude, Conserve=Conserve, Anharmonics=Anharmonics)
         ENDFOR
+
+        data[i*NPoints:(i + 1)*NPoints-1].intensity = d
 
         IF KEYWORD_SET(Anharmonics) THEN BEGIN
 
@@ -2596,7 +2619,7 @@ FUNCTION AmesPAHdbIDLSuite_Transitions::Convolve,XRange=XRange,FWHM=FWHM,Npoints
      PRINT,"========================================================="
      PRINT
 
-     IF nregion EQ 1 THEN BEGIN
+     IF nregion EQ 1L THEN BEGIN
 
         FWHM = [FWHM, {treshold:DOUBLE(xmax), fwhm:FWHM[0].fwhm}]
 
@@ -2605,44 +2628,64 @@ FUNCTION AmesPAHdbIDLSuite_Transitions::Convolve,XRange=XRange,FWHM=FWHM,Npoints
         nregion = 2
      ENDIF
 
-     FOR i = 0L, self.nuids - 1 DO BEGIN
-
-        select = ri[ri[(*self.uids)[i]]:ri[(*self.uids)[i]+1]-1]
+     FOR i = 0L, self.nuids - 1L DO BEGIN
 
         data[i*NPoints:(i + 1)*NPoints-1].uid = (*self.uids)[i]
 
-        fsel = WHERE((*self.data)[select].frequency GE xmin - clip * width[0] AND $
-                     (*self.data)[select].frequency LE FWHM[1].treshold, ndata)
+        select = ri[ri[(*self.uids)[i]]:ri[(*self.uids)[i]+1]-1]
 
-        FOR k = 0, ndata - 1 DO BEGIN
+        frequency = (*self.data)[select].frequency
 
-           IF (*self.data)[select[fsel[k]]].intensity GT 0 THEN $
-              data[i*NPoints:(i + 1)*NPoints-1].intensity += $
-                (*self.data)[select[fsel[k]]].intensity * self->LineProfile(x, (*self.data)[select[fsel[k]]].frequency, width[0], Gaussian=Gaussian, Drude=Drude, Conserve=Conserve, Anharmonics=Anharmonics)
+        intensity = (*self.data)[select].intensity
+
+        d = data[i*NPoints:(i + 1)*NPoints-1].intensity  
+
+        fsel = WHERE(frequency GE xmin - clip * width[0] AND $
+                     frequency LE FWHM[1].treshold, nsel)
+
+        freq = frequency[fsel]
+
+        int = intensity[fsel]
+
+        FOR k = 0L, nsel - 1L DO BEGIN
+
+           IF int[k] GT 0 THEN $
+              d += $
+                int[k] * self->LineProfile(x, freq[k], width[0], Gaussian=Gaussian, Drude=Drude, Conserve=Conserve, Anharmonics=Anharmonics)
         ENDFOR
 
-        FOR j = 1, nregion - 2 DO BEGIN
+        FOR j = 1L, nregion - 2L DO BEGIN
 
-           fsel = WHERE((*self.data)[select].frequency GE FWHM[j].treshold AND $
-                        (*self.data)[select].frequency LT FWHM[j+1].treshold, ndata)
+           fsel = WHERE(frequency GE FWHM[j].treshold AND $
+                        frequency LT FWHM[j+1].treshold, nsel)
 
-           FOR k = 0, ndata - 1 DO BEGIN
+           freq = frequency[fsel]
 
-              IF (*self.data)[select[fsel[k]]].intensity GT 0 THEN $
-                 data[i*NPoints:(i + 1)*NPoints-1].intensity += $
-                   (*self.data)[select[fsel[k]]].intensity * self->LineProfile(x, (*self.data)[select[fsel[k]]].frequency, width[j], Gaussian=Gaussian, Drude=Drude, Conserve=Conserve, Anharmonics=Anharmonics)
+           int = intensity[fsel]
+
+           FOR k = 0L, nsel - 1L DO BEGIN
+
+              IF int[k] GT 0 THEN $
+                 d += $
+                   int[k] * self->LineProfile(x, freq[k], width[j], Gaussian=Gaussian, Drude=Drude, Conserve=Conserve, Anharmonics=Anharmonics)
            ENDFOR
         ENDFOR
 
-        fsel = WHERE((*self.data)[select].frequency GE FWHM[j].treshold AND $
-                     (*self.data)[select].frequency LT xmax + clip * width[j], ndata)
+        fsel = WHERE(frequency GE FWHM[j].treshold AND $
+                     frequency LT xmax + clip * width[j], nsel)
 
-        FOR k = 0, ndata - 1 DO BEGIN
+        freq = frequency[fsel]
 
-           IF (*self.data)[select[fsel[k]]].intensity GT 0 THEN $
-              data[i*NPoints:(i + 1)*NPoints-1].intensity += $
-                (*self.data)[select[fsel[k]]].intensity * self->LineProfile(x, (*self.data)[select[fsel[k]]].frequency, width[j], Gaussian=Gaussian, Drude=Drude, Conserve=Conserve, Anharmonics=Anharmonics)
+        int = intensity[fsel]
+
+        FOR k = 0L, nsel - 1L DO BEGIN
+
+           IF int[k] GT 0 THEN $
+              d += $
+                int[k] * self->LineProfile(x, freq[k], width[j], Gaussian=Gaussian, Drude=Drude, Conserve=Conserve, Anharmonics=Anharmonics)
         ENDFOR
+
+        data[i*NPoints:(i + 1)*NPoints-1].intensity = d 
      ENDFOR
   ENDELSE
 
