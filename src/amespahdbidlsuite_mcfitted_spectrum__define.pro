@@ -25,6 +25,8 @@
 ; :History:
 ;   Changes::
 ;
+;     Add MEDIUM size bin to GETBREAKDOWN, GETCLASSES, and PLOT. Christiaan
+;     Boersma.
 ;     10-04-2023
 ;     Allow setting the SMALL threshold in PLOT through keyword-inheritance.
 ;     Christiaan Boersma
@@ -216,11 +218,17 @@ PRO AmesPAHdbIDLSuite_MCFitted_Spectrum::Plot,DistributionSize=DistributionSize,
 
         XYOUTS,0.25,0.75,'small',COLOR=Color,/Normal
 
-        self->AmesPAHdbIDLSuite_Plot::OplotError,x,obs_s.data.continuum+classes[*, 0].large,classes[*, 1].large,Color=Color+1
+        self->AmesPAHdbIDLSuite_Plot::OplotError,x,obs_s.data.continuum+classes[*, 0].medium,classes[*, 1].medium,Color=Color+1
 
-        self->AmesPAHdbIDLSuite_Plot::Oplot,x,obs_s.data.continuum+classes[*, 0].large,Stick=Stick,Fill=Fill,COLOR=Color+1
+        self->AmesPAHdbIDLSuite_Plot::Oplot,x,obs_s.data.continuum+classes[*, 0].medium,Stick=Stick,Fill=Fill,COLOR=Color+1
 
-        XYOUTS,0.25,0.70,'large',COLOR=Color+1,/NORMAL
+        XYOUTS,0.25,0.70,'medium',COLOR=Color+1,/Normal
+
+        self->AmesPAHdbIDLSuite_Plot::OplotError,x,obs_s.data.continuum+classes[*, 0].large,classes[*, 1].large,Color=Color+2
+
+        self->AmesPAHdbIDLSuite_Plot::Oplot,x,obs_s.data.continuum+classes[*, 0].large,Stick=Stick,Fill=Fill,COLOR=Color+2
+
+        XYOUTS,0.25,0.65,'large',COLOR=Color+2,/NORMAL
      ENDIF ELSE IF KEYWORD_SET(Charge) THEN BEGIN
 
         self->AmesPAHdbIDLSuite_Plot::OplotError,x,obs_s.data.continuum+classes[*, 0].anion,classes[*, 1].anion,COLOR=Color
@@ -640,7 +648,9 @@ END
 ;
 ; :Keywords:
 ;   Small: in, optional, type=int
-;     Cut-off size for small PAHs
+;     Cut-off size for small PAHs, defaults to 50
+;   Medium: in, optional, type=int
+;     Cut-off size for medium PAHs, defaults to 90
 ;   Flux: in, optional, type=int
 ;     Whether to use the flux to determine the breakdown
 ;   Absolute: in, optional, type=int
@@ -653,7 +663,7 @@ END
 ; :Categories:
 ;   SET/GET
 ;-
-FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetBreakdown,Small=Small,Flux=Flux,Absolute=Absolute
+FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetBreakdown,Small=Small,Medium=Medium,Flux=Flux,Absolute=Absolute
 
   COMPILE_OPT IDL2
 
@@ -662,6 +672,7 @@ FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetBreakdown,Small=Small,Flux=Flux
   IF PTR_VALID(self._lazy.breakdown) THEN BEGIN
 
     signature = ([KEYWORD_SET(Small) ? Small : 0L, $
+                  KEYWORD_SET(Medium) ? Medium : 0L, $
                   KEYWORD_SET(Flux), $
                   KEYWORD_SET(Absolute)]).HASHCODE()
 
@@ -682,6 +693,7 @@ FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetBreakdown,Small=Small,Flux=Flux
                      neutral:0D, $
                      cation:0D, $
                      small:0D, $
+                     medium:0D, $
                      large:0D, $
                      pure:0D, $
                      nitrogen:0D, $
@@ -692,13 +704,14 @@ FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetBreakdown,Small=Small,Flux=Flux
                      quintet:0L}, nobj)
 
     FOR i = 0L, nobj - 1L DO $
-      bd[i] = (*self.obj)[i]->GetBreakdown(Small=Small,Flux=Flux,Absolute=Absolute)
+      bd[i] = (*self.obj)[i]->GetBreakdown(Small=Small,Medium=Medium,Flux=Flux,Absolute=Absolute)
 
     mcbd = {AmesPAHdb_MCBreakdown, $
             anion:DBLARR(4), $
             neutral:DBLARR(4), $
             cation:DBLARR(4), $
             small:DBLARR(4), $
+            medium:DBLARR(4), $
             large:DBLARR(4), $
             pure:DBLARR(4), $
             nitrogen:DBLARR(4), $
@@ -724,7 +737,9 @@ END
 ;
 ; :Keywords:
 ;   Small: in, optional, type=int
-;     Cut-off size for small PAHs
+;     Cut-off size for small PAHs, defaults to 50
+;   Medium: in, optional, type=int
+;     Cut-off size for medium PAHs, defaults to 90
 ;
 ; :Returns:
 ;   Structure
@@ -732,7 +747,7 @@ END
 ; :Categories:
 ;   SET/GET
 ;-
-FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetClasses,Small=Small
+FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetClasses,Small=Small,Medium=Medium
 
   COMPILE_OPT IDL2
 
@@ -740,7 +755,8 @@ FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetClasses,Small=Small
 
   IF PTR_VALID(self._lazy.classes) THEN BEGIN
 
-    signature = ([KEYWORD_SET(Small) ? Small : 0L]).HASHCODE()
+    signature = ([KEYWORD_SET(Small) ? Small : 0L, $
+                  KEYWORD_SET(Medium) ? Medium : 0L]).HASHCODE()
 
     IF signature NE self._lazy.classes_sig THEN BEGIN
 
@@ -761,18 +777,20 @@ FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetClasses,Small=Small
                      neutral:0D, $
                      cation:0D, $
                      small:0D, $
+                     medium:0D, $
                      large:0D, $
                      pure:0D, $
                      nitrogen:0D}, ngrid, nobj)
 
     FOR i = 0L, nobj - 1L DO $
-      cls[*, i] = (*self.obj)[i]->GetClasses(Small=Small)
+      cls[*, i] = (*self.obj)[i]->GetClasses(Small=Small, Medium=Medium)
 
     mccls = REPLICATE({AmesPAHdb_Classes, $
                        anion:0D, $
                        neutral:0D, $
                        cation:0D, $
                        small:0D, $
+                       medium:0D, $
                        large:0D, $
                        pure:0D, $
                        nitrogen:0D}, ngrid, 4)

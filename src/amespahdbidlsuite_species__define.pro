@@ -28,6 +28,8 @@
 ; :History:
 ;   Changes::
 ;
+;     11-17-2023
+;     Add GETUIDS. Christiaan Boersma.
 ;     05-08-2019
 ;     In the absence of Michael Galloy's STR_REPLACE function
 ;     FormatFormulae will print a message and return. Christiaan
@@ -438,6 +440,32 @@ FUNCTION AmesPAHdbIDLSuite_Species::GetTagByUID,Tag,UIDs,Count
   UIDs = (*self.database).data.(itag)[select[UNIQ((*self.database).data.(itag)[select].uid, SORT((*self.database).data.(itag)[select].uid))]].uid
 
   RETURN,(*self.database).data.(itag)[select]
+END
+
+;+
+; Retrieves the Species' UIDs held.
+;
+; :Returns:
+;   long
+;
+; :Params:
+;   Count: out, optional, type=long
+;     Number of UIDs
+;
+; :Categories:
+;   SET/GET
+;
+; :Private:
+;-
+FUNCTION AmesPAHdbIDLSuite_Species::GetUIDs,Count
+
+  COMPILE_OPT IDL2
+
+  ON_ERROR,2
+
+  Count = self.nuids
+
+  RETURN,*self.uids
 END
 
 ;+
