@@ -25,6 +25,9 @@
 ; :History:
 ;   Changes::
 ;
+;     11-17-2023
+;     Add MEDIUM size bin to GETBREAKDOWN, GETCLASSES, and PLOT. Christiaan
+;     Boersma.
 ;     10-04-2023
 ;     Allow setting the SMALL threshold in PLOT through keyword-inheritance.
 ;     Christiaan Boersma.
@@ -315,9 +318,13 @@ PRO AmesPAHdbIDLSuite_Fitted_Spectrum::Plot,DistributionSize=DistributionSize,Re
 
         XYOUTS,0.25,0.75,'small',COLOR=Color,/Normal
 
-        self->AmesPAHdbIDLSuite_Plot::Oplot,x,(*self.observation).data.continuum+classes.large,Stick=Stick,Fill=Fill,COLOR=Color+1
+        self->AmesPAHdbIDLSuite_Plot::Oplot,x,(*self.observation).data.continuum+classes.medium,Stick=Stick,Fill=Fill,COLOR=Color+1
 
-        XYOUTS,0.25,0.70,'large',COLOR=Color+1,/NORMAL
+        XYOUTS,0.25,0.70,'medium',COLOR=Color+1,/Normal
+
+        self->AmesPAHdbIDLSuite_Plot::Oplot,x,(*self.observation).data.continuum+classes.large,Stick=Stick,Fill=Fill,COLOR=Color+2
+
+        XYOUTS,0.25,0.65,'large',COLOR=Color+2,/NORMAL
      ENDIF ELSE IF KEYWORD_SET(Charge) THEN BEGIN
 
         self->AmesPAHdbIDLSuite_Plot::Oplot,x,(*self.observation).data.continuum+classes.anion,Stick=Stick,Fill=Fill,COLOR=Color
@@ -953,7 +960,9 @@ END
 ;
 ; :Keywords:
 ;   Small: in, optional, type=int
-;     Cut-off size for small PAHs
+;     Cut-off size for small PAHs, defaults to 50
+;   Medium: in, optional, type=int
+;     Cut-off sie for medium PAHs, defaults to 90
 ;   Flux: in, optional, type=int
 ;     Whether to use the flux to determine the breakdown
 ;   Absolute: in, optional, type=int
@@ -965,7 +974,7 @@ END
 ; :Categories:
 ;   SET/GET
 ;-
-FUNCTION AmesPAHdbIDLSuite_Fitted_Spectrum::GetBreakdown,Small=Small,Flux=Flux,Absolute=Absolute
+FUNCTION AmesPAHdbIDLSuite_Fitted_Spectrum::GetBreakdown,Small=Small,Medium=Medium,Flux=Flux,Absolute=Absolute
 
   COMPILE_OPT IDL2
 
@@ -974,6 +983,7 @@ FUNCTION AmesPAHdbIDLSuite_Fitted_Spectrum::GetBreakdown,Small=Small,Flux=Flux,A
   IF PTR_VALID(self._lazy.breakdown) THEN BEGIN
 
     signature = ([KEYWORD_SET(Small) ? Small : 0L, $
+                  KEYWORD_SET(Medium) ? Medium : 0L, $
                   KEYWORD_SET(Flux), $
                   KEYWORD_SET(Absolute)]).HASHCODE()
 
@@ -1002,6 +1012,7 @@ FUNCTION AmesPAHdbIDLSuite_Fitted_Spectrum::GetBreakdown,Small=Small,Flux=Flux,A
                  neutral:0D, $
                  cation:0D, $
                  small:0D, $
+                 medium:0D, $
                  large:0D, $
                  pure:0D, $
                  nitrogen:0D, $
@@ -1042,7 +1053,7 @@ FUNCTION AmesPAHdbIDLSuite_Fitted_Spectrum::GetBreakdown,Small=Small,Flux=Flux,A
          RETURN,0
        ENDIF
 
-      classes = self->getClasses(Small=Small)
+      classes = self->getClasses(Small=Small, Medium=Medium)
 
       ntags = N_TAGS(classes)
 
@@ -1087,14 +1098,22 @@ FUNCTION AmesPAHdbIDLSuite_Fitted_Spectrum::GetBreakdown,Small=Small,Flux=Flux,A
 
       IF nselect NE 0 THEN breakdown.cation = TOTAL((*self.weights)[select].weight) / total
 
-      IF NOT KEYWORD_SET(Small) THEN Small = 50
+      IF NOT KEYWORD_SET(Small) THEN Small = 50L
 
       select = self->Select(WHERE((*self.database).data.species.nc LE Small), $
                             *self.weights, nselect)
 
       IF nselect NE 0 THEN breakdown.small = TOTAL((*self.weights)[select].weight) / total
 
-      select = self->Select(WHERE((*self.database).data.species.nc GT Small), $
+      IF NOT KEYWORD_SET(Medium) THEN Medium = 90L
+
+      select = self->Select(WHERE((*self.database).data.species.nc GT Small AND $
+                                  (*self.database).data.species.nc LE Medium), $
+                            *self.weights, nselect)
+
+      IF nselect NE 0 THEN breakdown.medium = TOTAL((*self.weights)[select].weight) / total
+
+      select = self->Select(WHERE((*self.database).data.species.nc GT Medium), $
                             *self.weights, nselect)
 
       IF nselect NE 0 THEN breakdown.large = TOTAL((*self.weights)[select].weight) / total
@@ -1125,7 +1144,9 @@ END
 ;
 ; :Keywords:
 ;   Small: in, optional, type=int
-;     Cut-off size for small PAHs
+;     Cut-off size for small PAHs, defaults to 50
+;   Medium: in, optional, type=int
+;     Cut-off size for medium PAHs defaults to 90
 ;
 ; :Returns:
 ;   Structure
@@ -1133,7 +1154,7 @@ END
 ; :Categories:
 ;   SET/GET
 ;-
-FUNCTION AmesPAHdbIDLSuite_Fitted_Spectrum::GetClasses,Small=Small
+FUNCTION AmesPAHdbIDLSuite_Fitted_Spectrum::GetClasses,Small=Small,Medium=Medium
 
   COMPILE_OPT IDL2
 
@@ -1141,7 +1162,8 @@ FUNCTION AmesPAHdbIDLSuite_Fitted_Spectrum::GetClasses,Small=Small
 
   IF PTR_VALID(self._lazy.classes) THEN BEGIN
 
-    signature = ([KEYWORD_SET(Small) ? Small : 0L]).HASHCODE()
+    signature = ([KEYWORD_SET(Small) ? Small : 0L, $ 
+                  KEYWORD_SET(Medium) ? Medium : 0L]).HASHCODE()
 
     IF signature NE self._lazy.classes_sig THEN BEGIN
 
@@ -1170,6 +1192,7 @@ FUNCTION AmesPAHdbIDLSuite_Fitted_Spectrum::GetClasses,Small=Small
                          neutral:0D, $
                          cation:0D, $
                          small:0D, $
+                         medium:0D, $
                          large:0D, $
                          pure:0D, $
                          nitrogen:0D}, ngrid)
@@ -1189,14 +1212,22 @@ FUNCTION AmesPAHdbIDLSuite_Fitted_Spectrum::GetClasses,Small=Small
 
     IF nselect NE 0 THEN classes.cation = TOTAL(REFORM((*self.data)[select].intensity, ngrid, nselect), 2)
 
-    IF NOT KEYWORD_SET(Small) THEN Small = 50
+    IF NOT KEYWORD_SET(Small) THEN Small = 50L
 
     select = self->Select(WHERE((*self.database).data.species.nc LE Small), $
                           *self.data, nselect)
 
     IF nselect NE 0 THEN classes.small = TOTAL(REFORM((*self.data)[select].intensity, ngrid, nselect), 2)
 
-    select = self->Select(WHERE((*self.database).data.species.nc GT Small), $
+    IF NOT KEYWORD_SET(Medium) THEN Medium = 90L
+
+    select = self->Select(WHERE((*self.database).data.species.nc GT Small AND $
+                                (*self.database).data.species.nc LE Medium), $
+                          *self.data, nselect)
+
+    IF nselect NE 0 THEN classes.medium = TOTAL(REFORM((*self.data)[select].intensity, ngrid, nselect), 2)
+
+    select = self->Select(WHERE((*self.database).data.species.nc GT Medium), $
                           *self.data, nselect)
 
     IF nselect NE 0 THEN classes.large = TOTAL(REFORM((*self.data)[select].intensity, ngrid, nselect), 2)

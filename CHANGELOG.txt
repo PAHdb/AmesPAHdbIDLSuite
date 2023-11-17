@@ -1,4 +1,13 @@
 CHANGELOG
++- 11-17-2023
+   Add AmesPAHdbIDLSuite_Species::GetUIDs in
+   AmesPAHdbIDLSuite_Species__define.pro. Fix capitalization of
+   AmesPAHdbIDLSuite_Data::GetUIDs in AmesPAHdbIDLSuite_Data__define.pro. Add
+   MEDIUM size bin to AmesPAHdbIDLSuite_Fitted_Spectrum::GetBreakdown,
+   AmesPAHdbIDLSuite_FittedSpectrum::GetClasses, and
+   AmesPAHdbIDLSuite_Fitted_Spectrum::Plot in
+   AmesPAHdbIDLSuite_Fitted_Spectrum__define.pro and
+   AmesPAHdbIDLSuite_MCFitted_Spectrum__define.pro.
 +- 11-09-2023
    Add missing case for switch in AmesPAHdbIDLSuite::HashCode in
    AmesPAHdbIDLSuite__define.pro. Speedups for

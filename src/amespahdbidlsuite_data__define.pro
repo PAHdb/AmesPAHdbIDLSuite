@@ -41,6 +41,8 @@
 ; :History:
 ;   Changes::
 ;
+;     11-17-2023
+;     Fix capitalization of GETUIDS. Christiaan Boersma.
 ;     11-09-2023
 ;     Add missing case for switch in HASHCODE method. Christiaan Boersma.
 ;     05-16-2022
@@ -343,7 +345,7 @@ END
 ;
 ; :Private:
 ;-
-FUNCTION AmesPAHdbIDLSuite_Data::GetUIDS,Count
+FUNCTION AmesPAHdbIDLSuite_Data::GetUIDs,Count
 
   COMPILE_OPT IDL2
 
