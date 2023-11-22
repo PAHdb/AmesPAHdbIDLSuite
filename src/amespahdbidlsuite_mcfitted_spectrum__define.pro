@@ -25,6 +25,9 @@
 ; :History:
 ;   Changes::
 ;
+;     11-22-2023
+;     Add GETTOLERANCE and GETITERATIONS. Christiaan Boersma.
+;     11-17-2023
 ;     Add MEDIUM size bin to GETBREAKDOWN, GETCLASSES, and PLOT. Christiaan
 ;     Boersma.
 ;     10-04-2023
@@ -938,6 +941,42 @@ FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetMethod
   ON_ERROR,2
 
   RETURN,(*self.obj)[0]->GetMethod()
+END
+
+;+
+; Retrieves the tolerance used for the fit.
+;
+; :Returns:
+;   double
+;
+; :Categories:
+;   SET/GET
+;-
+FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetTolerance
+
+  COMPILE_OPT IDL2
+
+  ON_ERROR,2
+
+  RETURN,(*self.obj)[0]->getTolerance()
+END
+
+;+
+; Retrieves the number of iterations needed for the fit.
+;
+; :Returns:
+;   long
+;
+; :Categories:
+;   SET/GET
+;-
+FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetIterations
+
+  COMPILE_OPT IDL2
+
+  ON_ERROR,2
+
+  RETURN,(*self.obj)[0]->getIterations()
 END
 
 ;+

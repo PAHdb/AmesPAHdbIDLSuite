@@ -25,6 +25,10 @@
 ; :History:
 ;   Changes::
 ;
+;     11-22-2023
+;     Add tolerance and iterations properties and their handling in SET, GET,
+;     and DESCRIPTION and add GETTOLERANCE and GETITERATIONs. Christiaan
+;     Boersma.
 ;     11-17-2023
 ;     Add MEDIUM size bin to GETBREAKDOWN, GETCLASSES, and PLOT. Christiaan
 ;     Boersma.
@@ -113,6 +117,8 @@ PRO AmesPAHdbIDLSuite_Fitted_Spectrum::Description,Str
 
   Str = [Str, $
          STRING(FORMAT='(A-12,":",X,A0)', "fit", self->getMethod()), $
+         STRING(FORMAT='(A-12,":",X,g-8.3)', "| tolerance", self->getTolerance()), $
+         STRING(FORMAT='(A-12,":",X,I0)', "| iterations", self->getIterations()), $
          STRING(FORMAT='(A-12,":",X,g-8.3)', "|_norm", self->getNorm()), $
          STRING(FORMAT='(A-12,":",X,g-8.3)', "|_chisquared", self->getChiSquared()), $
          STRING(FORMAT='(A-12,":",X,g-8.3)', "|_error", err.(0))]
@@ -583,7 +589,7 @@ FUNCTION AmesPAHdbIDLSuite_Fitted_Spectrum::Get
 
   struct.type = OBJ_CLASS(self)+'_S'
 
-  RETURN,CREATE_STRUCT(struct, 'observation', *self.observation, 'weights', *self.weights, 'norm', self->getNorm(), 'chisquared', self->getChiSquared(), 'method', self.method)
+  RETURN,CREATE_STRUCT(struct, 'observation', *self.observation, 'weights', *self.weights, 'norm', self->getNorm(), 'chisquared', self->getChiSquared(), 'method', self.method, 'tolerance', self.tolerance, 'iterations', self.iterations)
 END
 
 ;+
@@ -622,11 +628,15 @@ END
 ;     Weights
 ;   Method: in, optional, type=string
 ;     Method
+;   Tolerance: in, optional, type=double
+;     Tolerance
+;   Iterations: in, optional, type=long
+;     Number of iterations
 ;
 ; :Categories:
 ;   SET/GET
 ;-
-PRO AmesPAHdbIDLSuite_Fitted_Spectrum::Set,Struct,Type=Type,Version=Version,Data=Data,PAHdb=PAHdb,Uids=Uids,Model=Model,Units=Units,Shift=Shift,Grid=Grid,Profile=Profile,FWHM=FWHM,Observation=Observation,Weights=Weights,Method=Method
+PRO AmesPAHdbIDLSuite_Fitted_Spectrum::Set,Struct,Type=Type,Version=Version,Data=Data,PAHdb=PAHdb,Uids=Uids,Model=Model,Units=Units,Shift=Shift,Grid=Grid,Profile=Profile,FWHM=FWHM,Observation=Observation,Weights=Weights,Method=Method,Tolerance=Tolerance,Iterations=Iterations
 
   COMPILE_OPT IDL2
 
@@ -657,6 +667,10 @@ PRO AmesPAHdbIDLSuite_Fitted_Spectrum::Set,Struct,Type=Type,Version=Version,Data
            ENDIF
 
            IF NOT KEYWORD_SET(Method) THEN self.method = Struct.method
+
+           IF NOT KEYWORD_SET(Tolerance) THEN self.tolerance = Struct.tolerance
+
+           IF NOT KEYWORD_SET(Iterations) THEN self.iterations = Struct.iterations
         ENDIF
 
         IF KEYWORD_SET(Data) THEN self.InvalidateLazy
@@ -685,6 +699,10 @@ PRO AmesPAHdbIDLSuite_Fitted_Spectrum::Set,Struct,Type=Type,Version=Version,Data
    ENDIF
 
     IF KEYWORD_SET(Method) THEN self.method = Method
+
+    IF KEYWORD_SET(Tolerance) THEN self.tolerance = Tolerance
+
+    IF KEYWORD_SET(Iterations) THEN self.iterations = Iterations
 END
 
 ;+
@@ -1162,7 +1180,7 @@ FUNCTION AmesPAHdbIDLSuite_Fitted_Spectrum::GetClasses,Small=Small,Medium=Medium
 
   IF PTR_VALID(self._lazy.classes) THEN BEGIN
 
-    signature = ([KEYWORD_SET(Small) ? Small : 0L, $ 
+    signature = ([KEYWORD_SET(Small) ? Small : 0L, $
                   KEYWORD_SET(Medium) ? Medium : 0L]).HASHCODE()
 
     IF signature NE self._lazy.classes_sig THEN BEGIN
@@ -1349,7 +1367,7 @@ FUNCTION AmesPAHdbIDLSuite_Fitted_Spectrum::GetError
 
     ntags = N_ELEMENTS(tags)
     FOR i = 0L, ntags - 1L DO BEGIN
-  
+
       sel = WHERE(x GE range[0, i] AND x LE range[1, i], nsel)
 
       IF nsel EQ 0 THEN CONTINUE
@@ -1379,6 +1397,42 @@ FUNCTION AmesPAHdbIDLSuite_Fitted_Spectrum::GetMethod
   ON_ERROR,2
 
   RETURN,self.method
+END
+
+;+
+; Retrieves the tolerance used for the fit.
+;
+; :Returns:
+;   double
+;
+; :Categories:
+;   SET/GET
+;-
+FUNCTION AmesPAHdbIDLSuite_Fitted_Spectrum::GetTolerance
+
+  COMPILE_OPT IDL2
+
+  ON_ERROR,2
+
+  RETURN,self.tolerance
+END
+
+;+
+; Retrieves the number of iterations needed for the fit.
+;
+; :Returns:
+;   long
+;
+; :Categories:
+;   SET/GET
+;-
+FUNCTION AmesPAHdbIDLSuite_Fitted_Spectrum::GetIterations
+
+  COMPILE_OPT IDL2
+
+  ON_ERROR,2
+
+  RETURN,self.iterations
 END
 
 ;+
@@ -1463,11 +1517,15 @@ END
 ;     Weights
 ;   Method: in, optional, type=string
 ;     Method
+;   Tolerance: in, optional, type=double
+;     Tolerance
+;   Iterations: in, optional, type=long
+;     Number of iterations
 ;
 ; :Categories:
 ;   CLASS
 ;-
-FUNCTION AmesPAHdbIDLSuite_Fitted_Spectrum::Init,Struct,Type=Type,Version=Version,Data=Data,PAHdb=PAHdb,Uids=Uids,Model=Model,Units=Units,Shift=Shift,Grid=Grid,Profile=Profile,FWHM=FWHM,Observation=Observation,Weights=Weights,Method=Method
+FUNCTION AmesPAHdbIDLSuite_Fitted_Spectrum::Init,Struct,Type=Type,Version=Version,Data=Data,PAHdb=PAHdb,Uids=Uids,Model=Model,Units=Units,Shift=Shift,Grid=Grid,Profile=Profile,FWHM=FWHM,Observation=Observation,Weights=Weights,Method=Method,Tolerance=Tolerance,Iterations=Iterations
 
   COMPILE_OPT IDL2
 
@@ -1475,8 +1533,8 @@ FUNCTION AmesPAHdbIDLSuite_Fitted_Spectrum::Init,Struct,Type=Type,Version=Versio
 
   self.state = self->AmesPAHdbIDLSuite_Plot::Init()
 
-  IF N_PARAMS() GT 0 THEN self->Set,Struct,Type=Type,Version=Version,Data=Data,PAHdb=PAHdb,Uids=Uids,Model=Model,Units=Units,Shift=Shift,Grid=Grid,Profile=Profile,FWHM=FWHM,Observation=Observation,Weights=Weights,Method=Method $
-  ELSE self->Set,Type=Type,Version=Version,Data=Data,PAHdb=PAHdb,Uids=Uids,Model=Model,Units=Units,Shift=Shift,Grid=Grid,Profile=Profile,FWHM=FWHM,Observation=Observation,Weights=Weights,Method=Method
+  IF N_PARAMS() GT 0 THEN self->Set,Struct,Type=Type,Version=Version,Data=Data,PAHdb=PAHdb,Uids=Uids,Model=Model,Units=Units,Shift=Shift,Grid=Grid,Profile=Profile,FWHM=FWHM,Observation=Observation,Weights=Weights,Method=Method,Tolerance=Tolerance,Iterations=Iterations $
+  ELSE self->Set,Type=Type,Version=Version,Data=Data,PAHdb=PAHdb,Uids=Uids,Model=Model,Units=Units,Shift=Shift,Grid=Grid,Profile=Profile,FWHM=FWHM,Observation=Observation,Weights=Weights,Method=Method,Tolerance=Tolerance,Iterations=Iterations
 
   RETURN,self.state
 END
@@ -1491,6 +1549,10 @@ END
 ;     Pointer to a weights structure
 ;   method: type=string
 ;     Method used for the fit
+;   tolerance: type=double
+;     Tolerance used for the fit
+;   iterations: type=long
+;     Number of iterations needed for the fit
 ;
 ; :Categories:
 ;   CLASS
@@ -1508,6 +1570,8 @@ PRO AmesPAHdbIDLSuite_Fitted_Spectrum__DEFINE
           observation:PTR_NEW(), $
           weights:PTR_NEW(), $
           method:'', $
+          tolerance:0D, $
+          iterations:0L, $
           _lazy:{AmesPAHdbIDLSuite_Fitted_Lazy, $
                  residual:PTR_NEW(), $
                  fit:PTR_NEW(), $
