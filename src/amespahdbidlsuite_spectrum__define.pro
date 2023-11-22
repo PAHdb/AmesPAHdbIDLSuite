@@ -25,6 +25,9 @@
 ; :History:
 ;   Changes::
 ;
+;     11-22-2023
+;     Allow specifying the tolerance and maximum number of iterations to use for
+;     NNLS in FIT and MCFIT and pass to result. Christiaan Boersma.
 ;     11-06-2023
 ;     Add callback to FIT and NNLS for progress monitoring. Christiaan Boersma. 
 ;     10-19-2023
@@ -289,9 +292,9 @@ END
 ;      Matrix
 ;    b: in, required, type="double array (1D)"
 ;      Vector
-;    tol: in, optional, type=double
+;    tol: in, required, type=double
 ;      Tolerance
-;    max_iter: in, optional, type=long
+;    max_iter: in, required, type=long
 ;      Maximum number of iterations
 ;
 ; :Keywords:
@@ -309,11 +312,6 @@ PRO AmesPAHdbIDLSuite_Spectrum::NNLS,A,b,tol,max_iter,callback=callback
 
   ON_ERROR, 2
 
-  IF N_PARAMS() LT 4 THEN BEGIN
-     max_iter = 100
-     IF N_PARAMS() LT 3 THEN tol = 1D-16
-  ENDIF
-
   A        = DOUBLE(A)
   b        = DOUBLE(b)
   tol      = DOUBLE(tol)
@@ -321,7 +319,7 @@ PRO AmesPAHdbIDLSuite_Spectrum::NNLS,A,b,tol,max_iter,callback=callback
 
   s_struct = SIZE(A, /STRUCTURE)
   m        = s_struct.dimensions[0]
-  n        = s_struct.dimensions[1]
+;   n        = s_struct.dimensions[1]
   w        = MAKE_ARRAY(m, VALUE=-1D)
   x        = DBLARR(m)
   P        = !NULL
@@ -396,23 +394,33 @@ END
 ;      Uncertainties associated with observation
 ;
 ;  :Keywords:
+;    TOLERANCE_NNLS: in, optional, type=double
+;     Tollerance
+;    MAXITER_NNLS: in, optional, type=long
+;     Maximum number of iterations
 ;    CALLBACK_NNLS: in, optional, type=boolean
 ;     Callback 
 ;    EXTERNAL_NNLS: in, optional, type=int
 ;     Whether to use an externally defined NNLS-routine
-;    NOTICE: in, optional, type=int, default=1
+;    Notice: in, optional, type=int, default=1
 ;     Whether to show notices
 ;
 ; :Categories:
 ;   FITTING
 ;-
-FUNCTION AmesPAHdbIDLSuite_Spectrum::Fit,observation,error,CALLBACK_NNLS=callback_nnls,EXTERNAL_NNLS=external_nnls,Notice=Notice
+FUNCTION AmesPAHdbIDLSuite_Spectrum::Fit,observation,error,TOLERANCE_NNLS=tolerance_nnls,MAXITER_NNLS=maxiter_nnls,CALLBACK_NNLS=callback_nnls,EXTERNAL_NNLS=external_nnls,Notice=Notice
 
   COMPILE_OPT IDL2
 
   ON_ERROR,2
 
   IF SIZE(Notice, /TYPE) EQ 0 THEN Notice = 1
+
+  IF SIZE(TOLERANCE_NNLS, /TYPE) EQ 0 THEN tolerance_nnls = 1D-16
+
+  ftol = tolerance_nnls
+
+  IF SIZE(MAXITER_NNLS, /TYPE) EQ 0 THEN maxiter_nnls = 128L
 
   type = SIZE(observation, /STRUCTURE)
 
@@ -502,8 +510,7 @@ FUNCTION AmesPAHdbIDLSuite_Spectrum::Fit,observation,error,CALLBACK_NNLS=callbac
   READS,!VERSION.RELEASE,idl_version
 
   IF idl_version GE 8.0 AND NOT KEYWORD_SET(EXTERNAL_NNLS) THEN BEGIN
-
-     self->NNLS,m,b,callback=callback_nnls
+     self->NNLS,m,b,ftol,maxiter_nnls,callback=callback_nnls
 
      weights = b
   ENDIF ELSE IF NOT KEYWORD_SET(EXTERNAL_NNLS) THEN BEGIN
@@ -590,7 +597,9 @@ FUNCTION AmesPAHdbIDLSuite_Spectrum::Fit,observation,error,CALLBACK_NNLS=callbac
                  FWHM=self.fwhm NE !NULL ? *self.fwhm : !NULL, $
                  Observation=observation_s, $
                  Weights=_weights, $
-                 Method=method)
+                 Method=method, $
+                 Tolerance=ftol, $
+                 Iterations=maxiter_nnls)
 END
 
 ;+
@@ -608,19 +617,23 @@ END
 ;      Number of Monte Carlo samples
 ;
 ;  :Keywords:
-;    UNIFORM: in, optional, type=int
-;     Whether to use a uniform rather than a normal distribution to permutate the errors.
+;    Uniform: in, optional, type=int
+;      Whether to use a uniform rather than a normal distribution to permutate the errors.
+;    TOLERANCE_NNLS: in, optional, type=double
+;      Tollerance
+;    MAXITER_NNLS: in, optional, type=long
+;      Maximum number of iterations
 ;    EXTERNAL_NNLS: in, optional, type=int
-;     Whether to use an externally defined NNLS-routine.
+;      Whether to use an externally defined NNLS-routine.
 ;
 ; :Categories:
 ;   FITTING
 ;-
-FUNCTION AmesPAHdbIDLSuite_Spectrum::MCFit,observation,error,samples,EXTERNAL_NNLS=external_nnls,Uniform=Uniform
+FUNCTION AmesPAHdbIDLSuite_Spectrum::MCFit,observation,error,samples,TOLERANCE_NNLS=tolerance_nnls,MAXITER_NNLS=maxiter_nnls,EXTERNAL_NNLS=external_nnls,Uniform=Uniform
 
   COMPILE_OPT IDL2
 
-;   ON_ERROR,2
+  ON_ERROR,2
 
   type = SIZE(observation, /STRUCTURE)
 
@@ -678,7 +691,7 @@ FUNCTION AmesPAHdbIDLSuite_Spectrum::MCFit,observation,error,samples,EXTERNAL_NN
     obs->Set,Y=y + ystdev * (NOT KEYWORD_SET(Uniform) ? RANDOMU(seed, ny, /DOUBLE, /NORMAL) $
                                                       : (2D * RANDOMU(seed, ny, /DOUBLE, /UNIFORM) - 1D))
 
-    obj[i] = self->Fit(obs, EXTERNAL_NNLS=external_nnls, Notice=0)
+    obj[i] = self->Fit(obs, TOLERANCE_NNLS=tolerance_nnls, MAXITER_NNLS=maxiter_nnls, EXTERNAL_NNLS=external_nnls, Notice=0B)
   ENDFOR
   PRINT
   PRINT,"========================================================="

@@ -1,4 +1,19 @@
 CHANGELOG
++- 11-22-2023
+   Allow specifying the tolerance and maximum number of iterations to use for
+   NNLS in AmesPAHdbIDLSuite_Spectrum::Fit and AmesPAHdbIDLSuite_Spectrum::MCFit
+   and pass to result in AmesPAHdbIDLSuite_Spectrum__define.pro. Add tolerance
+   and iterations properties and their handling in
+   AmesPAHdbIDLSuite_Fitted_Spectrum::Set, 
+   AmesPAHdbIDLSuite_Fitted_Spectrum::Get, and
+   AmesPAHdbIDLSuite_Fitted_Spectrum::Description to
+   AmesPAHdbIDLSuite_Fitted_Spectrum in AmesPAHdbIDLSuite_Spectrum__define.pro.
+   Add AmesPAHdbIDLSuite_Fitted_Spectrum::GetTolerance and 
+   AmesPAHdbIDLSuite_Fitted_Spectrum::GetIterations in
+   AmesPAHdbIDLSuite_Fitted_Spectrum__define.pro. Add
+   AmesPAHdbIDLSuite_MCFitted_Spectrum::GetTolerance and 
+   AmesPAHdbIDLSuite_MCFitted_Spectrum::GetIterations in
+   AmesPAHdbIDLSuite_MCFitted_Spectrum__define.pro.
 +- 11-17-2023
    Add AmesPAHdbIDLSuite_Species::GetUIDs in
    AmesPAHdbIDLSuite_Species__define.pro. Fix capitalization of

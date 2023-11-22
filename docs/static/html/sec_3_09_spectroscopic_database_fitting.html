@@ -141,7 +141,7 @@ grid = observation-&gt;GetGrid()
         <pre><code class="language-idl">fit = spectrum-&gt;Fit(observation)</code></pre>
         <p>
           Optionally, a callback-procedure can be specified with the
-          'NNLS_Callback'-keyword that is called after each iteration and can be
+          'CALLBACK_NNLS'-keyword that is called after each iteration and can be
           used to, for example,  monitor progress. 
         </p>
         <pre><code class="language-idl">PRO CB,A,b
@@ -158,7 +158,13 @@ grid = observation-&gt;GetGrid()
 
 END
 
-fit = spectrum-&gt;Fit(intensity, uncertainty, NNLS_Callback='CB')</code></pre> 
+fit = spectrum-&gt;Fit(intensity, uncertainty, CALLBACK_NNLS='CB')</code></pre> 
+         <p>
+            In addition, optionally the 'TOLERANCE_NNLS'- and
+            'MAXITER_NNLS'-keywords can be used to set the tolerance for
+            convergence and the maximum number of iterations, respectively.
+         </p>
+        <pre><code class="language-idl">fit = spectrum-&gt;Fit(observation, TOLERANCE_NNLS=1D-20, MAXITER_NNLS=256L)</code></pre>
         <p>
           The 'AmesPAHdbIDLSuite_Fitted_Spectrum'-object exposes the fit and
           provides the 'Plot', and 'Write'-methods for output. The 'Plot'-method
