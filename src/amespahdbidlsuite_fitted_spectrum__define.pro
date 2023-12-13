@@ -24,7 +24,8 @@
 ;
 ; :History:
 ;   Changes::
-;
+;     12-13-2023
+;     Align TOLARANCE AND ITERATIONS in DESCRIPTION. Christiaan Boersma.
 ;     11-22-2023
 ;     Add tolerance and iterations properties and their handling in SET, GET,
 ;     and DESCRIPTION and add GETTOLERANCE and GETITERATIONs. Christiaan
@@ -117,8 +118,8 @@ PRO AmesPAHdbIDLSuite_Fitted_Spectrum::Description,Str
 
   Str = [Str, $
          STRING(FORMAT='(A-12,":",X,A0)', "fit", self->getMethod()), $
-         STRING(FORMAT='(A-12,":",X,g-8.3)', "| tolerance", self->getTolerance()), $
-         STRING(FORMAT='(A-12,":",X,I0)', "| iterations", self->getIterations()), $
+         STRING(FORMAT='(A-12,":",X,g-8.3)', "|_tolerance", self->getTolerance()), $
+         STRING(FORMAT='(A-12,":",X,I0)', "|_iterations", self->getIterations()), $
          STRING(FORMAT='(A-12,":",X,g-8.3)', "|_norm", self->getNorm()), $
          STRING(FORMAT='(A-12,":",X,g-8.3)', "|_chisquared", self->getChiSquared()), $
          STRING(FORMAT='(A-12,":",X,g-8.3)', "|_error", err.(0))]

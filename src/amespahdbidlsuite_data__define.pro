@@ -41,6 +41,8 @@
 ; :History:
 ;   Changes::
 ;
+;     12-13-2023
+;     Add CLONE. Christiaan Boersma.
 ;     11-17-2023
 ;     Fix capitalization of GETUIDS. Christiaan Boersma.
 ;     11-09-2023
@@ -355,6 +357,27 @@ FUNCTION AmesPAHdbIDLSuite_Data::GetUIDs,Count
 
   RETURN,*self.uids
 END
+
+;+
+; Clones the current object.
+;
+; :Returns:
+;   Object
+;
+; :Categories:
+;   SET/GET
+;
+; :Private:
+;-
+FUNCTION AmesPAHdbIDLSuite_Data::Clone
+
+  COMPILE_OPT IDL2
+
+  ON_ERROR,2
+
+  RETURN,OBJ_NEW(OBJ_CLASS(self), self->Get(), PAHdb=self.database)
+END
+
 
 ;+
 ; Retrieves the Class representation in a structure.

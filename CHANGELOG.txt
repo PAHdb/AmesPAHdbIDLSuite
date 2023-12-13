@@ -1,4 +1,10 @@
 CHANGELOG
++- 12-13-2023
+   Add AmesPAHdbIDLSuite_Data::Clone in AmesPAHdbIDLSuite_Data__define.pro.
+   Supply documentation for AmesPAHdbIDLSuite_Data::Clone and move to IDL 9.0.
+   Align Tolerance and Iterations in
+   AmesPAHdbIDLSuite_Fitted_Spectrum::Description in 
+   AmesPAHdbIDLSuite_Fitted_Spectrum__define.pro.
 +- 11-22-2023
    Allow specifying the tolerance and maximum number of iterations to use for
    NNLS in AmesPAHdbIDLSuite_Spectrum::Fit and AmesPAHdbIDLSuite_Spectrum::MCFit

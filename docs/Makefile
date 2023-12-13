@@ -1,7 +1,7 @@
 # Makefile to generate IDL-docs for the NASA Ames PAH IR Spectroscopic
 # Database
 
-IDLCMD = /Users/boersma/Applications/harris/idl89/bin/idl
+IDLCMD = /Users/boersma/Applications/NV5/idl/bin/idl
 
 docs:
 
