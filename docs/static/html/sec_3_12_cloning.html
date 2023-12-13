@@ -1,0 +1,106 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <title>AmesPAHdbIDLSuite Manual</title>
+
+
+    <link rel="stylesheet" type="text/css" media="all"
+          href="idldoc-resources/main.css" />
+    <link rel="stylesheet" type="text/css" media="print"
+          href="idldoc-resources/main-print.css" />
+
+    <link rel="stylesheet" type="text/css" media="all"
+          href="idldoc-resources/prismjs.css" />
+
+    <script type="text/javascript" src="idldoc-resources/prismjs.js"></script>
+    <script type="text/javascript" src="idldoc-resources/language-idl.js"></script>
+
+  </head>
+
+  <body>
+
+    <div class="container">
+
+      <div class="header">
+
+        <div class="breadcrumb">
+
+          <a href="overview.html">Docs</a> &raquo; <a href="api.html">API</a> &raquo; Cloning
+
+        </div>
+
+        <a class="btn-prev" href="sec_3_11_caching.html" title="Caching" accesskey="p"> Previous</a>
+
+        <a class="btn-next" href="release_history.html" title="Release History" accesskey="n">Next </a>
+
+      </div>
+
+      <div class="content">
+
+        <hr />
+
+        <h1>Cloning</h1>
+
+        <p>
+            Sometimes it is useful to (deep) copy an object, for example to be
+            able to compare different emission models. Since an object is not
+            copied upon reassignment and internally there is a heavy reliance on
+            pointers, the `Clone'-function is provided for each of the object
+            classes.
+        </p>
+        <pre><code class="language-idl">pahdb = AmesPAHdbIDLSuite()
+
+transitions = pahdb->getTransitionsByUID([18])
+
+; WRONG!!!
+copy = transitions
+
+; CORRECT
+clone = transitions->Clone()
+
+OBJ_DESTROY,[clone, transitions, pahdb]</code></pre>
+
+      </div>
+
+      <div class="footer">
+
+        <a class="btn-prev" href="sec_3_11_caching.html" title="Caching" accesskey="p"> Previous</a>
+
+        <a class="btn-next" href="release_history.html" title="Release History" accesskey="n">Next </a>
+
+        <hr />
+
+        <table class="smaller" summary="footer">
+
+          <tr>
+
+            <td>
+
+              &copy; Copyright 2023, Dr. Christiaan Boersma
+
+            </td>
+
+          </tr>
+
+          <tr>
+
+            <td>
+
+              Built with <a target="_top" href="https://github.com/mgalloy/idldoc">IDLdoc</a> using <a target="_top" href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> elements provided by <a target="_top" href="https://readthedocs.org">Read the Docs</a>.
+
+            </td>
+
+          </tr>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </body>
+
+</html>
