@@ -39,6 +39,8 @@
 ;-
 PRO FIT_A_SPECTRUM
 
+  COMPILE_OPT IDL2
+
   ; the Spitzer IRS/SL 10 - 15 micron spectrum of NGC7023
   file = 'ngc7023.dat'
 

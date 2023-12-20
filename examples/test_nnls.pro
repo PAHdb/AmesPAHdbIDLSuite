@@ -46,6 +46,8 @@
 ;-
 FUNCTION DO_NNLS
 
+  COMPILE_OPT IDL2
+
   ; avoid underflow messages
   !EXCEPT = 0
 
@@ -230,6 +232,8 @@ END
 ;
 ;-
 PRO TEST_NNLS
+
+  COMPILE_OPT IDL2
 
   points = {x:0D, y:0D}
 

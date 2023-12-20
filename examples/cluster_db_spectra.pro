@@ -37,6 +37,8 @@
 ;-
 PRO CLUSTER_DB_SPECTRA
 
+  COMPILE_OPT IDL2
+
   ; define FWHM, frequency range, number of points and number of clusters to use
   fwhm = 20D
 

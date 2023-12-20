@@ -38,6 +38,8 @@
 ;-
 PRO TEST_SVDC
 
+  COMPILE_OPT IDL2
+
   ; spectral parameters
   Ein = 6D * 1.6021765D-12
 

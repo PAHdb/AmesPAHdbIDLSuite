@@ -39,6 +39,8 @@
 ;-
 PRO STELLAR_KURUCZ_MODEL
 
+  COMPILE_OPT IDL2
+
   ; read in the default database defined by the environement variable
   ; !AMESPAHDEFAULTDB or the system variable AMESPAHDEFAULTDB. use the
   ; keyword FILENAME if these have not been set

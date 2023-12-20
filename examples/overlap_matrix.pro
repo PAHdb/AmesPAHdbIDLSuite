@@ -35,7 +35,7 @@
 ;   Example
 ;
 ; :Params:
-;   matrix: in, required, type=double array (2D)
+;   matrix: in, required, type=double array
 ;     n by n overlap matrix
 ;   depth: in, required, type=int
 ;     Current split
@@ -43,9 +43,9 @@
 ;     Maximum number of splits
 ;   min_bins: in, required, type=int
 ;     Minimum number of members required to form a bin
-;   bins: in, required, type=int array (n by max_depth)
+;   bins: in, required, type=int array
 ;     Assigned cluster bin
-;   parent: in, required, type=double array (1D)
+;   parent: in, required, type=double array
 ;     Parent of current cluster
 ;
 ; :Keywords:
@@ -55,6 +55,8 @@
 ; :Private:
 ;-
 PRO NODES,matrix,depth,max_depth,min_bins,bins,parent,METRIC=metric
+
+  COMPILE_OPT IDL2
 
   MESSAGE,STRING(FORMAT='("DEPTH:",X,I0)', depth),/INFORMATIONAL
 
@@ -73,7 +75,7 @@ PRO NODES,matrix,depth,max_depth,min_bins,bins,parent,METRIC=metric
 
   ENDIF
 
-  dummy = MIN(matrix, imin, /NAN, SUBSCRIPT_MAX=imax)
+  void = MIN(matrix, imin, /NAN, SUBSCRIPT_MAX=imax)
 
   bin1 = parent * 2 + 1 & bin2 = bin1 + 1
 
@@ -159,11 +161,19 @@ END
 ;+
 ; Procedure performing a hierarchical clustering of PAH emission
 ; spectra based on their overlap (area).
+; 
+; :Keywords:
+;   REBUILD: in, optional, type=int
+;     Wheter to rebuild the distance matrix
+;   METRIC: in, optional, type=int
+;     Whether to use a metric distance measure
 ;
 ; :Categories:
 ;   Example
 ;-
-PRO OVERLAP_MATRIX
+PRO OVERLAP_MATRIX,REBUILD=rebuild,METRIC=metric
+
+  COMPILE_OPT IDL2
 
   ; define path to save overlap matrix
   path = 'overlap_matrix.sav'
