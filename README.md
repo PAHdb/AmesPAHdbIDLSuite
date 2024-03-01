@@ -21,9 +21,8 @@ Portal](https://pahdb.github.io/AmesPAHdbIDLSuite/).
 ### Prerequisites
 
 The _AmesPAHdbIDLSuite_ requires
-[IDL](http://www.harrisgeospatial.com/ProductsandTechnology/Software/IDL.aspx). IDL
-is a registered trademark of [Harris
-Geospatial](http://www.harrisgeospatial.com/). The open source
+[IDL](https://www.nv5geospatialsoftware.com/Products/IDL). IDL
+is registered by [NV5 ](https://www.nv5geospatialsoftware.com). The open source
 IDL-replacement [GDL](https://github.com/gnudatalanguage/gdl) is
 currently incompatible with the suite.
 
