@@ -46,6 +46,8 @@
 ;-
 PRO RANDOM_MIXTURES
 
+  COMPILE_OPT IDL2
+
   ; test parameters
   n = 1000L
 

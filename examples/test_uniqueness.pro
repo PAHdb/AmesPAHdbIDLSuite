@@ -39,6 +39,8 @@
 ;-
 PRO TEST_UNIQUENESS
 
+  COMPILE_OPT IDL2
+
   ; avoid underflow messages
   !EXCEPT = 0
 

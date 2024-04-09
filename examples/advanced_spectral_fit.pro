@@ -37,7 +37,7 @@
 ; Callback function running a spectroscopy database-fit iteration.
 ;
 ; :Params:
-;   p: in, required, type=double array (1D)
+;   p: in, required, type=double array
 ;     Parameter values
 ;
 ; :Returns:
@@ -49,6 +49,8 @@
 ; :Private:
 ;-
 FUNCTION FUNC,p
+
+  COMPILE_OPT IDL2
 
   ; common block
   COMMON _func,pahdb,uids,nuids,ncarbon,observation,options,fit,nfit
@@ -136,11 +138,11 @@ FUNCTION FUNC,p
     ; merge the charges and assign pseudo identifiers
     FOR i = 0, nuids - 1 DO BEGIN
 
-       sel0 = WHERE(t.data.uid EQ uids[0, i], nsel0)
+       sel0 = WHERE(t.data.uid EQ uids[0, i])
 
-       sel1 = WHERE(t.data.uid EQ uids[1, i], nsel1)
+       sel1 = WHERE(t.data.uid EQ uids[1, i])
 
-       sel2 = WHERE(t.data.uid EQ uids[2, i], nsel2)
+       sel2 = WHERE(t.data.uid EQ uids[2, i])
 
        c.data[[sel0, sel1, sel2]].uid = i + 1
 
@@ -195,6 +197,8 @@ END
 ;   Example
 ;-
 PRO ADVANCED_SPECTRAL_FIT,OPTS
+
+  COMPILE_OPT IDL2
 
   ; the Spitzer IRS/SL 10 - 15 micron spectrum of NGC7023
   file = 'ngc7023.dat'
@@ -414,9 +418,6 @@ PRO ADVANCED_SPECTRAL_FIT,OPTS
   ENDIF ELSE Tgas = options.Tgas
 
   IF options.balance NE 0 AND options.Tgas NE 0 THEN BEGIN
-
-     ; store norm of the fit
-     norm = fit->getNorm()
 
      ; store the weights of the fitted combined spectra
      f_weights = fit->getWeights()
