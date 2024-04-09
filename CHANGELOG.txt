@@ -1,23 +1,26 @@
 CHANGELOG
++- 04-09-2024
+   Normalize ma:qtrix in AmesPAHdbIDLSuite_Spectrum::Fit in
+   AmesPAHdbIDLSuite_Spectrum__define.pro.
 +- 12-13-2023
    Add AmesPAHdbIDLSuite_Data::Clone in AmesPAHdbIDLSuite_Data__define.pro.
    Supply documentation for AmesPAHdbIDLSuite_Data::Clone and move to IDL 9.0.
    Align Tolerance and Iterations in
-   AmesPAHdbIDLSuite_Fitted_Spectrum::Description in 
+   AmesPAHdbIDLSuite_Fitted_Spectrum::Description in
    AmesPAHdbIDLSuite_Fitted_Spectrum__define.pro.
 +- 11-22-2023
    Allow specifying the tolerance and maximum number of iterations to use for
    NNLS in AmesPAHdbIDLSuite_Spectrum::Fit and AmesPAHdbIDLSuite_Spectrum::MCFit
    and pass to result in AmesPAHdbIDLSuite_Spectrum__define.pro. Add tolerance
    and iterations properties and their handling in
-   AmesPAHdbIDLSuite_Fitted_Spectrum::Set, 
+   AmesPAHdbIDLSuite_Fitted_Spectrum::Set,
    AmesPAHdbIDLSuite_Fitted_Spectrum::Get, and
    AmesPAHdbIDLSuite_Fitted_Spectrum::Description to
    AmesPAHdbIDLSuite_Fitted_Spectrum in AmesPAHdbIDLSuite_Spectrum__define.pro.
-   Add AmesPAHdbIDLSuite_Fitted_Spectrum::GetTolerance and 
+   Add AmesPAHdbIDLSuite_Fitted_Spectrum::GetTolerance and
    AmesPAHdbIDLSuite_Fitted_Spectrum::GetIterations in
    AmesPAHdbIDLSuite_Fitted_Spectrum__define.pro. Add
-   AmesPAHdbIDLSuite_MCFitted_Spectrum::GetTolerance and 
+   AmesPAHdbIDLSuite_MCFitted_Spectrum::GetTolerance and
    AmesPAHdbIDLSuite_MCFitted_Spectrum::GetIterations in
    AmesPAHdbIDLSuite_MCFitted_Spectrum__define.pro.
 +- 11-17-2023
@@ -63,11 +66,11 @@ CHANGELOG
 +- 06-02-2023
    Accommodate UIDs >9999 in AmesPAHdbIDLSuite_Geometry::Plot in
    AmesPAHdbIDLSuite_Geometry__define.pro, in example random_mixtures.pro, in
-   AmesPAHdbIDLSuite_GUI_Application_Main::LoadIcons in 
-   AmesPAHdbIDLSuite_GUI_Application_Main__define.pro, in 
+   AmesPAHdbIDLSuite_GUI_Application_Main::LoadIcons in
+   AmesPAHdbIDLSuite_GUI_Application_Main__define.pro, in
    AmesPAHdbIDLSuite_Transitions::Cascade and
    AmesPAHdbIDLSuite_Transitions::CalculatedTemperature in,
-   AmesPAHdbIDLSuite_Transitions__define.pro, and 
+   AmesPAHdbIDLSuite_Transitions__define.pro, and
    AmesPAHdbIDLSuite_Fitted_Spectrum::Plot in
    AmesPAHdbIDLSuite_Fitted_Spectrum__define.pro. Use Courier font in
    AmesPAHdbIDLSuite_Fitted_Spectrum::Plot when presenting contributing UIDs in
@@ -78,7 +81,7 @@ CHANGELOG
 +- 05-09-2023
    Access proper struct for database filename in
    AmesPAHdbIDLSuite_XMLParser::ENDDOCUMENT in
-   AmesPAHdbIDLSuite_XMLParser__define.pro.  Fix progress bar, use HISTOGRAM 
+   AmesPAHdbIDLSuite_XMLParser__define.pro.  Fix progress bar, use HISTOGRAM
    instead of WHERE, prompt for next plot, divide carbon and hydrogen sizes by
    nuids, and directly write to sample in example random_mixtures.pro.
    Remove invalid search key 'atoms' from AmesPAHdbIDLSuite::TOKENIZEWORDS in
@@ -124,7 +127,7 @@ CHANGELOG
 +- 05-18-2022
    Use Histogram for speed-up in AmesPAHdbIDLSuite_Spectrum::Plot in
    AmesPAHdbIDLSuite_Spectrum__define.pro. Use Histogram in
-   AmesPAHdbIDLSuite_Laboratory::Plot and 
+   AmesPAHdbIDLSuite_Laboratory::Plot and
    AmesPAHdbIDLSuite_Laboratory::Write for speed-ups in
    AmesPAHdbIDLSuite_Laboratory.pro. Use Histogram for speed-ups in
    AmesPAHdbIDLSuite_Transitions::Plot,
@@ -202,22 +205,22 @@ CHANGELOG
    enable (`old-style`) anharmonic profiles in
    AmesPAHdbIDLSuite_Transitions__define.pro.
 +- 07-06-2021
-  Cleaned up some progress bar in 
+  Cleaned up some progress bar in
   AmesPAHdbIDLSuite_Transitions__define.pro, mc_fit_spectrum.pro,
   and random_mixtures.pro.
 +- 06-23-2021
    Get sorting right for AmesPAHdbIDLSuite_Fitted_Spectrum::GetError,
    added error from AmesPAHdbIDLSuite_Fitted_Spectrum::GetError
-   to AmesPAHdbIDLSuite_Fitted_Spectrum::Description, and call 
-   AmesPAHdbIDLSuite_Plot::Init in 
+   to AmesPAHdbIDLSuite_Fitted_Spectrum::Description, and call
+   AmesPAHdbIDLSuite_Plot::Init in
    inAmesPAHdbIDLSuite_Fitted_Spectrum__define.pro.
 +-06-02-2021
-   Add message to show when blackbody stellar model is used for 
+   Add message to show when blackbody stellar model is used for
    AmesPAHdbIDLSuite_Transitions::Cascade in
    AmesPAHdbIDLSuite_Transitions__define.pro.
 +-05-03-2021
    Speed-up a number of methods by avoiding repeated linear
-   searches with WHERE and work around self.uids and self.data.uid 
+   searches with WHERE and work around self.uids and self.data.uid
    not having the same order in AmesPAHdbIDLSuite_Transitions__define.pro.
    Avoid potential issues when self.uids and self.data.uid don't have the
    same ordering in AmesPAHdbIDLSuite_Spectrum__define.
@@ -233,7 +236,7 @@ CHANGELOG
    Added GETERROR in
    AmesPAHdbIDLSuite_Fitted_Spectrum__define.pro. Fix parsing
    of ASCII-files, accommodate reading IPAC tables, and Sort
-   observation upon unit conversion in 
+   observation upon unit conversion in
    AmesPAHdbIDLSuite_Observation__define. Updated spectrum of
    NGC7023 used in examples to include uncertainties.
    Refactored FIT to make use of matrix operation in
@@ -246,12 +249,12 @@ CHANGELOG
 +- 03-31-2021
    Intersect now calls Spectrum::INTERSECT instead of
    Data::INTERSECT in
-   AmesPAHdbIDLSuite_fitted_spectrum__define.pro. 
+   AmesPAHdbIDLSuite_fitted_spectrum__define.pro.
 +- 10-03-2021
    Added Description to avoid crash on calling HELP in
    AmesPAHdbIDLSuite_Geometry__define.pro
 +- 02-17-2021
-   Overload Intersect to ensure weights are also intersected in 
+   Overload Intersect to ensure weights are also intersected in
    AmesPAHdbIDLSuite_fitted_spectrum__define.pro.
 +- 11-09-2020
    Fix formatting strings to properly display 4-digit UIDs in

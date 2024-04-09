@@ -161,7 +161,7 @@ PRO AmesPAHdbIDLSuite_Data::Intersect,UIDs,Count
 
   Count = 0L
 
-  mina = MIN(*self.uids, MAX=maxa) 
+  mina = MIN(*self.uids, MAX=maxa)
 
   minb = MIN(UIDs, MAX=maxb)
 

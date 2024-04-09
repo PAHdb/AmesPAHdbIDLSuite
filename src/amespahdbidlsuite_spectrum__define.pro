@@ -25,11 +25,13 @@
 ; :History:
 ;   Changes::
 ;
+;     04-09-2024
+;     Normalize matrix in FIT. Christiaan Boersma.
 ;     11-22-2023
 ;     Allow specifying the tolerance and maximum number of iterations to use for
 ;     NNLS in FIT and MCFIT and pass to result. Christiaan Boersma.
 ;     11-06-2023
-;     Add callback to FIT and NNLS for progress monitoring. Christiaan Boersma. 
+;     Add callback to FIT and NNLS for progress monitoring. Christiaan Boersma.
 ;     10-19-2023
 ;     Don't destroy created observation in MCFIT. Christiaan Boersma.
 ;     04-15-2023
@@ -48,7 +50,7 @@
 ;     Don't try and access pointer when it is not set in DESCRIPTION.
 ;     Christiaan Boersma.
 ;     05-03-2021
-;     Avoid potential issues when self.uids and self.data.uid don't have 
+;     Avoid potential issues when self.uids and self.data.uid don't have
 ;     the same ordering. Christiaan Boersma.
 ;     05-02-2021
 ;     Added NOTICE-keyword to FIT. Christiaan Boersma.
@@ -399,7 +401,7 @@ END
 ;    MAXITER_NNLS: in, optional, type=long
 ;     Maximum number of iterations
 ;    CALLBACK_NNLS: in, optional, type=boolean
-;     Callback 
+;     Callback
 ;    EXTERNAL_NNLS: in, optional, type=int
 ;     Whether to use an externally defined NNLS-routine
 ;    Notice: in, optional, type=int, default=1
@@ -509,6 +511,10 @@ FUNCTION AmesPAHdbIDLSuite_Spectrum::Fit,observation,error,TOLERANCE_NNLS=tolera
 
   READS,!VERSION.RELEASE,idl_version
 
+  scl = MAX(m)
+
+  m /= scl
+
   IF idl_version GE 8.0 AND NOT KEYWORD_SET(EXTERNAL_NNLS) THEN BEGIN
      self->NNLS,m,b,ftol,maxiter_nnls,callback=callback_nnls
 
@@ -549,6 +555,27 @@ FUNCTION AmesPAHdbIDLSuite_Spectrum::Fit,observation,error,TOLERANCE_NNLS=tolera
      RETURN,OBJ_NEW()
   ENDIF
 
+  uids = (*self.data)[UNIQ((*self.data).uid)].uid
+
+  _weights = REPLICATE({AmesPAHdbIDLSuite_Weights_S, $
+                        uid:0L, $
+                        weight:0D}, nvalid)
+
+  _weights.uid = uids[valid]
+
+  _weights.weight = weights[valid] / scl
+
+  data = REPLICATE({AmesPAHdbIDLSuite_Fitted_S, $
+                    intensity:0D, $
+                    uid:0L}, ny * nvalid)
+
+  FOR i = 0, nvalid - 1 DO BEGIN
+
+     data[i*ny:(i+1)*ny-1].uid = _weights[i].uid
+
+     data[i*ny:(i+1)*ny-1].intensity = _weights[i].weight * REFORM(matrix[valid[i], *], /OVERWRITE)
+  ENDFOR
+
   IF Notice THEN BEGIN
     PRINT
     PRINT,"========================================================="
@@ -562,33 +589,12 @@ FUNCTION AmesPAHdbIDLSuite_Spectrum::Fit,observation,error,TOLERANCE_NNLS=tolera
     PRINT
   ENDIF
 
-  uids = (*self.data)[UNIQ((*self.data).uid)].uid
-
-  _weights = REPLICATE({AmesPAHdbIDLSuite_Weights_S, $
-                        uid:0L, $
-                        weight:0D}, nvalid)
-
-  _weights.uid = uids[valid]
-
-  _weights.weight = weights[valid]
-
-  data = REPLICATE({AmesPAHdbIDLSuite_Fitted_S, $
-                    intensity:0D, $
-                    uid:0L}, ny * nvalid)
-
-  FOR i = 0, nvalid - 1 DO BEGIN
-
-     data[i*ny:(i+1)*ny-1].uid = uids[valid[i]]
-
-     data[i*ny:(i+1)*ny-1].intensity = weights[valid[i]] * REFORM(matrix[valid[i], *], /OVERWRITE)
-  ENDFOR
-
   RETURN,OBJ_NEW('AmesPAHdbIDLSuite_Fitted_Spectrum', $
                  Type=self.type, $
                  Version=self.version, $
                  Data=data, $
                  PAHdb=self.database, $
-                 Uids=uids[valid], $
+                 Uids=_weights.uid, $
                  Model=*self.model, $
                  Units=self.units, $
                  Shift=self.shift, $
@@ -675,7 +681,7 @@ FUNCTION AmesPAHdbIDLSuite_Spectrum::MCFit,observation,error,samples,TOLERANCE_N
 
   PRINT
   PRINT,"========================================================="
-  IF KEYWORD_SET(Uniform) THEN $ 
+  IF KEYWORD_SET(Uniform) THEN $
      PRINT,"           DRAWING FROM UNIFORM DISTRIBUTION             " $
    ELSE $
      PRINT,"            DRAWING FROM NORMAL DISTRIBUTION          "
@@ -685,7 +691,7 @@ FUNCTION AmesPAHdbIDLSuite_Spectrum::MCFit,observation,error,samples,TOLERANCE_N
   PRINT
   PRINT,"========================================================="
   FOR i = 0L, samples - 1L DO BEGIN
-  
+
     PRINT,FORMAT='("' + STRING(13B) + 'mc:",X,I5,"/",I5,$)',i+1L,samples
 
     obs->Set,Y=y + ystdev * (NOT KEYWORD_SET(Uniform) ? RANDOMU(seed, ny, /DOUBLE, /NORMAL) $
