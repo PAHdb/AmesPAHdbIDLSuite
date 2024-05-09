@@ -1,5 +1,8 @@
 CHANGELOG
-+- 04-09-2024
++- 05-09-2024
+   Ensure ordinate units are correct in
+   AmesPAHdbIDLSuite_Transitions__define.pro.
+;- 04-09-2024
    Normalize ma:qtrix in AmesPAHdbIDLSuite_Spectrum::Fit in
    AmesPAHdbIDLSuite_Spectrum__define.pro.
 +- 12-13-2023

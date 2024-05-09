@@ -27,6 +27,8 @@
 ; :History:
 ;   Changes::
 ;
+;     05-09-2024
+;     Ensure ordinate units are correct. Christiaan Boersma.
 ;     11-09-2023
 ;     Speedups for CASCADE, IDLBRIDGE_EXECUTE, and CONVOLVE by avoiding double
 ;     indexing and computing ranges in loops. Christiaan Boersma.
@@ -1113,12 +1115,12 @@ PRO AmesPAHdbIDLSuite_Transitions__IDLBridge_Execute,uid,offset
   ENDELSE
 
   Tmax = FX_ROOT([2.73D, 2500, 5000], func1, /DOUBLE, TOL=1D-5)
- 
+
   shmmap[n_ri+2L*n_data+offset] = Tmax
 
   shmmap[n_ri+2L*n_data+n_uids+offset] = Ein
 
-  d = intensities 
+  d = intensities
 
   IF (doStar OR doISRF) AND doConvolved THEN BEGIN
 
@@ -1290,7 +1292,7 @@ PRO AmesPAHdbIDLSuite_Transitions::Cascade_IDLBridge,E,Approximate=Approximate,S
   ;; sigma (n_uids / DOUBLE)
   ;; nc (n_uids / LONG)
   ;; charge (n_uids / LONG)
-  ;; n_star (optional; 1 / LONG) 
+  ;; n_star (optional; 1 / LONG)
   ;; star_frequency (optional; n_star / DOUBLE)
   ;; star_intensity (optional; n_star / DOUBLE)
 
@@ -1465,7 +1467,7 @@ PRO AmesPAHdbIDLSuite_Transitions::Cascade,E,Approximate=Approximate,IDLBridge=I
   IF SIZE(Cache, /TYPE) EQ 0 THEN Cache = 1B
 
   IF Cache THEN BEGIN
- 
+
     hash = self.HashCode({E:E, approximate:KEYWORD_SET(Approximate), $
                           star:KEYWORD_SET(Star), $
                           isrf:KEYWORD_SET(ISRF), $
@@ -1617,7 +1619,7 @@ PRO AmesPAHdbIDLSuite_Transitions::Cascade,E,Approximate=Approximate,IDLBridge=I
 
   self.units.ordinate = {AmesPAHdb_Unit_S, $
                          unit:3, $
-                         str:'integrated radiant energy [x10!U5!N erg/mol]'}
+                         str:'integrated radiant energy [erg/PAH]'}
 
   description = [STRING(FORMAT='(A-12,":",X,A-0)', "model", "Cascade"), $
                  STRING(FORMAT='(A-12,":",X,A-0)', "approximated", KEYWORD_SET(Approximate) ? "yes" : "no")]
@@ -1741,7 +1743,7 @@ PRO AmesPAHdbIDLSuite_Transitions::Cascade,E,Approximate=Approximate,IDLBridge=I
 
           IF intensities[j] EQ 0 THEN CONTINUE
 
-          frequency = frequencies[j] 
+          frequency = frequencies[j]
 
           d[j] *= QROMB(func3, 2.5D3, 1.1D5, K=7, EPS=1D-6)
        ENDFOR
@@ -2547,7 +2549,7 @@ FUNCTION AmesPAHdbIDLSuite_Transitions::Convolve,XRange=XRange,FWHM=FWHM,Npoints
 
         intensity = (*self.data)[select].intensity
 
-        d = data[i*NPoints:(i + 1)*NPoints-1].intensity  
+        d = data[i*NPoints:(i + 1)*NPoints-1].intensity
 
         IF KEYWORD_SET(Anharmonics) THEN BEGIN
 
@@ -2638,7 +2640,7 @@ FUNCTION AmesPAHdbIDLSuite_Transitions::Convolve,XRange=XRange,FWHM=FWHM,Npoints
 
         intensity = (*self.data)[select].intensity
 
-        d = data[i*NPoints:(i + 1)*NPoints-1].intensity  
+        d = data[i*NPoints:(i + 1)*NPoints-1].intensity
 
         fsel = WHERE(frequency GE xmin - clip * width[0] AND $
                      frequency LE FWHM[1].treshold, nsel)
@@ -2685,7 +2687,7 @@ FUNCTION AmesPAHdbIDLSuite_Transitions::Convolve,XRange=XRange,FWHM=FWHM,Npoints
                 int[k] * self->LineProfile(x, freq[k], width[j], Gaussian=Gaussian, Drude=Drude, Conserve=Conserve, Anharmonics=Anharmonics)
         ENDFOR
 
-        data[i*NPoints:(i + 1)*NPoints-1].intensity = d 
+        data[i*NPoints:(i + 1)*NPoints-1].intensity = d
      ENDFOR
   ENDELSE
 
@@ -2699,15 +2701,15 @@ FUNCTION AmesPAHdbIDLSuite_Transitions::Convolve,XRange=XRange,FWHM=FWHM,Npoints
 
      "AMESPAHDBIDLSUITE_MODEL_FIXEDTEMPERATURE_S": units.ordinate = {AmesPAHdb_Unit_S, $
                                                                      unit:3, $
-                                                                     str:'spectral radiance [erg/s.cm/PAH]'}
+                                                                     str:'spectral radiance [erg/s/cm!U-1!N/PAH]'}
 
      "AMESPAHDBIDLSUITE_MODEL_CALCULATEDTEMPERATURE_S": units.ordinate = {AmesPAHdb_Unit_S, $
                                                                           unit:3, $
-                                                                          str:'spectral radiance [erg/s.cm/PAH]'}
+                                                                          str:'spectral radiance [erg/s/cm!U-1!N/PAH]'}
 
      "AMESPAHDBIDLSUITE_MODEL_CASCADE_S": units.ordinate = {AmesPAHdb_Unit_S, $
                                                             unit:3, $
-                                                            str:'radiant energy [x10!U5!N erg.cm/mol]'}
+                                                            str:'radiant energy [erg cm]'}
   ENDCASE
 
   RETURN,OBJ_NEW('AmesPAHdbIDLSuite_Spectrum', $

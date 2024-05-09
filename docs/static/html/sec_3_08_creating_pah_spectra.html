@@ -52,9 +52,9 @@
           The <i>AmesPAHdbIDLSuite</i> offers three PAH emission models. With increasing complexity they are the 'FixedTemperature', 'CalculatedTemperature', and 'Cascade' model. The first simply multiplies a blackbody at fixed given temperature with the integrated cross-section of each vibrational transition. The second first calculates the maximum attained temperature from the provided input and subsequently multiplies a blackbody at that fixed temperature with the integrated cross-section of each vibrational transition. The third averages the total emission over the entire cooling cascade (time).
         </p>
         <p>
-          Emission models are handled by the 'AmesPAHdbIDLSuite_Transitions'-object. The 'FixedTemperature'-model simply takes a temperature, in Kelvin, and, in their simplest form, both the 'CalculatedTemperature' and 'Cascade' models take an energy, in erg.
+          Emission models are handled by the 'AmesPAHdbIDLSuite_Transitions'-object. The 'FixedTemperature'-model simply takes a temperature, in Kelvin, and, in their simplest form, both the 'CalculatedTemperature' and 'Cascade' models take an energy, in erg. The output of both 'Temperature' models and the 'Cascade' model are in erg/s and erg, respectively.
         </p>
-        <pre><code class="language-idl">transitions-&gt;FixedTemperature,600D
+        <pre><code class="language-idl">transitions-&gt;FixedTemperature,600D ; Kelvin
 
 transitions-&gt;CalculatedTemperature,6D*1.603D-12; 6 eV
 
@@ -62,7 +62,7 @@ transitions-&gt;Cascade,6D*1.603D-12; 6 eV</code></pre>
         <p>
 	  Both the 'CalculatedTemperature' and 'Cascade'-methods accept the 'Approximate', 'Star', 'StellarModel', and 'ISRF'-keywords. With the 'Approximate'-keyword specified, calculations are performed using the PAH emission model from Bakes et al. (2001<a href="http://adsabs.harvard.edu/abs/2001ApJ...556..501B">a</a>, <a href="http://adsabs.harvard.edu/abs/2001ApJ...560..261B">b</a>).  When the 'Star'-keyword is set, a stellar blackbody at the provided temperature is used to calculate the average energy absorbed by each PAH utilizing the PAH absorption cross-sections from Draine &amp; Li (<a href="http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=2007ApJ...657..810D&db_key=AST&link_type=ABSTRACT&high=54888b502c27613">2007</a>). In case the 'StellarModel'-keyword is provided as well, the input is considered to be a full-blown, for example, Kurucz stellar atmosphere model. The 'AmesPAHdbIDLSuite_CREATE_KURUCZ_STELLARMODEL_S' helper routine is provided to assist with molding the model data into the proper input format. Lastly, with the 'ISRF'-keyword set, the interstellar radiation field from Mathis et al. (<a href="http://adsabs.harvard.edu/cgi-bin/nph-data_query?bibcode=1983A%26A...128..212M&db_key=AST&link_type=ABSTRACT&high=54888b502c28367">1983</a>) is used to calculate the average energy absorbed by each PAH.
         </p>
-        <pre><code class="language-idl">transitions-&gt;CalculatedTemperature,17D3,/Star
+        <pre><code class="language-idl">transitions-&gt;CalculatedTemperature,17D3,/Star ; Kelvin
 
 transitions-&gt;Cascade,/Approximate,/ISRF
 
@@ -76,7 +76,7 @@ transitions-&gt;Cascade, $
         <p>
           The 'Cascade'-method also accepts the 'Convolve'-keyword. When set and combined with either the 'Star', optionally with the 'StellarModel'-keyword, or 'ISRF'-keyword, will instead of calculating the average absorbed photon energy for each PAH, convolve the PAH emission with the entire radiation field.
         </p>
-        <pre><code class="language-idl">transitions-&gt;Cascade,17D3,/Star,/Convolve</code></pre>
+        <pre><code class="language-idl">transitions-&gt;Cascade,17D3,/Star,/Convolve ; Kelvin</code></pre>
         <p>
           <b>NB</b> This is computationally expensive.
         </p>
@@ -87,14 +87,14 @@ transitions-&gt;Cascade, $
         <p>
 	  The 'AmesPAHdbIDLSuite_Transitions'-object's 'Shift'-method can be used to redshift the fundamental transitions to simulate anharmonic effects.
 	</p>
-	<pre><code class="language-idl">transitions-&gt;Shift,-15D</code></pre>
+	<pre><code class="language-idl">transitions-&gt;Shift,-15D ; /cm</code></pre>
 	<p>
 	  <b>NB</b> Red-shifting the fundamental vibrational transitions should be done <i>after</i> applying one of the three emission models described above.
 	</p>
 
         <h2>Line profiles</h2>
         <p>
-          Line profiles are handled by the 'AmesPAHdbIDLSuite_Transitions'-object and it provides three profiles; Lorentzian, Gaussian and Drude. Convolution with the keyword chosen line profile is achieved through the 'AmesPAHdbIDLSuite_Transitions'-object's 'Convolve'-method, which will return the convolved spectrum in the form of an 'AmesPAHdbIDLSuite_Spectrum'-object.
+        Line profiles are handled by the 'AmesPAHdbIDLSuite_Transitions'-object and it provides three profiles; Lorentzian, Gaussian and Drude. Convolution with the keyword chosen line profile is achieved through the 'AmesPAHdbIDLSuite_Transitions'-object's 'Convolve'-method, which will return the convolved spectrum in the form of an 'AmesPAHdbIDLSuite_Spectrum'-object. The output will be that of the applied model with /cm<sup>-1</sup> added.
         </p>
         <pre><code class="language-idl">spectrum = transitions-&gt;Convolve(/Drude)</code></pre>
         <p>
