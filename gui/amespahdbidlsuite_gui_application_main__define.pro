@@ -16,6 +16,9 @@
 ; :History:
 ;   Changes::
 ;
+;     05-10-2024
+;     Use suite date instead of library data for version in INIT and
+;     EVENTHANDLER. Christiaan Boersma.
 ;     06-02-2023
 ;     Accommodate UIDs >9999 in LOADICONS. Christiaan Boersma.
 ;     07-06-2021
@@ -56,7 +59,7 @@ PRO AmesPAHdbIDLSuite_GUI_Application_Main::EventHandler,Event
      ENDIF
   ENDIF ELSE IF Event.id EQ self.about THEN BEGIN
 
-     ok = DIALOG_MESSAGE(['This is the Graphical User Interface (GUI) to the AmesPAHdbIDLSuite.','This version of the suite is dated '+(*self.delegate).version+'.','','The suite has been created and is maintained by Dr. Christiaan Boersma.', 'Please contact the maintainer at Christiaan.Boerma@nasa.gov', 'for questions and/or comments/suggestions.'], DIALOG_PARENT=self.base, TITLE="About", /INFORMATION)
+     ok = DIALOG_MESSAGE(['This is the Graphical User Interface (GUI) to the AmesPAHdbIDLSuite.','This version of the suite is dated '+self.version+'.','','The suite has been created and is maintained by Dr. Christiaan Boersma.', 'Please contact the maintainer at Christiaan.Boerma@nasa.gov', 'for questions and/or comments/suggestions.'], DIALOG_PARENT=self.base, TITLE="About", /INFORMATION)
   ENDIF ELSE IF Event.id EQ self.tbar THEN BEGIN
 
      CASE Event.tab OF
@@ -216,6 +219,8 @@ FUNCTION AmesPAHdbIDLSuite_GUI_Application_Main::Init,Filename=Filename,Check=Ch
 
   IF self->AmesPAHdbIDLSuite_GUI_Application::Init() EQ 0 THEN RETURN,0
 
+  WIDGET_CONTROL,self.base,TLB_SET_TITLE='NASA Ames PAH IR Spectroscopic Database - ' + 'Suite dated ' + self.version
+
   pahdb = OBJ_NEW('AmesPAHdbIDLSuite', Filename=Filename, Check=Check, Cache=Cache)
 
   self.uids = PTR_NEW(/ALLOCATE)
@@ -225,8 +230,6 @@ FUNCTION AmesPAHdbIDLSuite_GUI_Application_Main::Init,Filename=Filename,Check=Ch
   IF OBJ_VALID(pahdb) THEN BEGIN
 
      self.delegate = PTR_NEW(pahdb)
-
-     WIDGET_CONTROL,self.base,TLB_SET_TITLE='NASA Ames PAH IR Spectroscopic Database - '+'Suite dated ' + ((*self.delegate)->GetVersion()).date
 
      WIDGET_CONTROL,self.mlabel,SET_VALUE=(*self.delegate)->GetVersion(/Str)
 

@@ -39,6 +39,8 @@
 ; :History:
 ;   Changes::
 ;
+;     05-09-2024
+;     Add Windows support for MD5 hashing. Christiaan Boersma.
 ;     10-10-2023
 ;     Generalize caching by adding CACHE_DIR and CACHE methods. Christiaan
 ;     Boersma.
@@ -170,6 +172,15 @@ PRO AmesPAHdbIDLSuite::File_MD5,File,Hash,Err
 
   ON_ERROR,2
 
+  IF !VERSION.OS_FAMILY EQ "Windows" THEN BEGIN
+
+     SPAWN,['certUtil', '-hashfile', File, 'MD5'],Hash,Err,/NOSHELL
+
+     Hash = (STRSPLIT(Hash, ':', /EXTRACT))[1]
+
+     RETURN
+  ENDIF
+
   md5 = FILE_WHICH(GETENV('PATH'), 'md5')
 
   IF MD5 NE '' THEN BEGIN
@@ -280,11 +291,11 @@ PRO AmesPAHdbIDLSuite::Cache,Hash,Clear=Clear
 
   PRINT,FORMAT='("CACHE DIR:",X,A0)',dir_cache
   PRINT,"---------------------------------------------------------"
-  PRINT,FORMAT='(A-32,X,A-7,8X,A0)',"HASH","SIZE","CLEARED" 
+  PRINT,FORMAT='(A-32,X,A-7,8X,A0)',"HASH","SIZE","CLEARED"
   PRINT,"---------------------------------------------------------"
 
   files = FILE_SEARCH(dir_cache + PATH_SEP() + "*.sav", COUNT=nfiles)
-  FOR i = 0L, nfiles - 1L DO BEGIN    
+  FOR i = 0L, nfiles - 1L DO BEGIN
     info = FILE_INFO(files[i])
     basename = STRUPCASE(FILE_BASENAME(files[i],".sav"))
     cleared = 0
@@ -818,7 +829,7 @@ FUNCTION AmesPAHdbIDLSuite::GetTagByUID,Tag,UIDs,Count
 
   IF Count EQ 0 THEN RETURN,-1
 
-  select = select[0:Count-1L] 
+  select = select[0:Count-1L]
 
   UIDs = (*self.pahdb).data.(itag)[select[UNIQ((*self.pahdb).data.(itag)[select].uid)]].uid
 
