@@ -7,7 +7,9 @@ CHANGELOG
    date instead of library data for version in
    AmesPAHdbIDLSuite_GUI_Application_Main::Init and
    AmesPAHdbIDLSuite_GUI_Application_Main::EventHandler in
-   AmesPAHdbIDLSuite_GUI_Application_Main__define.pro.
+   AmesPAHdbIDLSuite_GUI_Application_Main__define.pro. Update
+   one more unit in AmesPAHdbIDLSuite_Transitions::Convolve in
+   AmesPAHdbIDLSuite_Transitions__define.pro.
 +- 05-09-2024
    Ensure ordinate units are correct in
    AmesPAHdbIDLSuite_Transitions__define.pro.
