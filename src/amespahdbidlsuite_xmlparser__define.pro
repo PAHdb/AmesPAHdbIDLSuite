@@ -31,6 +31,8 @@
 ; :History:
 ;   Changes::
 ;
+;     07-03-2024
+;     Add and parse n_ch and n_ch3 fields added in v4.00. Christiaan Boersma.
 ;     05-09-2023
 ;     Access proper struct for database filename in ENDDOCUMENT. Christiaan
 ;     Boersma.
@@ -383,9 +385,8 @@ PRO AmesPAHdbIDLSuite_XMLParser::EndElement,URI,Local,Name
         ; 16    17    18    19    20     21     22
         ; nc:0, nh:0, nn:0, no:0, nmg:0, nsi:0, nfe:0
         ; 6     1     7     8     12     14     26
-        key = [-1, 16, -1, -1, -1, -1, 15, 17, 18, -1, -1, -1, 19, -1, 20, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 21]
+        key = [-1, 18, -1, -1, -1, -1, 17, 19, 20, -1, -1, -1, 21, -1, 22, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 23]
         ;      0   1   2   3   4   5   6   7   8    9  10  11  12  13  14  15  16  17  18  19  20  21  22  23  24  25  26
-
         type = FIX(self.chardata)
 
         (*self.database.data.geometries)[self.sizes.ngeometries].type = type
@@ -409,7 +410,11 @@ PRO AmesPAHdbIDLSuite_XMLParser::EndElement,URI,Local,Name
 
      'n_quintet' : (*self.database.data.species)[self.sizes.nspecies].nquintet = FIX(self.chardata)
 
+     'n_ch' : (*self.database.data.species)[self.sizes.nspecies].nch = FIX(self.chardata)
+
      'n_ch2' : (*self.database.data.species)[self.sizes.nspecies].nch2 = FIX(self.chardata)
+
+     'n_ch3' : (*self.database.data.species)[self.sizes.nspecies].nch3 = FIX(self.chardata)
 
      'n_chx' : (*self.database.data.species)[self.sizes.nspecies].nchx = FIX(self.chardata)
 
@@ -598,7 +603,9 @@ PRO AmesPAHdbIDLSuite_XMLParser::StartElement,URI,Local,Name,Attr,Value
                                                                                   ntrio:0, $
                                                                                   nquartet:0, $
                                                                                   nquintet:0, $
+                                                                                  nch:0, $
                                                                                   nch2:0, $
+                                                                                  nch3:0, $
                                                                                   nchx:0, $
                                                                                   nc:0, $
                                                                                   nh:0, $
@@ -838,7 +845,9 @@ FUNCTION AmesPAHdbIDLSuite_XMLParser::Init,SCHEMA_CHECKING=Schema_Checking
                                                   ntrio:0, $
                                                   nquartet:0, $
                                                   nquintet:0, $
+                                                  nch:0, $
                                                   nch2:0, $
+                                                  nch3:0, $
                                                   nchx:0, $
                                                   nc:0, $
                                                   nh:0, $

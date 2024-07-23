@@ -1,4 +1,8 @@
 CHANGELOG
++- 07-03-2024
+   Parse n_ch and n_ch3 fields added in v4.00
+   AmesPAHdbIDLSuite_XMLParser__define.pro and add search in
+   AmesPAHdbIDLSuite__define.pro.
 +- 05-10-24
    Add Windows support for MD5 hashing in File_MD5 in
    AmesPAHdbIDLSuite__define.pro. Read Suite version date in
@@ -13,7 +17,7 @@ CHANGELOG
 +- 05-09-2024
    Ensure ordinate units are correct in
    AmesPAHdbIDLSuite_Transitions__define.pro.
-;- 04-09-2024
++- 04-09-2024
    Normalize ma:qtrix in AmesPAHdbIDLSuite_Spectrum::Fit in
    AmesPAHdbIDLSuite_Spectrum__define.pro.
 +- 12-13-2023
