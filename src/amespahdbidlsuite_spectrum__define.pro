@@ -25,6 +25,9 @@
 ; :History:
 ;   Changes::
 ;
+;     08-25-2024
+;     Report when maximum number of iterations reached in FIT. Christiaan
+;     Boersma.
 ;     04-09-2024
 ;     Normalize matrix in FIT. Christiaan Boersma.
 ;     11-22-2023
@@ -516,7 +519,18 @@ FUNCTION AmesPAHdbIDLSuite_Spectrum::Fit,observation,error,TOLERANCE_NNLS=tolera
   m /= scl
 
   IF idl_version GE 8.0 AND NOT KEYWORD_SET(EXTERNAL_NNLS) THEN BEGIN
+
+     maxiter = maxiter_nnls
+
      self->NNLS,m,b,ftol,maxiter_nnls,callback=callback_nnls
+
+     IF maxiter EQ maxiter_nnls AND Notice THEN BEGIN
+       PRINT
+       PRINT,"========================================================="
+       PRINT,"         MAXIMUM NUMBER OF ITERATIONS REACHED: "+STRTRIM(maxiter,2)
+       PRINT,"========================================================="
+       PRINT
+     ENDIF
 
      weights = b
   ENDIF ELSE IF NOT KEYWORD_SET(EXTERNAL_NNLS) THEN BEGIN

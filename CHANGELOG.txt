@@ -1,4 +1,8 @@
 CHANGELOG
++- 08-25-2024
+   Report when maximum number of iterations reached in
+   AmesPAHdbIDLSuite_Spectrum::Fit in
+   AmesPAHdbIDLSuite_Spectrum__define.pro.
 +- 07-03-2024
    Parse n_ch and n_ch3 fields added in v4.00
    AmesPAHdbIDLSuite_XMLParser__define.pro and add search in
@@ -18,7 +22,7 @@ CHANGELOG
    Ensure ordinate units are correct in
    AmesPAHdbIDLSuite_Transitions__define.pro.
 +- 04-09-2024
-   Normalize ma:qtrix in AmesPAHdbIDLSuite_Spectrum::Fit in
+   Normalize matrix in AmesPAHdbIDLSuite_Spectrum::Fit in
    AmesPAHdbIDLSuite_Spectrum__define.pro.
 +- 12-13-2023
    Add AmesPAHdbIDLSuite_Data::Clone in AmesPAHdbIDLSuite_Data__define.pro.
@@ -63,7 +67,7 @@ CHANGELOG
    AmesPAHdbIDLSuite_Fitted_Spectrum::NNLS in
    AmesPAHdbIDLSuite_Spectrum__define.pro for progress monitoring.
 +- 10-19-2023
-   Don't destroy created observation in AmesPAHdbIDLSuite_Spectrum::MCfit in
+   Don't destroy created observation in AmesPAHdbIDLSuite_Spectrum::MCFit in
    AmesPAHdbIDLSuite_Spectrum__define.pro.
 +- 10-10-2023
    Generalize caching by adding AmesPAHdbIDLSuite::Cache_DIR and
