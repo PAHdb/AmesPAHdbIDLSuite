@@ -25,6 +25,8 @@
 ; :History:
 ;   Changes::
 ;
+;     08-28-2024
+;     Trim trailing whitespace. Christiaan Boersma.
 ;     11-22-2023
 ;     Add GETTOLERANCE and GETITERATIONS. Christiaan Boersma.
 ;     11-17-2023
@@ -81,7 +83,7 @@ PRO AmesPAHdbIDLSuite_MCFitted_Spectrum::Description,Str
 
   nfilter = N_ELEMENTS(filter)
   FOR i = 0L, nfilter - 1L DO BEGIN
-    
+
       keep = WHERE(STRMID(Str, 0, 2 + STRLEN(filter[i])) NE "|_" + filter[i])
 
       Str = Str[keep]
@@ -460,7 +462,7 @@ PRO AmesPAHdbIDLSuite_MCFitted_Spectrum::Set,Struct,Type=Type,Obj=Obj,Distributi
            IF NOT KEYWORD_SET(Obj) THEN BEGIN
 
               IF PTR_VALID(self.obj) THEN BEGIN
-              
+
                 PTR_FREE,self.obj
 
                 self.InvalidateLazy
@@ -475,7 +477,7 @@ PRO AmesPAHdbIDLSuite_MCFitted_Spectrum::Set,Struct,Type=Type,Obj=Obj,Distributi
 
             IF OBJ_VALID(Struct.observation) THEN self.observation = Struct.observation
           ENDIF
-          
+
         ENDIF
      ENDIF
   ENDIF
@@ -850,7 +852,7 @@ FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetNorm
 
     nrm = DBLARR(nobj)
     FOR i = 0L,  nobj - 1L DO nrm[i] = (*self.obj)[i]->getNorm()
-  
+
     self._lazy.norm = PTR_NEW(MOMENT(nrm))
   ENDIF
 
@@ -905,7 +907,7 @@ FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetError
     nobj = N_ELEMENTS(*self.obj)
 
     tags = ['err',  'e127',  'e112',  'e77', 'e62', 'e33']
-  
+
     mcerr = REPLICATE(CREATE_STRUCT(NAME='AmesPAHdb_Piecewise_Error', $
                                     tags, -1.0D, -1.0D, -1.0D, -1.0D, -1.0D, -1.0D), $
                                     nobj)

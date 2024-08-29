@@ -25,6 +25,8 @@
 ; :History:
 ;   Changes::
 ;
+;     08-28-2024
+;     Do unit conversion already in MCFIT. Christiaan Boersma.
 ;     08-25-2024
 ;     Report when maximum number of iterations reached in FIT. Christiaan
 ;     Boersma.
@@ -662,6 +664,8 @@ FUNCTION AmesPAHdbIDLSuite_Spectrum::MCFit,observation,error,samples,TOLERANCE_N
     samples = error
 
     obs = observation
+
+    obs->AbscissaUnitsTo,1
 
     obs_s = obs->Get()
 

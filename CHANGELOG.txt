@@ -1,4 +1,10 @@
 CHANGELOG
++- 08-28-2024
+   Do unit conversion already in AmesPAHdbIDLSuite_Spectrum::MCFit in
+   AmesPAHdIDLSuite_Spectrum__define.pro. Honor Notice-keyword in
+   AmesPAHdbIDLSuite_Observation::AbscissaUnitsTo in
+   AmesPAHdbIDLSuite_Observation__define.pro. Trim trailing whitespaces
+   in AmesPAHdbIDLSuite_MCFitted_Spectrum__define.pro.
 +- 08-25-2024
    Report when maximum number of iterations reached in
    AmesPAHdbIDLSuite_Spectrum::Fit in
