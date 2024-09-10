@@ -25,6 +25,8 @@
 ; :History:
 ;   Changes::
 ;
+;     09-10-2024
+;     Added GETAVERAGENUMBEROFCARBONATOMS. Christiaan Boersma.
 ;     08-28-2024
 ;     Trim trailing whitespace. Christiaan Boersma.
 ;     11-22-2023
@@ -646,6 +648,37 @@ FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetSizeDistribution,NBins=nbins,Mi
   ENDIF
 
   RETURN,*self._lazy.sizedistribution
+END
+
+;+
+; Retrieves the average number and standard deviation of carbon atoms of the
+; fitted PAHs.
+;
+; :Returns:
+;   double array
+;
+; :Categories:
+;   SET/GET
+;-
+FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetAverageNumberOfCarbonAtoms
+
+  COMPILE_OPT IDL2
+
+  ON_ERROR,2
+
+  IF NOT PTR_VALID(self._lazy.averagenumberofcarbonatoms) THEN BEGIN
+
+    nobj = N_ELEMENTS(*self.obj)
+
+    nc = DBLARR(nobj, 2)
+
+    FOR i = 0L, nobj - 1L DO $
+      nc[i,*] = (*self.obj)[i]->GetAverageNumberOfCarbonAtoms()
+
+      self._lazy.averagenumberofcarbonatoms = PTR_NEW([MOMENT(nc[*,0]), MOMENT(nc[*,1])])
+  END
+
+  RETURN,*self._lazy.averagenumberofcarbonatoms
 END
 
 ;+
@@ -1302,6 +1335,7 @@ PRO AmesPAHdbIDLSuite_MCFitted_Spectrum__DEFINE
                  residual:PTR_NEW(), $
                  fit:PTR_NEW(), $
                  sizedistribution:PTR_NEW(), $
+                 averagenumberofcarbonatoms:PTR_NEW(), $
                  breakdown:PTR_NEW(), $
                  breakdown_sig:0L, $
                  classes:PTR_NEW(), $

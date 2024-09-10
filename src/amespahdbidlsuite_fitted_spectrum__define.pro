@@ -24,6 +24,9 @@
 ;
 ; :History:
 ;   Changes::
+;
+;     09-10-2024
+;     Added GETAVERAGENUMBEROFCARBONATOMS. Christiaan Boersma.
 ;     12-13-2023
 ;     Align TOLARANCE AND ITERATIONS in DESCRIPTION. Christiaan Boersma.
 ;     11-22-2023
@@ -959,7 +962,7 @@ FUNCTION AmesPAHdbIDLSuite_Fitted_Spectrum::GetSizeDistribution,NBins=nbins,Min=
 
     distribution = DBLARR(nbins)
 
-  idx = VALUE_LOCATE(size, nc)
+    idx = VALUE_LOCATE(size, nc)
 
     left = WHERE(idx LT 0, c)
     IF c GT 0 THEN idx[left] = 0
@@ -972,6 +975,44 @@ FUNCTION AmesPAHdbIDLSuite_Fitted_Spectrum::GetSizeDistribution,NBins=nbins,Min=
   ENDIF
 
   RETURN,*self._lazy.sizedistribution
+END
+
+;+
+; Retrieves the average number and standard deviation of carbon atoms of the
+; fitted PAHs.
+;
+; :Returns:
+;   double array
+;
+; :Categories:
+;   SET/GET
+;-
+FUNCTION AmesPAHdbIDLSuite_Fitted_Spectrum::GetAverageNumberOfCarbonAtoms
+
+  COMPILE_OPT IDL2
+
+  ON_ERROR,2
+
+  IF NOT PTR_VALID(self._lazy.averagenumberofcarbonatoms) THEN BEGIN
+
+    ndata = N_ELEMENTS((*self.database).data.species)
+
+    idx = ULINDGEN(ndata, self.nuids)
+
+    select = WHERE((*self.database).data.species[idx MOD ndata].uid EQ (*self.weights)[idx / ndata].uid) MOD ndata
+
+    nc = (*self.database).data.species[select].nc
+
+    tot = TOTAL((*self.weights).weight)
+
+    avg = TOTAL(nc * (*self.weights).weight) / tot
+
+    var = TOTAL((nc - avg)^2 * (*self.weights).weight) / (self.nuids * tot / (self.nuids - 1D))
+
+    self._lazy.averagenumberofcarbonatoms = PTR_NEW([avg, SQRT(var)])
+  END
+
+  RETURN,*self._lazy.averagenumberofcarbonatoms
 END
 
 ;+
@@ -1577,6 +1618,7 @@ PRO AmesPAHdbIDLSuite_Fitted_Spectrum__DEFINE
                  residual:PTR_NEW(), $
                  fit:PTR_NEW(), $
                  sizedistribution:PTR_NEW(), $
+                 averagenumberofcarbonatoms:PTR_NEW(), $
                  breakdown:PTR_NEW(), $
                  breakdown_sig:0L, $
                  classes:PTR_NEW(), $

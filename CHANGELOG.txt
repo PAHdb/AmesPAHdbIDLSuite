@@ -1,4 +1,9 @@
 CHANGELOG
++- 09-10-2024
+   Added AmesPAHdbIDLSuite_Fitted_Spectrum::GetAverageNumberOfCarbonAtoms in
+   AmesPAHdbIDLSuite_Fitted_Spectrum__define.pro and
+   AmesPAHdbIDLSuite_MCFitted_Spectrum::GetAverageNumberOfCarbonAtoms in
+   AmesPAHdbIDLSuite_MCFitted_Spectrum__define.pro.
 +- 08-28-2024
    Do unit conversion already in AmesPAHdbIDLSuite_Spectrum::MCFit in
    AmesPAHdIDLSuite_Spectrum__define.pro. Honor Notice-keyword in
