@@ -1,4 +1,6 @@
 CHANGELOG
++- 09-11-2024
+   Compute entire spectrum in stellar_kurucz_model.pro.
 +- 09-10-2024
    Added AmesPAHdbIDLSuite_Fitted_Spectrum::GetAverageNumberOfCarbonAtoms in
    AmesPAHdbIDLSuite_Fitted_Spectrum__define.pro and

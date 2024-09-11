@@ -26,6 +26,8 @@
 ; :History:
 ;   Changes::
 ;
+;     09-11-2024
+;     Compute complete spectrum. Christiaan Boersma.
 ;     08-19-2019
 ;     Documentation added. Christiaan Boersma.
 ;-
@@ -71,7 +73,7 @@ PRO STELLAR_KURUCZ_MODEL
   transitions->Shift,-15D
 
   ; convolve stick spectrum
-  spectrum = transitions->Convolve(FWHM=15D, XRange=1D4/[15,2.5])
+  spectrum = transitions->Convolve(FWHM=15D)
 
   ; plot the spectrum
   spectrum->Plot
