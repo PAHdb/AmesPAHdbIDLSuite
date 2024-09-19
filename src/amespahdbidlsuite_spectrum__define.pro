@@ -1001,7 +1001,7 @@ PRO AmesPAHdbIDLSuite_Spectrum::Set,Struct,Type=Type,Version=Version,Data=Data,P
 END
 
 ;+
-; Retrieves the abscissa valuesa.
+; Retrieves the abscissa values.
 ;
 ; :Returns:
 ;   double array (1D)

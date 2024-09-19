@@ -25,6 +25,8 @@
 ; :History:
 ;   Changes::
 ;
+;     09-19-2024
+;     Use standard deviation in DESCRIPTION. Christiaan Boersma.
 ;     09-10-2024
 ;     Added GETAVERAGENUMBEROFCARBONATOMS. Christiaan Boersma.
 ;     08-28-2024
@@ -78,6 +80,10 @@ PRO AmesPAHdbIDLSuite_MCFitted_Spectrum::Description,Str
   Str = STRSPLIT(Str, "!C", /REGEX, /EXTRACT)
 
   err = self->getError()
+  ntags = N_TAGS(err)
+  FOR i = 0L, ntags - 1L DO $
+    IF err.(i)[1] GE 0.0D THEN $
+      err.(i)[1] = SQRT(err.(i)[1])
 
   tags = STRLOWCASE(TAG_NAMES(err))
 
@@ -97,7 +103,6 @@ PRO AmesPAHdbIDLSuite_MCFitted_Spectrum::Description,Str
          STRING(FORMAT='(A-12,":",X,I0)', "|_samples", N_ELEMENTS(*self.obj)), $
          STRING(FORMAT='(A-12,":",X,g-4.2,"!M'+STRING( 177B )+'",g-11.2)', "|_error", err.(0)[0], err.(0)[1])]
 
-  ntags = N_TAGS(err)
   FOR i = 1L, ntags - 1L DO $
     IF err.(i)[0] GE 0.0D THEN $
       Str = [Str, $
