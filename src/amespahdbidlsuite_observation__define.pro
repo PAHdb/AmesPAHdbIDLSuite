@@ -25,6 +25,8 @@
 ; :History:
 ;   Changes::
 ;
+;     08-28-2024
+;     Honor NOTICE-keyword in ABSCISSAUNITSTO. Christiaan Boersma.
 ;     06-15-2022:
 ;     Properly include grid end point in REBIN. Christiaan Boersma.
 ;     04-27-2022
@@ -292,11 +294,13 @@ PRO AmesPAHdbIDLSuite_Observation::AbscissaUnitsTo,xunit,Notice=Notice
 
   self.units.abscissa.str = xunits[select].str
 
-  PRINT
-  PRINT,"========================================================="
-  PRINT," CONVERTED ABSCISSA-UNITS TO: "+self.units.abscissa.str
-  PRINT,"========================================================="
-  PRINT
+  IF Notice THEN BEGIN
+     PRINT
+     PRINT,"========================================================="
+     PRINT," CONVERTED ABSCISSA-UNITS TO: "+self.units.abscissa.str
+     PRINT,"========================================================="
+     PRINT
+  ENDIF
 END
 
 ;+

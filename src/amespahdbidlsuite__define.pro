@@ -39,6 +39,9 @@
 ; :History:
 ;   Changes::
 ;
+;     07-03-2024
+;     Add search logic for n_ch and n_ch3 fields added in v4.00. Christiaan
+;     Boersma.
 ;     05-09-2024
 ;     Add Windows support for MD5 hashing. Christiaan Boersma.
 ;     10-10-2023
@@ -947,8 +950,12 @@ FUNCTION AmesPAHdbIDLSuite::TokenizeWords,Word
                  translation:'(*self.joined).scale'}, $
                 {word:'intensity', $
                  translation:'(*self.joined).intensity'}, $
+                {word:'ch', $
+                 translation:'(*self.joined).nch'}, $
                 {word:'ch2', $
                  translation:'(*self.joined).nch2'}, $
+                {word:'ch3', $
+                 translation:'(*self.joined).nch3'}, $
                 {word:'chx', $
                  translation:'(*self.joined).nchx'}, $
                 {word:'solo', $
@@ -1238,7 +1245,7 @@ FUNCTION AmesPAHdbIDLSuite::Search,Str,Count,Query=Query
         PRINT,"              RESTORING INDEX FROM CACHE                 "
         PRINT,"========================================================="
         PRINT
-        RESTORE,FILENAME=file_cache
+        RESTORE,FILENAME=file_cache,/RELAXED_STRUCTURE_ASSIGNMENT
      ENDIF ELSE BEGIN
 
         PRINT
@@ -1537,7 +1544,7 @@ PRO AmesPAHdbIDLSuite::ReadFile,File,Check=Check,Cache=Cache
      PRINT
 
      timer = SYSTIME(/SECONDS)
-     RESTORE,FILENAME=file_cache
+     RESTORE,FILENAME=file_cache,/RELAXED_STRUCTURE_ASSIGNMENT
      PRINT,"========================================================="
      PRINT,FORMAT='(A-30, ": ", A0)',"FILENAME",""+file_cache
      PRINT,FORMAT='(A-30, ": ", A0)',"ORIGINAL FILE",""+pahdb.filename

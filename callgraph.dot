@@ -108,6 +108,7 @@ digraph callgraph {
   amespahdbidlsuite::getversion[fontcolor=black,shape=plaintext]
   amespahdbidlsuite_mcfitted_spectrum::get[fontcolor=black,shape=plaintext]
   amespahdbidlsuite_geometry::mass[fontcolor=black,shape=plaintext]
+  amespahdbidlsuite_mcfitted_spectrum::getaveragenumberofcarbonatoms[fontcolor=black,shape=plaintext]
   amespahdbidlsuite_observation::setgridrange[fontcolor=black,shape=plaintext]
   amespahdbidlsuite_observation::rebin[fontcolor=black,shape=plaintext]
   anharmonics[fontcolor=black,shape=plaintext]
@@ -140,5 +141,6 @@ digraph callgraph {
   amespahdbidlsuite_spectrum::description[fontcolor=black,shape=plaintext]
   amespahdbidlsuite_transitions::write[fontcolor=black,shape=plaintext]
   amespahdbidlsuite_spectrum::coadd[fontcolor=black,shape=plaintext]
+  amespahdbidlsuite_fitted_spectrum::getaveragenumberofcarbonatoms[fontcolor=black,shape=plaintext]
   amespahdbidlsuite_species::transitions[fontcolor=black,shape=plaintext]
 }

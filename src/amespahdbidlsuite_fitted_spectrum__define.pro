@@ -24,6 +24,14 @@
 ;
 ; :History:
 ;   Changes::
+;
+;     11-27-2024
+;     Medium/large PAH size cutoff set to 70 to align with Python counterpart.
+;     Christiaan Boersma.
+;     09-19-2024
+;     Use trapezium integration in favor of INT_TABULATED. Christiaan Boersma.
+;     09-10-2024
+;     Added GETAVERAGENUMBEROFCARBONATOMS. Christiaan Boersma.
 ;     12-13-2023
 ;     Align TOLARANCE AND ITERATIONS in DESCRIPTION. Christiaan Boersma.
 ;     11-22-2023
@@ -210,15 +218,17 @@ PRO AmesPAHdbIDLSuite_Fitted_Spectrum::Plot,DistributionSize=DistributionSize,Re
 
      f_perc = DBLARR(self.nuids, /NOZERO)
 
+     dx = (*self.grid)[1:*] - *self.grid
+
      FOR i = 0L, self.nuids - 1 DO BEGIN
 
         sel = WHERE((*self.data).uid EQ (*self.uids)[i])
 
-        grid = *self.grid
-
         intensity = (*self.data)[sel].intensity
 
-        f_perc[i] = INT_TABULATED(grid, intensity, /SORT)
+        yavg = (intensity[0:-2] + intensity[1:*]) / 2D
+
+        f_perc[i] = TOTAL(dx * yavg)
      ENDFOR
 
      f_perc *= 100D / TOTAL(f_perc)
@@ -545,15 +555,17 @@ PRO AmesPAHdbIDLSuite_Fitted_Spectrum::Sort,Weights,Flux=Flux
   IF NOT KEYWORD_SET(Flux) THEN Weights.weight = (*self.weights).weight $
   ELSE BEGIN
 
+     dx = (*self.grid)[1:*] - *self.grid
+
      FOR i = 0L, self.nuids - 1 DO BEGIN
 
         select = WHERE((*self.data).uid EQ (*self.uids)[i])
 
-        grid = *self.grid
-
         intensity = (*self.data)[select].intensity
 
-        Weights[i].weight = INT_TABULATED(grid, intensity, /SORT)
+        yavg = (intensity[0:-2] + intensity[1:*]) / 2.0
+
+        Weights[i].weight = TOTAL(dx * yavg)
      ENDFOR
   ENDELSE
 
@@ -959,7 +971,7 @@ FUNCTION AmesPAHdbIDLSuite_Fitted_Spectrum::GetSizeDistribution,NBins=nbins,Min=
 
     distribution = DBLARR(nbins)
 
-  idx = VALUE_LOCATE(size, nc)
+    idx = VALUE_LOCATE(size, nc)
 
     left = WHERE(idx LT 0, c)
     IF c GT 0 THEN idx[left] = 0
@@ -975,13 +987,51 @@ FUNCTION AmesPAHdbIDLSuite_Fitted_Spectrum::GetSizeDistribution,NBins=nbins,Min=
 END
 
 ;+
+; Retrieves the average number and standard deviation of carbon atoms of the
+; fitted PAHs.
+;
+; :Returns:
+;   double array
+;
+; :Categories:
+;   SET/GET
+;-
+FUNCTION AmesPAHdbIDLSuite_Fitted_Spectrum::GetAverageNumberOfCarbonAtoms
+
+  COMPILE_OPT IDL2
+
+  ON_ERROR,2
+
+  IF NOT PTR_VALID(self._lazy.averagenumberofcarbonatoms) THEN BEGIN
+
+    ndata = N_ELEMENTS((*self.database).data.species)
+
+    idx = ULINDGEN(ndata, self.nuids)
+
+    select = WHERE((*self.database).data.species[idx MOD ndata].uid EQ (*self.weights)[idx / ndata].uid) MOD ndata
+
+    nc = (*self.database).data.species[select].nc
+
+    tot = TOTAL((*self.weights).weight)
+
+    avg = TOTAL(nc * (*self.weights).weight) / tot
+
+    var = TOTAL((nc - avg)^2 * (*self.weights).weight) / (self.nuids * tot / (self.nuids - 1D))
+
+    self._lazy.averagenumberofcarbonatoms = PTR_NEW([avg, SQRT(var)])
+  END
+
+  RETURN,*self._lazy.averagenumberofcarbonatoms
+END
+
+;+
 ; Retrieves the breakdown of the fitted PAHs.
 ;
 ; :Keywords:
 ;   Small: in, optional, type=int
 ;     Cut-off size for small PAHs, defaults to 50
 ;   Medium: in, optional, type=int
-;     Cut-off sie for medium PAHs, defaults to 90
+;     Cut-off size for medium PAHs, defaults to 70
 ;   Flux: in, optional, type=int
 ;     Whether to use the flux to determine the breakdown
 ;   Absolute: in, optional, type=int
@@ -1072,21 +1122,28 @@ FUNCTION AmesPAHdbIDLSuite_Fitted_Spectrum::GetBreakdown,Small=Small,Medium=Medi
          RETURN,0
        ENDIF
 
-      classes = self->getClasses(Small=Small, Medium=Medium)
+       classes = self->getClasses(Small=Small, Medium=Medium)
 
-      ntags = N_TAGS(classes)
+       ntags = N_TAGS(classes)
 
-      grid = *self.grid
+       dx = (*self.grid)[1:*] - *self.grid
 
-       IF NOT KEYWORD_SET(Absolute) THEN total = INT_TABULATED(grid, self->getFit(), /SORT)
+       IF NOT KEYWORD_SET(Absolute) THEN BEGIN
+
+          y = self->getFit()
+
+          yavg = (y[0:-2] + y[1:*]) / 2.0D
+
+          total = TOTAL(dx * yavg)
+       ENDIF
 
        FOR i = 0, ntags - 1 DO BEGIN
 
-          grid = *self.grid
-
           class = classes.(i)
 
-          breakdown.(i) = INT_TABULATED(grid, class, /SORT) / total
+          yavg = (class[0:-2] + class[1:*]) / 2.0D
+
+          breakdown.(i) = TOTAL(dx * yavg) / total
       ENDFOR
     ENDIF ELSE BEGIN
 
@@ -1124,7 +1181,7 @@ FUNCTION AmesPAHdbIDLSuite_Fitted_Spectrum::GetBreakdown,Small=Small,Medium=Medi
 
       IF nselect NE 0 THEN breakdown.small = TOTAL((*self.weights)[select].weight) / total
 
-      IF NOT KEYWORD_SET(Medium) THEN Medium = 90L
+      IF NOT KEYWORD_SET(Medium) THEN Medium = 70L
 
       select = self->Select(WHERE((*self.database).data.species.nc GT Small AND $
                                   (*self.database).data.species.nc LE Medium), $
@@ -1165,7 +1222,7 @@ END
 ;   Small: in, optional, type=int
 ;     Cut-off size for small PAHs, defaults to 50
 ;   Medium: in, optional, type=int
-;     Cut-off size for medium PAHs defaults to 90
+;     Cut-off size for medium PAHs defaults to 70
 ;
 ; :Returns:
 ;   Structure
@@ -1238,7 +1295,7 @@ FUNCTION AmesPAHdbIDLSuite_Fitted_Spectrum::GetClasses,Small=Small,Medium=Medium
 
     IF nselect NE 0 THEN classes.small = TOTAL(REFORM((*self.data)[select].intensity, ngrid, nselect), 2)
 
-    IF NOT KEYWORD_SET(Medium) THEN Medium = 90L
+    IF NOT KEYWORD_SET(Medium) THEN Medium = 70L
 
     select = self->Select(WHERE((*self.database).data.species.nc GT Small AND $
                                 (*self.database).data.species.nc LE Medium), $
@@ -1373,7 +1430,11 @@ FUNCTION AmesPAHdbIDLSuite_Fitted_Spectrum::GetError
 
       IF nsel EQ 0 THEN CONTINUE
 
-      piecewise.(i) = INT_TABULATED(x[sel], r[sel]) / INT_TABULATED(x[sel], y[sel])
+      dx = (*self.grid)[sel[1:*]] - (*self.grid)[sel]
+      yavg = (y[sel[0:-2]] + y[sel[1:*]]) / 2D
+      ravg = (r[sel[0:-2]] + r[sel[1:*]]) / 2D
+
+      piecewise.(i) = TOTAL(dx * ravg) / TOTAL(dx * yavg)
     ENDFOR
 
     self._lazy.error = PTR_NEW(piecewise)
@@ -1577,6 +1638,7 @@ PRO AmesPAHdbIDLSuite_Fitted_Spectrum__DEFINE
                  residual:PTR_NEW(), $
                  fit:PTR_NEW(), $
                  sizedistribution:PTR_NEW(), $
+                 averagenumberofcarbonatoms:PTR_NEW(), $
                  breakdown:PTR_NEW(), $
                  breakdown_sig:0L, $
                  classes:PTR_NEW(), $

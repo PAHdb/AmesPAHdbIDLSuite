@@ -27,6 +27,8 @@
 ; :History:
 ;   Changes::
 ;
+;     05-10-2024
+;     Update one more unit in CONVOLVE. Christiaan
 ;     05-09-2024
 ;     Ensure ordinate units are correct. Christiaan Boersma.
 ;     11-09-2023
@@ -2709,7 +2711,7 @@ FUNCTION AmesPAHdbIDLSuite_Transitions::Convolve,XRange=XRange,FWHM=FWHM,Npoints
 
      "AMESPAHDBIDLSUITE_MODEL_CASCADE_S": units.ordinate = {AmesPAHdb_Unit_S, $
                                                             unit:3, $
-                                                            str:'radiant energy [erg cm]'}
+                                                            str:'radiant energy [erg/cm!U-1!N/PAH]'}
   ENDCASE
 
   RETURN,OBJ_NEW('AmesPAHdbIDLSuite_Spectrum', $

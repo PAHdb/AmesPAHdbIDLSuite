@@ -99,7 +99,7 @@ PRO MC_FIT_A_SPECTRUM
 
   ; print results
   mcbd = mcfit->GetBreakdown()
-  
+
   tags = TAG_NAMES(mcbd)
 
   ntags = N_TAGS(mcbd)
