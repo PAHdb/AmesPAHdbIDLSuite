@@ -1,4 +1,8 @@
 CHANGELOG
++- 11-27-2024
+   Medium/large PAH size cutoff set to 70 in AmesPAHdbIDLSuite_Fitted_Spectrum::GetClasses
+   and AmesPAHdbIDLSuite_Fitted_Spectrum::GetBreakdown in
+   AmesPAHdbIDLSuite_Fitted_Spectrum__define.pro to align with Python counterpart.
 +- 09-19-2004
    Use standard deviation in AmesPAHdbIDLSuite_MCFitted_Spectrum::Description
    in AmesPAHdbIDLSuite_MCFitted_Spectrum__define.pro. Use trapezium integration

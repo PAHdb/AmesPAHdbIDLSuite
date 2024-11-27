@@ -25,6 +25,9 @@
 ; :History:
 ;   Changes::
 ;
+;     11-27-2024
+;     Medium/large PAH size cutoff set to 70 to align with Python counterpart.
+;     Christiaan Boersma.
 ;     09-19-2024
 ;     Use trapezium integration in favor of INT_TABULATED. Christiaan Boersma.
 ;     09-10-2024
@@ -1028,7 +1031,7 @@ END
 ;   Small: in, optional, type=int
 ;     Cut-off size for small PAHs, defaults to 50
 ;   Medium: in, optional, type=int
-;     Cut-off sie for medium PAHs, defaults to 90
+;     Cut-off size for medium PAHs, defaults to 70
 ;   Flux: in, optional, type=int
 ;     Whether to use the flux to determine the breakdown
 ;   Absolute: in, optional, type=int
@@ -1178,7 +1181,7 @@ FUNCTION AmesPAHdbIDLSuite_Fitted_Spectrum::GetBreakdown,Small=Small,Medium=Medi
 
       IF nselect NE 0 THEN breakdown.small = TOTAL((*self.weights)[select].weight) / total
 
-      IF NOT KEYWORD_SET(Medium) THEN Medium = 90L
+      IF NOT KEYWORD_SET(Medium) THEN Medium = 70L
 
       select = self->Select(WHERE((*self.database).data.species.nc GT Small AND $
                                   (*self.database).data.species.nc LE Medium), $
@@ -1219,7 +1222,7 @@ END
 ;   Small: in, optional, type=int
 ;     Cut-off size for small PAHs, defaults to 50
 ;   Medium: in, optional, type=int
-;     Cut-off size for medium PAHs defaults to 90
+;     Cut-off size for medium PAHs defaults to 70
 ;
 ; :Returns:
 ;   Structure
@@ -1292,7 +1295,7 @@ FUNCTION AmesPAHdbIDLSuite_Fitted_Spectrum::GetClasses,Small=Small,Medium=Medium
 
     IF nselect NE 0 THEN classes.small = TOTAL(REFORM((*self.data)[select].intensity, ngrid, nselect), 2)
 
-    IF NOT KEYWORD_SET(Medium) THEN Medium = 90L
+    IF NOT KEYWORD_SET(Medium) THEN Medium = 70L
 
     select = self->Select(WHERE((*self.database).data.species.nc GT Small AND $
                                 (*self.database).data.species.nc LE Medium), $
