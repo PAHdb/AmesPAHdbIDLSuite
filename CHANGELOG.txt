@@ -1,4 +1,7 @@
 CHANGELOG
++-04-18-2025
+   Normalize b-vector in AmesPAHdbIDLSuite_Spectrum::Fit in
+   AmesPAHdbIDLSuite_Spectrum__define.pro.
 +- 11-27-2024
    Medium/large PAH size cutoff set to 70 in AmesPAHdbIDLSuite_Fitted_Spectrum::GetClasses
    and AmesPAHdbIDLSuite_Fitted_Spectrum::GetBreakdown in
