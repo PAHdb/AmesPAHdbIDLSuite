@@ -25,6 +25,8 @@
 ; :History:
 ;   Changes::
 ;
+;     04-18-2025
+;     Normalize b-vector in FIT. Christiaan Boersma.
 ;     08-28-2024
 ;     Do unit conversion already in MCFIT. Christiaan Boersma.
 ;     08-25-2024
@@ -516,9 +518,13 @@ FUNCTION AmesPAHdbIDLSuite_Spectrum::Fit,observation,error,TOLERANCE_NNLS=tolera
 
   READS,!VERSION.RELEASE,idl_version
 
-  scl = MAX(m)
+  b_scl = MAX(b)
 
-  m /= scl
+  b /= b_scl
+
+  m_scl = MAX(m)
+
+  m /= m_scl
 
   IF idl_version GE 8.0 AND NOT KEYWORD_SET(EXTERNAL_NNLS) THEN BEGIN
 
@@ -579,7 +585,7 @@ FUNCTION AmesPAHdbIDLSuite_Spectrum::Fit,observation,error,TOLERANCE_NNLS=tolera
 
   _weights.uid = uids[valid]
 
-  _weights.weight = weights[valid] / scl
+  _weights.weight = weights[valid] * b_scl / m_scl
 
   data = REPLICATE({AmesPAHdbIDLSuite_Fitted_S, $
                     intensity:0D, $
