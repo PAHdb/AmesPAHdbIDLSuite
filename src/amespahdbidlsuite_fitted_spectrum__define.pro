@@ -932,18 +932,18 @@ FUNCTION AmesPAHdbIDLSuite_Fitted_Spectrum::GetSizeDistribution,NBins=nbins,Min=
 
   IF NOT PTR_VALID(self._lazy.sizedistribution) THEN BEGIN
 
-    IF  NOT PTR_VALID(self.database) THEN BEGIN
-       PRINT
-       PRINT,"========================================================="
-       PRINT," VALID DATABASE POINTER NEEDED TO GET SIZE DISTRUBUTION  "
-       PRINT,"========================================================="
+    IF NOT PTR_VALID(self.database) THEN BEGIN
+      PRINT
+      PRINT,"========================================================="
+      PRINT," VALID DATABASE POINTER NEEDED TO GET SIZE DISTRIBUTION  "
+      PRINT,"========================================================="
       PRINT
       self.state = 0
       RETURN,0
    ENDIF
 
     IF NOT PTR_VALID(self.weights) THEN BEGIN
-       PRINT
+      PRINT
       PRINT,"========================================================="
       PRINT,"                  WEIGHTS ARE NOT SET                    "
       PRINT,"========================================================="
