@@ -1,4 +1,5 @@
-[![Documentation](https://img.shields.io/badge/docs-available-brightgreen.svg)](https://pahdb.github.io/AmesPAHdbIDLSuite/)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17428247.svg)](https://doi.org/10.5281/zenodo.17428247) [![Documentation](https://img.shields.io/badge/docs-available-brightgreen.svg)](https://pahdb.github.io/AmesPAHdbIDLSuite/)
+
 
 # AmesPAHdbIDLSuite
 
