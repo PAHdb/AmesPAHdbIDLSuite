@@ -496,7 +496,7 @@ PRO AmesPAHdbIDLSuite_MCFitted_Spectrum::Set,Struct,Type=Type,Obj=Obj,Distributi
         PTR_FREE,self.obj
 
         self.InvalidateLazy
-      ENDIF
+    ENDIF
 
       self.obj = PTR_NEW(Obj)
    ENDIF
@@ -618,7 +618,7 @@ FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::GetSizeDistribution,NBins=nbins,Mi
 
       (*his[i]) = (*self.obj)[i]->GetSizeDistribution(NBins=nbins, Min=min, Max=max)
 
-     hleft = MIN((*his[i]).size, MAX=hright)
+      hleft = MIN((*his[i]).size, MAX=hright)
 
       IF hleft LT left THEN min = hleft
       IF hright GT right THEN max = hright
