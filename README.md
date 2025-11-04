@@ -46,8 +46,7 @@ pull requests.
 
 ## Versioning
 
-A date system is used for versioning. For the versions available, see
-the [tags on this repository](https://github.com/PAHdb/AmesPAHdbIDLSuite/tags).
+ For the versions available, see the [tags on this repository](https://github.com/PAHdb/AmesPAHdbIDLSuite/tags).
 
 ## Authors
 
@@ -56,6 +55,31 @@ the [tags on this repository](https://github.com/PAHdb/AmesPAHdbIDLSuite/tags).
 See also the list of
 [contributors](https://github.com/PAHdb/AmesPAHdbIDLSuite/contributors)
 who participated in this project.
+
+## Citations
+
+You are kindly asked to consider the following references for citation
+when using the AmesPAHdbPythonSuite:
+
+* C.W. Bauschlicher, Jr., A. Ricca, C. Boersma, and
+  L.J. Allamandola, "THE NASA AMES PAH IR SPECTROSCOPIC DATABASE:
+  COMPUTATIONAL VERSION 3.00 WITH UPDATED CONTENT AND THE
+  INTRODUCTION OF MULTIPLE SCALING FACTORS", The Astrophysical
+  Journal Supplement Series, 234, 32, 2018
+  [https://doi.org/10.3847/1538-4365/aaa019](https://doi.org/10.3847/1538-4365/aaa019)
+
+* C. Boersma, C.W. Bauschlicher, Jr., A. Ricca, A.L. Mattioda,
+  J. Cami, E. Peeters, F. Sanchez de Armas, G. Puerta Saborido,
+  D.M. Hudgins, and L.J. Allamandola, "THE NASA AMES PAH IR
+  SPECTROSCOPIC DATABASE VERSION 2.00: UPDATED CONTENT, WEBSITE AND
+  ON/OFFLINE TOOLS", The Astrophysical Journal Supplement Series,, 211, 8, 2014 [https://doi.org/10.1088/0067-0049/211/1/8](https://doi.org/10.1088/0067-0049/211/1/8)
+
+* Mattioda, A. L., Hudgins, D. M., Boersma, C., Ricca, A.,
+  Peeters, E., Cami, J., Sanchez de Armas, F., Puerta Saborido,
+  G., Bauschlicher, C. W., J., and Allamandola, L. J. "THE NASA
+  AMES PAH IR SPECTROSCOPIC DATABASE: THE LABORATORY SPECTRA", The
+  Astrophysical Journal Supplement Series, 251, 22, 2020,
+  [https://doi.org/10.3847/1538-4365/abc2c8](https://doi.org/10.3847/1538-4365/abc2c8)
 
 ## License
 

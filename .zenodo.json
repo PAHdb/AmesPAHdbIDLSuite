@@ -4,5 +4,14 @@
             "name": "The PAHdb Team"
         }
     ],
-    "title": "AmesPAHdbIDLSuite"
+    "contributors": [
+        {
+            "name": "Boersma, Christiaan",
+            "type": "ProjectLeader",
+            "orcid": "0000-0002-4836-217X",
+            "affiliation": "Ames Research Center"
+        }
+    ],
+    "title": "AmesPAHdbIDLSuite",
+    "description": "Polycyclic aromatic hydrocarbon (PAH) molecules dominate the mid-infrared (IR) emission of many objects in the sky. At NASA Ames Research Center, laboratory experiments and quantum chemical calculations have resulted in an unrivaled collection of PAH absorption spectra that have been collected into the NASA Ames PAH IR Spectroscopic Database. To have astronomers mine this wealth of data and apply it to observations, tools are needed, preferably in a language astronomers are familiar with. The AmesPAHdbIDLSuite does just that. The AmesPAHdbIDLSuite is a collection of object classes written in IDL, short for Interactive Data Language, a programming language used for data analysis and popular with astronomers. The provided object classes allow for the reading and parsing of a downloaded database XML-file. Once the database is loaded into memory, it can be searched and different elements can be plotted to screen and/or file. These elements include, but are not limited to, spectroscopic data, molecular properties, chemical structure, etc. In addition, the AmesPAHdbIDLSuite implements a selection PAH emission models that offer different levels of detail. These models turn the database absorption spectra into emission spectra, which are needed for comparison with astronomical observations. The AmesPAHdbIDLSuite also offers a selection of algorithms to be used for fitting these emission spectra directly to the observations and tools to break down and analyze those fits."
 }
