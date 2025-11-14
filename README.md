@@ -1,6 +1,5 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17428247.svg)](https://doi.org/10.5281/zenodo.17428247) [![Documentation](https://img.shields.io/badge/docs-available-brightgreen.svg)](https://pahdb.github.io/AmesPAHdbIDLSuite/)
 
-
 # AmesPAHdbIDLSuite
 
 A suite of IDL object classes to work with a downloaded NASA Ames PAH
@@ -61,22 +60,30 @@ who participated in this project.
 You are kindly asked to consider the following references for citation
 when using the AmesPAHdbPythonSuite:
 
-* C.W. Bauschlicher, Jr., A. Ricca, C. Boersma, and
-  L.J. Allamandola, "THE NASA AMES PAH IR SPECTROSCOPIC DATABASE:
+- Ricca, A., Boersma, C., Maragkoudakis, A., Roser, J.E., Shannon, M.J.
+  Allamandola, L.J., Bauschlicher Jr., C.W., "THE NASA AMES PAH IR
+  SPECTROSCOPIC DATABASE: COMPUTATIONAL VERSION 4.00, SOFTWARE TOOLS, WEBSITE,
+  AND DOCUMENTATION", The Astrophysical Journal Supplement Series, in press,
+  2025
+  [https://doi.org/10.3847/1538-4365/ae1c38](https://doi.org/10.3847/1538-4365/ae1c38)
+
+- Bauschlicher, Jr., C.W., Ricca, A.,  Boersma, C.,
+  Allamandola, L.J., "THE NASA AMES PAH IR SPECTROSCOPIC DATABASE:
   COMPUTATIONAL VERSION 3.00 WITH UPDATED CONTENT AND THE
   INTRODUCTION OF MULTIPLE SCALING FACTORS", The Astrophysical
   Journal Supplement Series, 234, 32, 2018
   [https://doi.org/10.3847/1538-4365/aaa019](https://doi.org/10.3847/1538-4365/aaa019)
 
-* C. Boersma, C.W. Bauschlicher, Jr., A. Ricca, A.L. Mattioda,
-  J. Cami, E. Peeters, F. Sanchez de Armas, G. Puerta Saborido,
-  D.M. Hudgins, and L.J. Allamandola, "THE NASA AMES PAH IR
+- Boersma, C., Bauschlicher, Jr., C.W., Ricca, A., Mattioda, A.L,
+  Cami, J., Peeters, E., Sanchez de Armas, F., Puerta Saborido, G.,
+  Hudgins, D.M., Allamandola, L.J., "THE NASA AMES PAH IR
   SPECTROSCOPIC DATABASE VERSION 2.00: UPDATED CONTENT, WEBSITE AND
-  ON/OFFLINE TOOLS", The Astrophysical Journal Supplement Series,, 211, 8, 2014 [https://doi.org/10.1088/0067-0049/211/1/8](https://doi.org/10.1088/0067-0049/211/1/8)
+  ON/OFFLINE TOOLS", The Astrophysical Journal Supplement Series,, 211, 8, 2014
+  [https://doi.org/10.1088/0067-0049/211/1/8](https://doi.org/10.1088/0067-0049/211/1/8)
 
-* Mattioda, A. L., Hudgins, D. M., Boersma, C., Ricca, A.,
+- Mattioda, A. L., Hudgins, D. M., Boersma, C., Ricca, A.,
   Peeters, E., Cami, J., Sanchez de Armas, F., Puerta Saborido,
-  G., Bauschlicher, C. W., J., and Allamandola, L. J. "THE NASA
+  G., Bauschlicher, C. W., J., Allamandola, L. J. "THE NASA
   AMES PAH IR SPECTROSCOPIC DATABASE: THE LABORATORY SPECTRA", The
   Astrophysical Journal Supplement Series, 251, 22, 2020,
   [https://doi.org/10.3847/1538-4365/abc2c8](https://doi.org/10.3847/1538-4365/abc2c8)
@@ -91,3 +98,10 @@ This project is licensed under the BSD 3-Clause License - see the
 - The NASA Ames PAH IR Spectroscopic Database Team
 - The Astrophysics & Astrochemistry Laboratory at NASA Ames Research
   Center - [www.astrochemistry.org](https://www.astrochemistry.org)
+
+<small>from FY2025 onward the NASA Ames PAH IR Spectroscopic Database is being supported through the Laboratory Astrophysics Round 3 directed Work Package at NASA Ames.</small>
+
+<small>From FY2023-2025 the NASA Ames PAH IR Spectroscopic Database was supported through the Laboratory Astrophysics Round 2 directed Work Package at NASA Ames.</small>
+
+<small>From FY2019-2022 the NASA Ames PAH IR Spectroscopic Database was supported through a directed Work Package at NASA Ames titled: “_Laboratory Astrophysics & The NASA Ames PAH IR Spectroscopic Database_”.</small>
+

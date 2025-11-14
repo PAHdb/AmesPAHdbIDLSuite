@@ -1,4 +1,8 @@
 CHANGELOG
++-08-26-2025
+   Correct spelling and indentation in
+   AmesPAHdbIDLSuite_Fitted_Spectrum::GetSizeDistribution in
+   AmesPAHdbIDLSuite_Fitted_Spectrum__define.pro
 +-04-18-2025
    Normalize b-vector in AmesPAHdbIDLSuite_Spectrum::Fit in
    AmesPAHdbIDLSuite_Spectrum__define.pro.

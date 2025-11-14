@@ -44,15 +44,11 @@
         <h1>Installation</h1>
 
         <p>
-          The <i>AmesPAHdbIDLSuite</i> can be freely downloaded
-          from the
-          <a href="https://www.astrochemistry.org/pahdb/theoretical/3.20/download/view">download</a> section
-          of the NASA Ames PAH IR Spectroscopic
-          Database <a target="_top" href="https://www.astrochemistry.org/pahdb/theoretical/3.20/default/view">website</a> as a
-          gzipped tar-archive or from <a target="_top" href="https://github.com/PAHdb/AmesPAHdbIDLSuite/releases/latest">GitHub</a> as a zip-archive.
+          The <i>AmesPAHdbIDLSuite</i> can be freely obtained from
+          <a target="_top" href="https://github.com/PAHdb/AmesPAHdbIDLSuite/releases/latest">GitHub</a>.
         </p>
         <p>
-          The <i>AmesPAHdbIDLSuite</i> has been tested with IDL versions 7.0 through 8.7.2. Spectroscopic fitting using the built-in
+          The <i>AmesPAHdbIDLSuite</i> has been tested with IDL versions 7.0 through 9.2.0. Spectroscopic fitting using the built-in
           NNLS-algorithm requires IDL version 8.0 or higher due to the use of !NULL in the NNLS implementation.
         </p>
         <p>
@@ -62,28 +58,28 @@
         <p>
           <ol type="i">
             <li>
-              Unpack the <i>AmesPAHdbIDLSuite</i> downloaded as a gzipped tar-archive <i>or</i> zip-archive.
-              <pre><code class="language-bash">tar xvaf AmesPAHdbIDLSuite.tgz</code></pre>
-	      <pre><code class="language-bash">unzip AmesPAHdbIDLSuite.zip</code></pre>
+              Clone or unpack the <i>AmesPAHdbIDLSuite</i> downloaded as a zip-archive.
+              <pre><code class="language-bash">git clone https://github.com/PAHdb/AmesPAHdbIDLSuite.git</code></pre>
+              <pre><code class="language-bash">unzip AmesPAHdbIDLSuite.zip</code></pre>
             </li>
             <li>
               <p>
-                Place the unpacked files in a directory accessible by IDL or update the IDL !PATH-variable accordingly.
+                Move the files to a directory accessible by IDL or update the IDL !PATH-variable accordingly.
               </p>
               <pre><code class="language-bash">!PATH = !PATH + ":/path/to/AmesPAHdbIDLSuite/"</code></pre>
             </li>
             <li>
               <p>
-                Obtain the XML-version(s) of either/or both the theoretical and experimental database from the <a href="https://www.astrochemistry.org/pahdb/theoretical/3.20/download/view">download</a> section of the NASA Ames PAH IR Spectroscopic Database <a href="https://www.astrochemistry.org/pahdb/theoretical/3.20/default/view">website</a> and unpack the gzipped-file(s).
+                Obtain the XML-version(s) of either/or both the theoretical and experimental database from the <a href="https://www.astrochemistry.org/pahdb/downloads">download</a> section of the NASA Ames PAH IR Spectroscopic Database <a href="https://www.astrochemistry.org/pahdb">website</a> and unpack the gzipped-file(s).
               </p>
-              <pre><code class="language-bash">gunzip pahdb-full-theoretical-v2.00.xml.gz</code></pre>
+              <pre><code class="language-bash">gunzip pahdb-full-theoretical-v4.00.xml.gz</code></pre>
             </li>
             <li>
               <p>
                 Place the unpacked file somewhere where IDL can access it and/or set either or both of the system and IDL AMESPAHDEFAULTDB environment variables to a default database file you wish to use.
               </p>
               IDL:
-	      <pre><code class="language-idl">DEFSYSV,'!AMESPAHDEFAULTDB',"/path/to/default/xml-file"</code></pre>
+          <pre><code class="language-idl">DEFSYSV,'!AMESPAHDEFAULTDB',"/path/to/default/xml-file"</code></pre>
               Bash:
               <pre><code class="language-bash">export AMESPAHDEFAULTDB='/path/to/default/xml-file'</code></pre>
               <p>
