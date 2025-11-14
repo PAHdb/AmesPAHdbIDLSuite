@@ -25,6 +25,9 @@
 ; :History:
 ;   Changes::
 ;
+;     08-26-2025
+;     Correct spelling and indentation in GETSIZEDISTRIBUTION. Christiaan
+;     Boersma.
 ;     11-27-2024
 ;     Medium/large PAH size cutoff set to 70 to align with Python counterpart.
 ;     Christiaan Boersma.
