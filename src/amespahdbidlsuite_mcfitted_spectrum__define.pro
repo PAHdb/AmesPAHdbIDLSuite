@@ -25,6 +25,8 @@
 ; :History:
 ;   Changes::
 ;
+;     12-09-2025
+;     Dereference observation in GET. Christiaan Boersma.
 ;     09-19-2024
 ;     Use standard deviation in DESCRIPTION. Christiaan Boersma.
 ;     09-10-2024
@@ -426,12 +428,13 @@ FUNCTION AmesPAHdbIDLSuite_MCFitted_Spectrum::Get
 
   ON_ERROR,2
 
-  IF NOT PTR_VALID(self.obj) THEN RETURN, 0
+  IF NOT PTR_VALID(self.obj) OR $
+     NOT OBJ_VALID(self.observation) THEN RETURN, 0
 
   RETURN,CREATE_STRUCT('type', OBJ_CLASS(self)+'_S', $
                        'obj', *self.obj, $
                        'distribution', self.distribution, $
-                       'observation', self.observation)
+                       'observation', self.observation.Get())
 END
 
 ;+

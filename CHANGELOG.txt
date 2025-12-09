@@ -1,4 +1,7 @@
 CHANGELOG
++- 12-09-2025
+   Dereference observation in AmesPAHdbIDLSuite_MCFitted_Spectrum::Get. in
+   AmesPAHdbIDLSuite_MCFitted_Spectrum__define.pro
 +-08-26-2025
    Correct spelling and indentation in
    AmesPAHdbIDLSuite_Fitted_Spectrum::GetSizeDistribution in
